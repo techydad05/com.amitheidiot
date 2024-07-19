@@ -98,13 +98,17 @@
 <div class="bg-base-200 min-h-screen flex items-center justify-center p-4">
 	<div class="w-full max-w-lg">
 		{#if !showConfirmation && !showQuiz && !showResults}
+			<div class="text-center mb-6">
+				<p class="text-lg md:text-xl lg:text-2xl">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+				</p>
+			</div>
 			<button class="btn btn-primary btn-lg w-full text-xl py-6 rounded-xl shadow-lg" on:click={showConfirmationCard} transition:fade>
 				Start Quiz
 			</button>
 		{:else if showConfirmation} 
 			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
 				<div class="card-body p-6">
-					<h2 class="card-title text-3xl mb-4 text-center">Ready to begin?</h2>
 					<p class="text-xl mb-8 text-center">You're about to start the quiz. Good luck!</p>
 					<div class="card-actions justify-center">
 						<button class="btn btn-primary btn-wide text-xl py-4 rounded-xl" on:click={startQuiz}>Let's Go!</button>
@@ -115,14 +119,14 @@
 			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
 				<div class="card-body p-6">
 					<div class="flex flex-col sm:flex-row justify-between items-center mb-6">
-						<div class="text-4xl font-bold mb-2 sm:mb-0" style="font-size: {$timerSize}%">
+						<div class="text-4xl font-bold mb-2 sm:mb-0 text-center sm:text-left" style="font-size: {$timerSize}%">
 							{remainingTime}s
 						</div>
-						<div class="text-2xl font-semibold">
+						<div class="text-2xl font-semibold text-center sm:text-left">
 							Question {currentQuestionIndex + 1}/{questions.length}
 						</div>
 					</div>
-					<progress class="progress progress-primary w-full mb-8" value={progress} max="100" />
+					<progress class="progress progress-primary w-full mb-8" value={progress} max="100"></progress>
 					{#if questions.length > 0 && questions[currentQuestionIndex]}
 						<h2 class="text-2xl font-bold mb-8 text-center">{questions[currentQuestionIndex].question}</h2>
 						<form on:submit|preventDefault={handleSubmit} class="space-y-6">
@@ -154,7 +158,6 @@
 		{:else if showResults}
 			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
 				<div class="card-body p-6">
-					<h2 class="card-title text-4xl mb-8 text-center">Quiz Results</h2>
 					<p class="text-3xl mb-8 text-center">Your score: <span class="font-bold">{score}/{questions.length}</span></p>
 					<div class="space-y-6 mb-8">
 						{#each questions as question, index}
