@@ -100,7 +100,7 @@
 			<button class="btn btn-primary btn-lg w-full text-xl py-6 rounded-xl shadow-lg" on:click={showConfirmationCard} transition:fade>
 				Start Quiz
 			</button>
-		{:else if showConfirmation}
+		{:else if showConfirmation} 
 			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
 				<div class="card-body p-6">
 					<h2 class="card-title text-3xl mb-4 text-center">Ready to begin?</h2>
