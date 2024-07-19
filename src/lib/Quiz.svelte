@@ -92,6 +92,7 @@
 		userAnswers = [];
 		dispatch('restartQuiz');
 	}
+	import { hello } from './hello.js';
 </script>
 
 <div class="bg-base-200 min-h-screen flex items-center justify-center p-4">
