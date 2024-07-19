@@ -41,10 +41,14 @@
 	}
 
 	function startQuiz() {
+		if (questions.length === 0) {
+			alert("No questions available. Please try again later.");
+			return;
+		}
 		showConfirmation = false;
 		showQuiz = true;
 		shuffleArray(questions);
-		questions = questions.slice(0, numQuestions);
+		questions = questions.slice(0, Math.min(numQuestions, questions.length));
 		startTimer();
 	}
 
@@ -118,28 +122,32 @@
 						</div>
 					</div>
 					<progress class="progress progress-primary w-full mb-4" value={progress} max="100" />
-					<h2 class="card-title mb-4">{questions[currentQuestionIndex].question}</h2>
-					<form on:submit|preventDefault={handleSubmit}>
-						{#each questions[currentQuestionIndex].options as option, index}
-							<div class="form-control">
-								<label class="label cursor-pointer">
-									<input
-										type="radio"
-										name="answer"
-										class="radio"
-										bind:group={selectedAnswer}
-										value={index}
-									/>
-									<span class="label-text ml-2">{option}</span>
-								</label>
+					{#if questions.length > 0 && questions[currentQuestionIndex]}
+						<h2 class="card-title mb-4">{questions[currentQuestionIndex].question}</h2>
+						<form on:submit|preventDefault={handleSubmit}>
+							{#each questions[currentQuestionIndex].options as option, index}
+								<div class="form-control">
+									<label class="label cursor-pointer">
+										<input
+											type="radio"
+											name="answer"
+											class="radio"
+											bind:group={selectedAnswer}
+											value={index}
+										/>
+										<span class="label-text ml-2">{option}</span>
+									</label>
+								</div>
+							{/each}
+							<div class="card-actions mt-4 justify-end">
+								<button type="submit" class="btn btn-primary" disabled={selectedAnswer === null}>
+									Submit
+								</button>
 							</div>
-						{/each}
-						<div class="card-actions mt-4 justify-end">
-							<button type="submit" class="btn btn-primary" disabled={selectedAnswer === null}>
-								Submit
-							</button>
-						</div>
-					</form>
+						</form>
+					{:else}
+						<p>No questions available. Please try again later.</p>
+					{/if}
 				</div>
 			</div>
 		{:else if showResults}
