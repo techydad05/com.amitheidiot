@@ -2,6 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 
+	let showConfirmation = false;
 	let showQuiz = false;
 	let currentQuestionIndex = 0;
 	let selectedAnswer = null;
@@ -34,7 +35,12 @@
 		}
 	];
 
+	function showConfirmationCard() {
+		showConfirmation = true;
+	}
+
 	function startQuiz() {
+		showConfirmation = false;
 		showQuiz = true;
 	}
 
@@ -45,8 +51,18 @@
 
 <div class="bg-base-200 flex min-h-screen items-center justify-center">
 	<div transition:fade>
-		{#if !showQuiz}
-			<button class="btn btn-primary btn-lg" on:click={startQuiz}> Begin </button>
+		{#if !showConfirmation && !showQuiz}
+			<button class="btn btn-primary btn-lg" on:click={showConfirmationCard}> Begin </button>
+		{:else if showConfirmation}
+			<div class="card bg-base-100 w-96 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title mb-4">Are you sure?</h2>
+					<p>You are about to start the quiz. Are you ready?</p>
+					<div class="card-actions mt-4 justify-end">
+						<button class="btn btn-primary" on:click={startQuiz}>Yes!</button>
+					</div>
+				</div>
+			</div>
 		{:else}
 			<div class="card bg-base-100 w-96 shadow-xl">
 				<form on:submit|preventDefault={handleSubmit} class="card-body">
