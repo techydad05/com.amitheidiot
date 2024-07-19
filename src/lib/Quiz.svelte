@@ -94,40 +94,40 @@
 	}
 </script>
 
-<div class="bg-base-200 flex min-h-screen items-center justify-center p-4">
-	<div class="w-full max-w-md">
+<div class="bg-base-200 min-h-screen flex items-center justify-center p-4">
+	<div class="w-full max-w-lg">
 		{#if !showConfirmation && !showQuiz && !showResults}
-			<button class="btn btn-primary btn-lg w-full text-xl py-4" on:click={showConfirmationCard} transition:fade>
+			<button class="btn btn-primary btn-lg w-full text-xl py-6 rounded-xl shadow-lg" on:click={showConfirmationCard} transition:fade>
 				Start Quiz
 			</button>
 		{:else if showConfirmation}
-			<div class="card bg-base-100 shadow-xl" transition:fly={{ y: 200, duration: 500 }}>
-				<div class="card-body">
-					<h2 class="card-title text-2xl mb-4">Ready to begin?</h2>
-					<p class="text-lg mb-6">You're about to start the quiz. Good luck!</p>
+			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
+				<div class="card-body p-6">
+					<h2 class="card-title text-3xl mb-4 text-center">Ready to begin?</h2>
+					<p class="text-xl mb-8 text-center">You're about to start the quiz. Good luck!</p>
 					<div class="card-actions justify-center">
-						<button class="btn btn-primary btn-wide text-lg" on:click={startQuiz}>Let's Go!</button>
+						<button class="btn btn-primary btn-wide text-xl py-4 rounded-xl" on:click={startQuiz}>Let's Go!</button>
 					</div>
 				</div>
 			</div>
 		{:else if showQuiz}
-			<div class="card bg-base-100 shadow-xl" transition:fly={{ y: 200, duration: 500 }}>
-				<div class="card-body p-4 sm:p-6">
-					<div class="flex flex-col sm:flex-row justify-between items-center mb-4">
-						<div class="text-3xl font-bold mb-2 sm:mb-0" style="font-size: {$timerSize}%">
+			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
+				<div class="card-body p-6">
+					<div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+						<div class="text-4xl font-bold mb-2 sm:mb-0" style="font-size: {$timerSize}%">
 							{remainingTime}s
 						</div>
-						<div class="text-xl">
+						<div class="text-2xl font-semibold">
 							Question {currentQuestionIndex + 1}/{questions.length}
 						</div>
 					</div>
-					<progress class="progress progress-primary w-full mb-6" value={progress} max="100" />
+					<progress class="progress progress-primary w-full mb-8" value={progress} max="100" />
 					{#if questions.length > 0 && questions[currentQuestionIndex]}
-						<h2 class="text-2xl font-bold mb-6">{questions[currentQuestionIndex].question}</h2>
-						<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+						<h2 class="text-2xl font-bold mb-8 text-center">{questions[currentQuestionIndex].question}</h2>
+						<form on:submit|preventDefault={handleSubmit} class="space-y-6">
 							{#each questions[currentQuestionIndex].options as option, index}
 								<div class="form-control">
-									<label class="label cursor-pointer flex items-center p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors">
+									<label class="label cursor-pointer flex items-center p-4 bg-base-200 rounded-xl hover:bg-base-300 transition-colors">
 										<input
 											type="radio"
 											name="answer"
@@ -135,37 +135,37 @@
 											bind:group={selectedAnswer}
 											value={index}
 										/>
-										<span class="label-text ml-3 text-lg">{option}</span>
+										<span class="label-text ml-4 text-xl">{option}</span>
 									</label>
 								</div>
 							{/each}
-							<div class="card-actions mt-6 justify-center">
-								<button type="submit" class="btn btn-primary btn-wide text-lg" disabled={selectedAnswer === null}>
+							<div class="card-actions mt-8 justify-center">
+								<button type="submit" class="btn btn-primary btn-wide text-xl py-4 rounded-xl" disabled={selectedAnswer === null}>
 									Submit Answer
 								</button>
 							</div>
 						</form>
 					{:else}
-						<p class="text-center text-lg">No questions available. Please try again later.</p>
+						<p class="text-center text-xl">No questions available. Please try again later.</p>
 					{/if}
 				</div>
 			</div>
 		{:else if showResults}
-			<div class="card bg-base-100 shadow-xl" transition:fly={{ y: 200, duration: 500 }}>
-				<div class="card-body p-4 sm:p-6">
-					<h2 class="card-title text-3xl mb-6 text-center">Quiz Results</h2>
-					<p class="text-2xl mb-6 text-center">Your score: <span class="font-bold">{score}/{questions.length}</span></p>
-					<div class="space-y-4 mb-6">
+			<div class="card bg-base-100 shadow-xl rounded-xl" transition:fly={{ y: 200, duration: 500 }}>
+				<div class="card-body p-6">
+					<h2 class="card-title text-4xl mb-8 text-center">Quiz Results</h2>
+					<p class="text-3xl mb-8 text-center">Your score: <span class="font-bold">{score}/{questions.length}</span></p>
+					<div class="space-y-6 mb-8">
 						{#each questions as question, index}
-							<div class="p-4 rounded-lg {userAnswers[index] === question.correctIndex ? 'bg-success/20 border-success' : 'bg-error/20 border-error'} border">
-								<p class="font-semibold text-lg mb-2">{question.question}</p>
-								<p class="mb-1">Your answer: <span class="{userAnswers[index] === question.correctIndex ? 'text-success' : 'text-error'} font-medium">{question.options[userAnswers[index]]}</span></p>
-								<p>Correct answer: <span class="text-success font-medium">{question.options[question.correctIndex]}</span></p>
+							<div class="p-6 rounded-xl {userAnswers[index] === question.correctIndex ? 'bg-success/20 border-success' : 'bg-error/20 border-error'} border-2">
+								<p class="font-semibold text-xl mb-4">{question.question}</p>
+								<p class="mb-2 text-lg">Your answer: <span class="{userAnswers[index] === question.correctIndex ? 'text-success' : 'text-error'} font-medium">{question.options[userAnswers[index]]}</span></p>
+								<p class="text-lg">Correct answer: <span class="text-success font-medium">{question.options[question.correctIndex]}</span></p>
 							</div>
 						{/each}
 					</div>
 					<div class="card-actions justify-center">
-						<button class="btn btn-primary btn-wide text-lg" on:click={restartQuiz}>Try Again</button>
+						<button class="btn btn-primary btn-wide text-xl py-4 rounded-xl" on:click={restartQuiz}>Try Again</button>
 					</div>
 				</div>
 			</div>
