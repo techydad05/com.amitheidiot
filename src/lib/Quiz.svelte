@@ -44,30 +44,32 @@
 </script>
 
 <div class="bg-base-200 flex min-h-screen items-center justify-center">
-	{#if !showQuiz}
-		<button class="btn btn-primary btn-lg" on:click={startQuiz} transition:fade> Begin </button>
-	{:else}
-		<div class="card bg-base-100 w-96 shadow-xl" transition:fade>
-			<form on:submit|preventDefault={handleSubmit} class="card-body">
-				<h2 class="card-title mb-4">{questions[currentQuestionIndex].question}</h2>
-				{#each questions[currentQuestionIndex].options as option, index}
-					<div class="form-control">
-						<label class="label cursor-pointer">
-							<input
-								type="radio"
-								name="answer"
-								class="radio"
-								bind:group={selectedAnswer}
-								value={index}
-							/>
-							<span class="label-text ml-2">{option}</span>
-						</label>
+	<div transition:fade>
+		{#if !showQuiz}
+			<button class="btn btn-primary btn-lg" on:click={startQuiz}> Begin </button>
+		{:else}
+			<div class="card bg-base-100 w-96 shadow-xl">
+				<form on:submit|preventDefault={handleSubmit} class="card-body">
+					<h2 class="card-title mb-4">{questions[currentQuestionIndex].question}</h2>
+					{#each questions[currentQuestionIndex].options as option, index}
+						<div class="form-control">
+							<label class="label cursor-pointer">
+								<input
+									type="radio"
+									name="answer"
+									class="radio"
+									bind:group={selectedAnswer}
+									value={index}
+								/>
+								<span class="label-text ml-2">{option}</span>
+							</label>
+						</div>
+					{/each}
+					<div class="card-actions mt-4 justify-end">
+						<button type="submit" class="btn btn-primary">Submit</button>
 					</div>
-				{/each}
-				<div class="card-actions mt-4 justify-end">
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</div>
-			</form>
-		</div>
-	{/if}
+				</form>
+			</div>
+		{/if}
+	</div>
 </div>
