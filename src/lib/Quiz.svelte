@@ -44,10 +44,12 @@
 </script>
 
 <div class="bg-base-200 flex min-h-screen items-center justify-center">
-	<div transition:fade>
-		{#if !showQuiz}
+	{#if !showQuiz}
+		<div transition:fade>
 			<button class="btn btn-primary btn-lg" on:click={startQuiz}> Begin </button>
-		{:else}
+		</div>
+	{:else}
+		<div transition:fade>
 			<div class="card bg-base-100 w-96 shadow-xl">
 				<form on:submit|preventDefault={handleSubmit} class="card-body">
 					<h2 class="card-title mb-4">{questions[currentQuestionIndex].question}</h2>
@@ -70,6 +72,6 @@
 					</div>
 				</form>
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>
