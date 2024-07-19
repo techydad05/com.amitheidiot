@@ -1,4 +1,5 @@
 <script>
+    // @ts-nocheck
 	import { fade, fly } from 'svelte/transition';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { tweened } from 'svelte/motion';
