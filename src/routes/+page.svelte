@@ -39,7 +39,6 @@
 </script>
 
 <main>
-    <h1>Quiz Example</h1>
     <Quiz 
         questions={questions}
         timeLimit={20}
