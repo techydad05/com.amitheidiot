@@ -17,6 +17,8 @@
     let timer;
     let remainingTime;
 
+    const passingScore = 0.8; // 80% to pass
+
     $: progress = (currentQuestionIndex / numQuestions) * 100;
     $: currentQuestion = questions[currentQuestionIndex];
 
@@ -75,15 +77,28 @@
     }
 </script>
 
-<div class="card w-full max-w-md mx-auto bg-base-100 shadow-xl">
+<style>
+    .timer {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1rem;
+        transition: font-size 0.5s ease;
+    }
+    .timer.grow {
+        font-size: 3rem;
+    }
+</style>
+
+<div class="card w-full max-w-md mx-auto bg-base-100 shadow-xl relative">
     <div class="card-body p-6">
         {#if currentState === 'start'}
-            <h2 class="card-title text-xl mb-4">Ancient Greek Quiz</h2>
-            <p class="text-sm mb-4">Test your knowledge about the ancient Greek concept of "idiot" (ἰδιώτης, idiōtēs).</p>
+            <h2 class="card-title text-xl mb-4">Are you the idiot?</h2>
+            <p class="text-sm mb-4"><p></p>
             <button class="btn btn-primary btn-sm w-full" on:click={startQuiz}>Start Quiz</button>
         {:else if currentState === 'quiz'}
+            <div class="timer {remainingTime <= 5 ? 'grow' : ''}">{remainingTime}s</div>
             <div class="flex justify-between items-center mb-2 text-sm">
-                <span class="font-bold">{remainingTime}s</span>
                 <span>Question {currentQuestionIndex + 1}/{questions.length}</span>
             </div>
             <progress class="progress progress-primary w-full mb-4" value={progress} max="100"></progress>
@@ -103,20 +118,11 @@
         {:else if currentState === 'results'}
             <h2 class="card-title text-xl mb-4">Quiz Results</h2>
             <p class="text-lg mb-4">Your score: <span class="font-bold">{score}/{questions.length}</span></p>
-            <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">
-                {#each questions as question, index}
-                    <div class="collapse collapse-arrow bg-base-200">
-                        <input type="checkbox" /> 
-                        <div class="collapse-title text-sm font-medium py-2">
-                            Q{index + 1}: {question.question.substring(0, 30)}...
-                        </div>
-                        <div class="collapse-content text-xs"> 
-                            <p>Your answer: <span class="{userAnswers[index] === question.correctIndex ? 'text-success' : 'text-error'}">{question.options[userAnswers[index]]}</span></p>
-                            <p>Correct: <span class="text-success">{question.options[question.correctIndex]}</span></p>
-                        </div>
-                    </div>
-                {/each}
-            </div>
+            {#if score / questions.length >= passingScore}
+                <p class="text-lg text-success mb-4">Congratulations! You passed the quiz.</p>
+            {:else}
+                <p class="text-lg text-error mb-4">Sorry, you did not pass the quiz. Better luck next time!</p>
+            {/if}
             <button class="btn btn-primary btn-sm w-full" on:click={restartQuiz}>Try Again</button>
         {/if}
     </div>
