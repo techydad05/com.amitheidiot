@@ -3,9 +3,9 @@ import Quiz from '$lib/Quiz.svelte';
 import { fly, scale } from 'svelte/transition';
 import { cubicOut } from 'svelte/easing';
 import { onMount, tick } from 'svelte';
+import pb from 'pocketbase';
 
 const questions = [
-const usCitizenshipQuestions = [
   {
     question: 'What is the supreme law of the land?',
     options: ['The Constitution', 'The Declaration of Independence', 'The Articles of Confederation', 'The Bill of Rights'],
@@ -62,7 +62,7 @@ const usCitizenshipQuestions = [
     correctIndex: 0
   },
   {
-    question: 'What is the “rule of law”?',
+    question: 'What is the "rule of law"?',
     options: ['Everyone must follow the law', 'Leaders must obey the law', 'Government must obey the law', 'All of the above'],
     correctIndex: 3
   },
@@ -108,7 +108,7 @@ const usCitizenshipQuestions = [
   },
   {
     question: 'Why do some states have more Representatives than other states?',
-    options: ['Because of the state’s population', 'Because the state’s geographic size', 'Because the state’s economic output', 'Because of the state’s location'],
+    options: [`Because of the state's population', 'Because the state's geographic size', 'Because the state's economic output', 'Because of the state's location`],
     correctIndex: 0
   },
   {
@@ -152,7 +152,7 @@ const usCitizenshipQuestions = [
     correctIndex: 0
   },
   {
-    question: 'What does the President’s Cabinet do?',
+    question: `What does the President's Cabinet do?`,
     options: ['Advises the President', 'Makes laws', 'Commands the military', 'Controls the Treasury'],
     correctIndex: 0
   },
@@ -216,91 +216,106 @@ const usCitizenshipQuestions = [
 /**
  * @param {{ detail: { score: any; totalQuestions: any; }; }} event
  */
-function handleQuizComplete(event) {
-	console.log(`Quiz completed! Score: ${event.detail.score}/${event.detail.totalQuestions}`);
+async function handleQuizComplete(event) {
+  console.log(`Quiz completed! Score: ${event.detail.score}/${event.detail.totalQuestions}`);
+
+  try {
+    const record = await pb.collection('quiz_results').create({
+      score: event.detail.score,
+      totalQuestions: event.detail.totalQuestions,
+      timestamp: new Date().toISOString()
+    });
+    console.log('Quiz result saved:', record);
+  } catch (error) {
+    console.error('Error saving quiz result:', error);
+  }
 }
 
 function handleRestartQuiz() {
-	console.log('Quiz restarted');
+  console.log('Quiz restarted');
 }
 
 const specialWords = [
-    { text: "idiot", size: "text-6xl md:text-8xl" },
-    { text: "ἰδιώτης", size: "text-5xl md:text-7xl" },
-    { text: "idiōtēs", size: "text-4xl md:text-6xl" },
-    { text: "private", size: "text-5xl md:text-7xl" },
-    { text: "public", size: "text-5xl md:text-7xl" },
-    { text: "affairs", size: "text-4xl md:text-6xl" },
-    { text: "polis", size: "text-3xl md:text-5xl" },
-    { text: "citizenship", size: "text-4xl md:text-6xl" },
-    { text: "society", size: "text-5xl md:text-7xl" },
-  ];
+  { text: "idiot", size: "text-6xl md:text-8xl" },
+  { text: "ἰδιώτης", size: "text-5xl md:text-7xl" },
+  { text: "idiōtēs", size: "text-4xl md:text-6xl" },
+  { text: "private", size: "text-5xl md:text-7xl" },
+  { text: "public", size: "text-5xl md:text-7xl" },
+  { text: "affairs", size: "text-4xl md:text-6xl" },
+  { text: "polis", size: "text-3xl md:text-5xl" },
+  { text: "citizenship", size: "text-4xl md:text-6xl" },
+  { text: "society", size: "text-5xl md:text-7xl" },
+];
 
-  const fullText = `In ancient Greece, the term "idiot" (ἰδιώτης, idiōtēs) had a very different meaning from what it does today. It originally referred to a private individual, someone who was not involved in public affairs or the governance of the city-state (polis). The word derives from "idios," meaning "private" or "one's own." An "idiot" in ancient Greek society was essentially a person who focused on their private life and interests, rather than participating in public life, politics, or civic duties. This term carried a negative connotation because the Greeks highly valued active participation in public affairs and viewed it as a key aspect of citizenship and contributing to the common good. Therefore, an "idiot" was seen as someone who was disengaged and uninvolved in the civic and communal responsibilities of society.`;
+const fullText = `In ancient Greece, the term "idiot" (ἰδιώτης, idiōtēs) had a very different meaning from what it does today. It originally referred to a private individual, someone who was not involved in public affairs or the governance of the city-state (polis). The word derives from "idios," meaning "private" or "one's own." An "idiot" in ancient Greek society was essentially a person who focused on their private life and interests, rather than participating in public life, politics, or civic duties. This term carried a negative connotation because the Greeks highly valued active participation in public affairs and viewed it as a key aspect of citizenship and contributing to the common good. Therefore, an "idiot" was seen as someone who was disengaged and uninvolved in the civic and communal responsibilities of society.`;
 
-  function applySpecificSizes(text, defaultSize='text-xl') {
-    const cleanText = text.replace(/[^a-zA-Z0-9\s\u0370-\u03FF\u1F00-\u1FFF]/g, '');
-    const words = cleanText.split(' ');
-    const specialWordsMap = new Map(specialWords.map(w => [w.text.toLowerCase(), w]));
+function applySpecificSizes(text, defaultSize='text-xl') {
+  const cleanText = text.replace(/[^a-zA-Z0-9\s\u0370-\u03FF\u1F00-\u1FFF]/g, '');
+  const words = cleanText.split(' ');
+  const specialWordsMap = new Map(specialWords.map(w => [w.text.toLowerCase(), w]));
 
-    const sizedWords = words.map((word, index) => {
-      const lowerWord = word.toLowerCase();
-      const size = specialWordsMap.has(lowerWord) ? specialWordsMap.get(lowerWord).size : defaultSize;
-      return `<span id="word-${index}" class="${size} word ml-[5px]">${word}</span>`;
-    });
+  const sizedWords = words.map((word, index) => {
+    const lowerWord = word.toLowerCase();
+    const size = specialWordsMap.has(lowerWord) ? specialWordsMap.get(lowerWord).size : defaultSize;
+    return `<span id="word-${index}" class="${size} word ml-[5px]">${word}</span>`;
+  });
 
-    return sizedWords.join('');
-  }
+  return sizedWords.join('');
+}
 
-  function setupFlyAwayEffect() {
-    const container = document.querySelector('.word-container');
-    const words = document.querySelectorAll('.word');
-    const radius = 150; // Adjust this value to change the effect radius
+function setupFlyAwayEffect() {
+  const container = document.querySelector('.word-container');
+  const words = document.querySelectorAll('.word');
+  const radius = 150; // Adjust this value to change the effect radius
 
-    function flyAway(e) {
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
+  function flyAway(e) {
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
 
-      words.forEach((word) => {
-        const rect = word.getBoundingClientRect();
-        const wordX = rect.left + rect.width / 2;
-        const wordY = rect.top + rect.height / 2;
+    words.forEach((word) => {
+      const rect = word.getBoundingClientRect();
+      const wordX = rect.left + rect.width / 2;
+      const wordY = rect.top + rect.height / 2;
 
-        const dx = wordX - mouseX;
-        const dy = wordY - mouseY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+      const dx = wordX - mouseX;
+      const dy = wordY - mouseY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < radius) {
-          const angle = Math.atan2(dy, dx);
-          const force = (radius - distance) / radius;
-          const translateX = Math.cos(angle) * force * 50;
-          const translateY = Math.sin(angle) * force * 50;
+      if (distance < radius) {
+        const angle = Math.atan2(dy, dx);
+        const force = (radius - distance) / radius;
+        const translateX = Math.cos(angle) * force * 50;
+        const translateY = Math.sin(angle) * force * 50;
 
-          word.style.transform = `translate(${translateX}px, ${translateY}px)`;
-          word.style.transition = 'transform 0.3s ease-out';
-        } else {
-          word.style.transform = 'translate(0, 0)';
-        }
-      });
-    }
-
-    container.addEventListener('mousemove', flyAway);
-    container.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      flyAway(e.touches[0]);
+        word.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        word.style.transition = 'transform 0.3s ease-out';
+      } else {
+        word.style.transform = 'translate(0, 0)';
+      }
     });
   }
 
-  const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
+  container.addEventListener('mousemove', flyAway);
+  container.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    flyAway(e.touches[0]);
+  });
+}
+
+const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
+
+let buttonAnimating = false;
 
 async function toggleContainer() {
   if (buttonVisible) {
+    buttonAnimating = true;
     buttonVisible = false;
     setTimeout(async () => {
+      buttonAnimating = false;
       showNewContainer = true;
       await tick(); // Wait for the DOM to update
       startAutoScroll(); // Start auto-scroll when the new container is shown
-    }, 300); // Delay to allow button to shrink first
+    }, 1000); // Delay to allow button to animate
   } else {
     showNewContainer = false;
     setTimeout(() => {
@@ -349,13 +364,13 @@ onMount(() => {
     </div>
   {/if}
   
-  {#if buttonVisible}
+  {#if buttonVisible || buttonAnimating}
     <button 
-      class="btn btn-outline btn-primary z-[999]" 
+      class="btn btn-outline btn-primary z-[999] transition-button !bg-transparent !text-primary"
+      class:circular-shrink={buttonAnimating}
       on:click={toggleContainer}
-      transition:scale={{ duration: 300, start: 1, end: 0, easing: cubicOut }}
     >
-      Am I the idiot?
+      Are you the idiot?
     </button>
   {/if}
 
@@ -390,5 +405,28 @@ onMount(() => {
     width: 100%;
     padding: 1rem;
     font-size: 1.25rem; /* Increase text size */
+  }
+  .transition-button {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .circular-shrink {
+    animation: circular-shrink 1s ease-in-out forwards;
+  }
+  @keyframes circular-shrink {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: rotate(90deg) translate(50px) rotate(-90deg) scale(0.75);
+    }
+    50% {
+      transform: rotate(180deg) translate(50px) rotate(-180deg) scale(0.5);
+    }
+    75% {
+      transform: rotate(270deg) translate(50px) rotate(-270deg) scale(0.25);
+    }
+    100% {
+      transform: rotate(360deg) translate(50px) rotate(-360deg) scale(0);
+    }
   }
 </style>

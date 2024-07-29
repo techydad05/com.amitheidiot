@@ -49,6 +49,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"daisyui": "^4.12.10"
+		"daisyui": "^4.12.10",
+		"pocketbase": "^0.21.4"
 	}
 }
