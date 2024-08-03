@@ -1,9 +1,9 @@
 <script>
 import Quiz from '$lib/Quiz.svelte';
-import { fly, scale } from 'svelte/transition';
-import { cubicOut } from 'svelte/easing';
+import { scale, fade, fly } from 'svelte/transition';
+import { cubicOut, elasticOut } from 'svelte/easing';
 import { onMount, tick } from 'svelte';
-import pb from 'pocketbase';
+import QRCode from "@bonosoft/sveltekit-qrcode"
 
 const questions = [
   {
@@ -213,26 +213,26 @@ const questions = [
   }
 ];
 
-/**
- * @param {{ detail: { score: any; totalQuestions: any; }; }} event
- */
 async function handleQuizComplete(event) {
-  console.log(`Quiz completed! Score: ${event.detail.score}/${event.detail.totalQuestions}`);
+  const { score, totalQuestions } = event.detail;
+  const formData = new FormData();
+  formData.append('score', score);
+  formData.append('totalQuestions', totalQuestions);
 
   try {
-    const record = await pb.collection('quiz_results').create({
-      score: event.detail.score,
-      totalQuestions: event.detail.totalQuestions,
-      timestamp: new Date().toISOString()
+    const response = await fetch('?/saveQuizResult', {
+      method: 'POST',
+      body: formData
     });
-    console.log('Quiz result saved:', record);
+    const result = await response.json();
+    if (result.success) {
+      console.log('Quiz result saved successfully');
+    } else {
+      console.error('Failed to save quiz result:', result.error);
+    }
   } catch (error) {
     console.error('Error saving quiz result:', error);
   }
-}
-
-function handleRestartQuiz() {
-  console.log('Quiz restarted');
 }
 
 const specialWords = [
@@ -250,44 +250,32 @@ const specialWords = [
 const fullText = `In ancient Greece, the term "idiot" (ἰδιώτης, idiōtēs) had a very different meaning from what it does today. It originally referred to a private individual, someone who was not involved in public affairs or the governance of the city-state (polis). The word derives from "idios," meaning "private" or "one's own." An "idiot" in ancient Greek society was essentially a person who focused on their private life and interests, rather than participating in public life, politics, or civic duties. This term carried a negative connotation because the Greeks highly valued active participation in public affairs and viewed it as a key aspect of citizenship and contributing to the common good. Therefore, an "idiot" was seen as someone who was disengaged and uninvolved in the civic and communal responsibilities of society.`;
 
 function applySpecificSizes(text, defaultSize='text-xl') {
-  const cleanText = text.replace(/[^a-zA-Z0-9\s\u0370-\u03FF\u1F00-\u1FFF]/g, '');
-  const words = cleanText.split(' ');
+  const words = text.replace(/[^a-zA-Z0-9\s\u0370-\u03FF\u1F00-\u1FFF]/g, '').split(' ');
   const specialWordsMap = new Map(specialWords.map(w => [w.text.toLowerCase(), w]));
 
-  const sizedWords = words.map((word, index) => {
-    const lowerWord = word.toLowerCase();
-    const size = specialWordsMap.has(lowerWord) ? specialWordsMap.get(lowerWord).size : defaultSize;
+  return words.map((word, index) => {
+    const size = specialWordsMap.get(word.toLowerCase())?.size || defaultSize;
     return `<span id="word-${index}" class="${size} word ml-[5px]">${word}</span>`;
-  });
-
-  return sizedWords.join('');
+  }).join('');
 }
 
 function setupFlyAwayEffect() {
   const container = document.querySelector('.word-container');
   const words = document.querySelectorAll('.word');
-  const radius = 150; // Adjust this value to change the effect radius
+  const radius = 150;
 
   function flyAway(e) {
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-
+    const { clientX: mouseX, clientY: mouseY } = e.touches ? e.touches[0] : e;
     words.forEach((word) => {
       const rect = word.getBoundingClientRect();
-      const wordX = rect.left + rect.width / 2;
-      const wordY = rect.top + rect.height / 2;
-
-      const dx = wordX - mouseX;
-      const dy = wordY - mouseY;
+      const dx = (rect.left + rect.width / 2) - mouseX;
+      const dy = (rect.top + rect.height / 2) - mouseY;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < radius) {
         const angle = Math.atan2(dy, dx);
         const force = (radius - distance) / radius;
-        const translateX = Math.cos(angle) * force * 50;
-        const translateY = Math.sin(angle) * force * 50;
-
-        word.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        word.style.transform = `translate(${Math.cos(angle) * force * 50}px, ${Math.sin(angle) * force * 50}px)`;
         word.style.transition = 'transform 0.3s ease-out';
       } else {
         word.style.transform = 'translate(0, 0)';
@@ -304,92 +292,84 @@ function setupFlyAwayEffect() {
 
 const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
 
-let buttonAnimating = false;
+let buttonVisible = true;
+let showNewContainer = false;
 
-async function toggleContainer() {
-  if (buttonVisible) {
-    buttonAnimating = true;
-    buttonVisible = false;
-    setTimeout(async () => {
-      buttonAnimating = false;
-      showNewContainer = true;
-      await tick(); // Wait for the DOM to update
-      startAutoScroll(); // Start auto-scroll when the new container is shown
-    }, 1000); // Delay to allow button to animate
-  } else {
-    showNewContainer = false;
-    setTimeout(() => {
-      buttonVisible = true;
-    }, 500); // Delay to show button after screen transition
-  }
+function toggleContainer() {
+  buttonVisible = false;
+  setTimeout(() => {
+    showNewContainer = true;
+  }, 1000);
+}
+
+function resetEverything() {
+  showNewContainer = false;
+  setTimeout(() => {
+    buttonVisible = true;
+  }, 500);
 }
 
 function startAutoScroll() {
   const scrollContainer = document.querySelector('.scroll-container');
   const scrollHeight = scrollContainer?.scrollHeight;
-  const duration = 15000; // Duration of the scroll in milliseconds
-  const delay = 3000; // Delay before starting the scroll in milliseconds
+  const duration = 15000;
+  const delay = 3000;
   const startTime = performance.now() + delay;
 
   function scrollStep(timestamp) {
     const progress = Math.min((timestamp - startTime) / duration, 1);
     scrollContainer?.scrollTo({ top: progress * (scrollHeight - scrollContainer.clientHeight), behavior: 'auto' });
-
-    if (progress < 1) {
-      requestAnimationFrame(scrollStep);
-    }
+    if (progress < 1) requestAnimationFrame(scrollStep);
   }
 
   requestAnimationFrame(scrollStep);
 }
 
-let showNewContainer = false;
-let buttonVisible = true;
-
-onMount(() => {
-  if (showNewContainer) {
-    startAutoScroll();
-  }
+onMount(async () => {
+  if (showNewContainer) startAutoScroll();
 });
-
 </script>
 
 <div class="relative h-screen overflow-hidden bg-base-200 flex flex-col justify-center items-center">
   {#if !showNewContainer}
-    <div 
-      class="absolute inset-0 flex flex-wrap content-start opacity-30 p-2 md:p-4 word-container"
-      transition:fly={{ x: -1000, duration: 500, easing: cubicOut, delay: 300 }}
-    >
+    <div class="absolute inset-0 flex flex-wrap content-start opacity-30 p-2 md:p-4 word-container">
       {@html sizedFullText}
     </div>
   {/if}
   
-  {#if buttonVisible || buttonAnimating}
-    <button 
-      class="btn btn-outline btn-primary z-[999] transition-button !bg-transparent !text-primary"
-      class:circular-shrink={buttonAnimating}
-      on:click={toggleContainer}
+  {#if buttonVisible}
+    <div 
+      class="relative z-10"
+      in:fade={{ duration: 300 }} 
+      out:fade={{ duration: 1000 }}
     >
-      Are you the idiot?
-    </button>
+      <button 
+        class="btn btn-outline btn-primary !bg-transparent !text-primary"
+        on:click={toggleContainer}
+        in:scale={{ duration: 300, easing: elasticOut }}
+        out:scale={{ duration: 1000, easing: cubicOut }}
+      >
+        Are you the idiot?
+      </button>
+    </div>
   {/if}
 
   {#if showNewContainer}
     <div 
-      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center"
-      transition:scale={{ duration: 700, start: 0.1, easing: cubicOut }}
+      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-20"
+      in:scale={{ duration: 800, start: 0.3, opacity: 0, easing: elasticOut }}
+      out:scale={{ duration: 500, start: 0.5, opacity: 0, easing: cubicOut }}
     >
       <div class="scroll-container overflow-y-auto h-1/3 w-full p-4 text-lg md:text-xl">
         <p>{@html fullText}</p>
       </div>
       <Quiz
         {questions}
-        timeLimit={20}
-        numQuestions={5}
+        timeLimit={8}
+        numQuestions={1}
         on:quizComplete={handleQuizComplete}
-        on:restartQuiz={handleRestartQuiz}
       />
-      <button class="btn btn-outline btn-secondary mt-4" on:click={toggleContainer}>Go Back</button>
+      <button class="btn btn-outline btn-secondary mt-4" on:click={resetEverything}>Go Back</button>
     </div>
   {/if}
 </div>
@@ -401,32 +381,12 @@ onMount(() => {
   }
   .scroll-container {
     overflow-y: auto;
-    height: 33.33%; /* Top third of the container */
+    height: 33.33%;
     width: 100%;
     padding: 1rem;
-    font-size: 1.25rem; /* Increase text size */
+    font-size: 1.25rem;
   }
-  .transition-button {
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-  .circular-shrink {
-    animation: circular-shrink 1s ease-in-out forwards;
-  }
-  @keyframes circular-shrink {
-    0% {
-      transform: translate(0, 0) scale(1);
-    }
-    25% {
-      transform: rotate(90deg) translate(50px) rotate(-90deg) scale(0.75);
-    }
-    50% {
-      transform: rotate(180deg) translate(50px) rotate(-180deg) scale(0.5);
-    }
-    75% {
-      transform: rotate(270deg) translate(50px) rotate(-270deg) scale(0.25);
-    }
-    100% {
-      transform: rotate(360deg) translate(50px) rotate(-360deg) scale(0);
-    }
+  .word-container {
+    z-index: 1;
   }
 </style>
