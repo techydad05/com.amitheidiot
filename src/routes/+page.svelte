@@ -259,54 +259,23 @@ function applySpecificSizes(text, defaultSize='text-xl') {
   }).join('');
 }
 
-function setupFlyAwayEffect() {
-  const container = document.querySelector('.word-container');
-  const words = document.querySelectorAll('.word');
-  const radius = 150;
-
-  function flyAway(e) {
-    const { clientX: mouseX, clientY: mouseY } = e.touches ? e.touches[0] : e;
-    words.forEach((word) => {
-      const rect = word.getBoundingClientRect();
-      const dx = (rect.left + rect.width / 2) - mouseX;
-      const dy = (rect.top + rect.height / 2) - mouseY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < radius) {
-        const angle = Math.atan2(dy, dx);
-        const force = (radius - distance) / radius;
-        word.style.transform = `translate(${Math.cos(angle) * force * 50}px, ${Math.sin(angle) * force * 50}px)`;
-        word.style.transition = 'transform 0.3s ease-out';
-      } else {
-        word.style.transform = 'translate(0, 0)';
-      }
-    });
-  }
-
-  container.addEventListener('mousemove', flyAway);
-  container.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    flyAway(e.touches[0]);
-  });
-}
-
 const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
 
 let buttonVisible = true;
 let showNewContainer = false;
 
-function toggleContainer() {
-  buttonVisible = false;
-  setTimeout(() => {
-    showNewContainer = true;
-  }, 1000);
-}
-
-function resetEverything() {
-  showNewContainer = false;
-  setTimeout(() => {
-    buttonVisible = true;
-  }, 500);
+function toggleContainer(reset = false) {
+  if (reset) {
+    showNewContainer = false;
+    setTimeout(() => {
+      buttonVisible = true;
+    }, 1000);
+  } else {
+    buttonVisible = false;
+    setTimeout(() => {
+      showNewContainer = true;
+    }, 1000);
+  }
 }
 
 function startAutoScroll() {
@@ -345,7 +314,7 @@ onMount(async () => {
     >
       <button 
         class="btn btn-outline btn-primary !bg-transparent !text-primary"
-        on:click={toggleContainer}
+        on:click={() => toggleContainer()}
         in:scale={{ duration: 300, easing: elasticOut }}
         out:scale={{ duration: 1000, easing: cubicOut }}
       >
@@ -369,7 +338,7 @@ onMount(async () => {
         numQuestions={1}
         on:quizComplete={handleQuizComplete}
       />
-      <button class="btn btn-outline btn-secondary mt-4" on:click={resetEverything}>Go Back</button>
+      <button class="btn btn-outline btn-secondary mt-4" on:click={() => toggleContainer(true)}>Go Back</button>
     </div>
   {/if}
 </div>
