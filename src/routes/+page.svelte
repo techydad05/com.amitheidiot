@@ -190,14 +190,29 @@ const questions = [
     correctIndex: 0
   },
   {
-    question: 'Who is the Governor of your state now?',
-    options: ['[Current Governor]', 'Gavin Newsom', 'Greg Abbott', 'Ron DeSantis'],
+    question: 'What is the capital of the United States?',
+    options: ['Washington, D.C.', 'New York City', 'Los Angeles', 'Chicago'],
     correctIndex: 0
   },
   {
-    question: 'What is the capital of your state?',
-    options: ['[State Capital]', 'Sacramento', 'Austin', 'Tallahassee'],
+    question: 'Which of these is NOT a U.S. state capital?',
+    options: ['Albany', 'Sacramento', 'Miami', 'Austin'],
+    correctIndex: 2
+  },
+  {
+    question: 'Which state is known as the "Sunshine State"?',
+    options: ['Florida', 'California', 'Hawaii', 'Arizona'],
     correctIndex: 0
+  },
+  {
+    question: 'Which state is the largest by land area?',
+    options: ['Alaska', 'Texas', 'California', 'Montana'],
+    correctIndex: 0
+  },
+  {
+    question: 'Which state is known for its production of maple syrup?',
+    options: ['Vermont', 'Maine', 'New Hampshire', 'All of the above'],
+    correctIndex: 3
   },
   {
     question: 'What are the two major political parties in the United States?',
@@ -276,19 +291,19 @@ function startQuiz() {
 }
 
 function startCountdown() {
-  let timeLeft = 10;
-  countdownProgress = 0;
+  let startTime = Date.now();
+  let duration = 10000; // 10 seconds in milliseconds
   quizStarted = false;
 
   countdownInterval = setInterval(() => {
-    timeLeft--;
-    countdownProgress = (10 - timeLeft) / 10;
+    let elapsedTime = Date.now() - startTime;
+    countdownProgress = Math.min(elapsedTime / duration, 1);
 
-    if (timeLeft <= 0) {
+    if (elapsedTime >= duration) {
       clearInterval(countdownInterval);
       quizStarted = true;
     }
-  }, 1000);
+  }, 16); // Run approximately 60 times per second for smooth animation
 }
 
 function showLearnMore() {
@@ -314,25 +329,7 @@ function goBackToStart() {
   // Reset any other necessary states
 }
 
-function startAutoScroll() {
-  const scrollContainer = document.querySelector('.scroll-container');
-  const scrollHeight = scrollContainer?.scrollHeight;
-  const duration = 15000;
-  const delay = 3000;
-  const startTime = performance.now() + delay;
-
-  function scrollStep(timestamp) {
-    const progress = Math.min((timestamp - startTime) / duration, 1);
-    scrollContainer?.scrollTo({ top: progress * (scrollHeight - scrollContainer.clientHeight), behavior: 'auto' });
-    if (progress < 1) requestAnimationFrame(scrollStep);
-  }
-
-  requestAnimationFrame(scrollStep);
-}
-
-onMount(async () => {
-  if (showNewContainer) startAutoScroll();
-
+onMount(() => {
   return () => {
     clearInterval(countdownInterval);
   };
@@ -375,7 +372,7 @@ onMount(async () => {
     <div 
       class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-40 p-4 overflow-y-auto"
       in:fly={{ y: -1000, duration: 500 }}
-      out:fly={{ y: -1000, duration: 1000 }}
+      out:fly={{ y: -1000, duration: 500 }}
     >
       <div class="w-full max-w-3xl prose prose-lg dark:prose-invert">
         <h2 class="text-3xl font-bold mb-4">The History of the Word "Idiot"</h2>
@@ -389,14 +386,17 @@ onMount(async () => {
     <div 
       class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-30 p-4"
       in:fly={{ y: 1000, duration: 500 }}
-      out:fly={{ y: 1000, duration: 1000 }}
+      out:fly={{ y: 1000, duration: 500 }}
     >
       <div class="w-full max-w-2xl">
         {#if !quizStarted}
           <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold mb-4">Quiz starting in {10 - Math.floor(countdownProgress * 10)} seconds</h2>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div class="bg-blue-600 h-2.5 rounded-full" style="width: {countdownProgress * 100}%"></div>
+            <h2 class="text-2xl font-bold mb-4">Quiz starting in {Math.ceil(10 - countdownProgress * 10)} seconds</h2>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
+              <div 
+                class="bg-blue-600 h-2.5 rounded-full transition-all duration-100 ease-linear" 
+                style="width: {countdownProgress * 100}%"
+              ></div>
             </div>
           </div>
         {:else}
