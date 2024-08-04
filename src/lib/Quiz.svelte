@@ -1,7 +1,7 @@
 <script>
     // @ts-nocheck
     import { fade, slide } from 'svelte/transition';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
 
     export let questions = [];
     export let timeLimit = 30; // in seconds
@@ -9,7 +9,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let currentState = 'start';
+    let currentState = 'quiz';
     let currentQuestionIndex = 0;
     let selectedAnswer = null;
     let score = 0;
@@ -22,16 +22,15 @@
     $: progress = (currentQuestionIndex / numQuestions) * 100;
     $: currentQuestion = questions[currentQuestionIndex];
 
-    function startQuiz() {
+    onMount(() => {
         if (questions.length === 0) {
             alert("No questions available. Please try again later.");
             return;
         }
         shuffleArray(questions);
         questions = questions.slice(0, Math.min(numQuestions, questions.length));
-        currentState = 'quiz';
         startTimer();
-    }
+    });
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -69,11 +68,12 @@
     }
 
     function restartQuiz() {
-        currentState = 'start';
+        currentState = 'quiz';
         currentQuestionIndex = 0;
         score = 0;
         userAnswers = [];
         dispatch('restartQuiz');
+        startTimer();
     }
 </script>
 
@@ -92,11 +92,7 @@
 
 <div class="card w-full max-w-md mx-auto bg-base-100 shadow-xl relative">
     <div class="card-body p-6">
-        {#if currentState === 'start'}
-            <h2 class="card-title text-xl mb-4">Are you the idiot?</h2>
-            <p class="text-sm mb-4"><p></p>
-            <button class="btn btn-primary btn-sm w-full" on:click={startQuiz}>Start Quiz</button>
-        {:else if currentState === 'quiz'}
+        {#if currentState === 'quiz'}
             <div class="timer {remainingTime <= 5 ? 'grow' : ''}">{remainingTime}s</div>
             <div class="flex justify-between items-center mb-2 text-sm">
                 <span>Question {currentQuestionIndex + 1}/{questions.length}</span>

@@ -1,9 +1,7 @@
 <script>
 import Quiz from '$lib/Quiz.svelte';
-import { scale, fade, fly } from 'svelte/transition';
-import { cubicOut, elasticOut } from 'svelte/easing';
-import { onMount, tick } from 'svelte';
-import QRCode from "@bonosoft/sveltekit-qrcode"
+import { fly } from 'svelte/transition';
+import { onMount } from 'svelte';
 
 const questions = [
   {
@@ -225,7 +223,7 @@ async function handleQuizComplete(event) {
       body: formData
     });
     const result = await response.json();
-    if (result.success) {
+    if (result.type === 'success') {
       console.log('Quiz result saved successfully');
     } else {
       console.error('Failed to save quiz result:', result.error);
@@ -261,21 +259,59 @@ function applySpecificSizes(text, defaultSize='text-xl') {
 
 const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
 
-let buttonVisible = true;
 let showNewContainer = false;
+let showQuizContainer = false;
+let showLearnMoreContainer = false;
+let countdownProgress = 0;
+let quizStarted = false;
+let countdownInterval;
 
-function toggleContainer(reset = false) {
-  if (reset) {
-    showNewContainer = false;
-    setTimeout(() => {
-      buttonVisible = true;
-    }, 1000);
-  } else {
-    buttonVisible = false;
-    setTimeout(() => {
-      showNewContainer = true;
-    }, 1000);
-  }
+function toggleContainer() {
+  showNewContainer = true;
+}
+
+function startQuiz() {
+  showQuizContainer = true;
+  startCountdown();
+}
+
+function startCountdown() {
+  let timeLeft = 10;
+  countdownProgress = 0;
+  quizStarted = false;
+
+  countdownInterval = setInterval(() => {
+    timeLeft--;
+    countdownProgress = (10 - timeLeft) / 10;
+
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      quizStarted = true;
+    }
+  }, 1000);
+}
+
+function showLearnMore() {
+  showLearnMoreContainer = true;
+}
+
+function goBackToInfo() {
+  showQuizContainer = false;
+  showLearnMoreContainer = false;
+  quizStarted = false;
+  clearInterval(countdownInterval);
+  countdownProgress = 0;
+  // Reset quiz state here if necessary
+}
+
+function goBackToStart() {
+  showNewContainer = false;
+  showQuizContainer = false;
+  showLearnMoreContainer = false;
+  quizStarted = false;
+  clearInterval(countdownInterval);
+  countdownProgress = 0;
+  // Reset any other necessary states
 }
 
 function startAutoScroll() {
@@ -296,6 +332,10 @@ function startAutoScroll() {
 
 onMount(async () => {
   if (showNewContainer) startAutoScroll();
+
+  return () => {
+    clearInterval(countdownInterval);
+  };
 });
 </script>
 
@@ -304,41 +344,71 @@ onMount(async () => {
     <div class="absolute inset-0 flex flex-wrap content-start opacity-30 p-2 md:p-4 word-container">
       {@html sizedFullText}
     </div>
-  {/if}
-  
-  {#if buttonVisible}
-    <div 
-      class="relative z-10"
-      in:fade={{ duration: 300 }} 
-      out:fade={{ duration: 1000 }}
-    >
+    
+    <div class="relative z-10">
       <button 
         class="btn btn-outline btn-primary !bg-transparent !text-primary"
-        on:click={() => toggleContainer()}
-        in:scale={{ duration: 300, easing: elasticOut }}
-        out:scale={{ duration: 1000, easing: cubicOut }}
+        on:click={toggleContainer}
       >
         Are you the idiot?
       </button>
     </div>
-  {/if}
-
-  {#if showNewContainer}
+  {:else}
     <div 
-      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-20"
-      in:scale={{ duration: 800, start: 0.3, opacity: 0, easing: elasticOut }}
-      out:scale={{ duration: 500, start: 0.5, opacity: 0, easing: cubicOut }}
+      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-20 p-4"
+      transition:fly={{ x: 1000, duration: 500 }}
     >
-      <div class="scroll-container overflow-y-auto h-1/3 w-full p-4 text-lg md:text-xl">
-        <p>{@html fullText}</p>
+      <div class="text-center max-w-2xl">
+        <p class="text-lg md:text-2xl mb-8">
+          In ancient Greece, the term "idiot" (ἰδιώτης, idiōtēs) had a very different meaning from what it does today. If you would like to learn more about the history of the word "idiot" and its meaning, click the button below.
+        </p>
+        <div class="space-y-4">
+          <button class="btn btn-primary w-full" on:click={showLearnMore}>Learn More</button>
+          <button class="btn btn-secondary w-full" on:click={startQuiz}>I'm Ready</button>
+          <button class="btn btn-outline w-full" on:click={goBackToStart}>Go Back</button>
+        </div>
       </div>
-      <Quiz
-        {questions}
-        timeLimit={8}
-        numQuestions={1}
-        on:quizComplete={handleQuizComplete}
-      />
-      <button class="btn btn-outline btn-secondary mt-4" on:click={() => toggleContainer(true)}>Go Back</button>
+    </div>
+  {/if}
+  
+  {#if showLearnMoreContainer}
+    <div 
+      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-40 p-4 overflow-y-auto"
+      in:fly={{ y: -1000, duration: 500 }}
+      out:fly={{ y: -1000, duration: 1000 }}
+    >
+      <div class="w-full max-w-3xl prose prose-lg dark:prose-invert">
+        <h2 class="text-3xl font-bold mb-4">The History of the Word "Idiot"</h2>
+        <p class="mb-6">{fullText}</p>
+        <button class="btn btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
+      </div>
+    </div>
+  {/if}
+  
+  {#if showQuizContainer}
+    <div 
+      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-30 p-4"
+      in:fly={{ y: 1000, duration: 500 }}
+      out:fly={{ y: 1000, duration: 1000 }}
+    >
+      <div class="w-full max-w-2xl">
+        {#if !quizStarted}
+          <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold mb-4">Quiz starting in {10 - Math.floor(countdownProgress * 10)} seconds</h2>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: {countdownProgress * 100}%"></div>
+            </div>
+          </div>
+        {:else}
+          <Quiz
+            {questions}
+            timeLimit={8}
+            numQuestions={1}
+            on:quizComplete={handleQuizComplete}
+          />
+        {/if}
+        <button class="btn btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
+      </div>
     </div>
   {/if}
 </div>
@@ -347,13 +417,6 @@ onMount(async () => {
   .word {
     display: inline-block;
     transition: transform 0.3s ease-out;
-  }
-  .scroll-container {
-    overflow-y: auto;
-    height: 33.33%;
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.25rem;
   }
   .word-container {
     z-index: 1;
