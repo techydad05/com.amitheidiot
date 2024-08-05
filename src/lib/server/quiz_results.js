@@ -34,9 +34,9 @@ async function checkDatabase() {
   
   checkDatabase();
 
-export async function saveQuizResult(score, totalQuestions) {
-  const text = 'INSERT INTO quiz_results(score, total_questions) VALUES($1, $2) RETURNING *';
-  const values = [score, totalQuestions];
+export async function saveQuizResult(score, totalQuestions, missedQuestions) {
+  const text = 'INSERT INTO quiz_results(score, total_questions, missed_questions) VALUES($1, $2, $3) RETURNING *';
+  const values = [score, totalQuestions, missedQuestions];
   
   try {
     const res = await query(text, values);

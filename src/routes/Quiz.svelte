@@ -1,9 +1,8 @@
 <script>
     // @ts-nocheck
-    import { fade, slide } from 'svelte/transition';
+    import { fade, fly } from 'svelte/transition';
     import { createEventDispatcher, onMount } from 'svelte';
     import QRCode from 'qrcode-svg';
-    import { enhance } from '$app/forms';
 
     export let questions = [];
     export let timeLimit = 30; // in seconds
@@ -22,11 +21,38 @@
     let qrCodeSvg = '';
     let quizResult = {};
     let showAward = false;
+    let showSaveDropdown = false;
+    let missedQuestions = [];
 
     const passingScore = 0.8; // 80% to pass
 
     $: progress = (currentQuestionIndex / numQuestions) * 100;
     $: currentQuestion = questions[currentQuestionIndex];
+
+    function generateRandomString(length) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    }
+
+    async function saveQuizResult(score, totalQuestions, missedQuestions) {
+        const formData = new FormData();
+        formData.append('score', score);
+        formData.append('totalQuestions', totalQuestions);
+        formData.append('missedQuestions', JSON.stringify(missedQuestions));
+
+        const response = await fetch('?/saveQuizResult', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        console.log("saveQuizResult response:", result); // Add logging here
+        return result;
+    }
 
     onMount(() => {
         if (questions.length === 0) {
@@ -56,10 +82,12 @@
         }, 1000);
     }
 
-    function handleSubmit() {
+    async function handleSubmit() {
         clearInterval(timer);
         userAnswers[currentQuestionIndex] = selectedAnswer;
-        if (selectedAnswer === currentQuestion.correctIndex) {
+        if (selectedAnswer !== currentQuestion.correctIndex) {
+            missedQuestions.push(currentQuestion.question);
+        } else {
             score++;
         }
         selectedAnswer = null;
@@ -69,10 +97,19 @@
             startTimer();
         } else {
             currentState = 'results';
-            dispatch('quizComplete', { score, totalQuestions: questions.length });
-            // Assume you have a function to save results and get an ID
-            const id = saveResultsAndGetId({ score, totalQuestions: questions.length });
-            generateQRCode(id);
+            const percentageScore = (score / questions.length) * 100;
+
+            if (percentageScore >= 80) { // B- or better
+                const result = await saveQuizResult(score, questions.length, missedQuestions);
+                if (result.type === 'success') {
+                    console.log("result:", JSON.parse(result.data)[6]);
+                    generateQRCode(JSON.parse(result.data)[6]);
+                } else {
+                    console.error('Failed to save quiz result:', result.error);
+                }
+            } else if (percentageScore >= 70) { // C- to B-
+                showSaveDropdown = true;
+            }
         }
     }
 
@@ -100,6 +137,21 @@
         dispatch('restartQuiz');
         startTimer();
     }
+
+    async function handleSave() {
+        showSaveDropdown = false;
+        const result = await saveQuizResult(score, questions.length, missedQuestions);
+        console.log("result:", result);
+        if (result.type === 'success') {
+            generateQRCode(resultId);
+        } else {
+            console.error('Failed to save quiz result:', result.error);
+        }
+    }
+
+    function handleCancel() {
+        showSaveDropdown = false;
+    }
 </script>
 
 <style>
@@ -112,6 +164,24 @@
     }
     .timer.grow {
         font-size: 3rem;
+    }
+    .dropdown-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 50;
+    }
+    .dropdown-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 </style>
 
@@ -145,25 +215,6 @@
                 {:else}
                     <p class="text-lg text-error mb-4">Sorry, you did not pass the quiz. Better luck next time!</p>
                 {/if}
-                
-                <form 
-                    method="POST" 
-                    action="?/saveQuizResult" 
-                    use:enhance={() => {
-                        return async ({ result }) => {
-                            if (result.type === 'success') {
-                                quizResult = result.data;
-                                if (quizResult.result && quizResult.result.id) {
-                                    generateQRCode(quizResult.result.id);
-                                }
-                            }
-                        };
-                    }}
-                >
-                    <input type="hidden" name="score" value={score}>
-                    <input type="hidden" name="totalQuestions" value={questions.length}>
-                    <button type="submit" class="btn btn-primary btn-sm w-full mb-4">Save Result</button>
-                </form>
             {/if}
         </div>
     {:else}
@@ -180,6 +231,18 @@
                     </div>
                 {/if}
                 <p class="text-sm text-white">Scan the QR code to view your results online</p>
+            </div>
+        </div>
+    {/if}
+    {#if showSaveDropdown}
+        <div class="dropdown-background" on:click={handleCancel}>
+            <div class="dropdown-content" in:fly={{ y: 200 }} out:fly={{ y: 200 }} on:click|stopPropagation>
+                <h2 class="text-xl font-bold mb-4">Save Your Results?</h2>
+                <p class="mb-4">Your score is between C- and B-. Do you want to save your results?</p>
+                <div class="flex justify-end space-x-4">
+                    <button class="btn btn-secondary" on:click={handleCancel}>Cancel</button>
+                    <button class="btn btn-primary" on:click={handleSave}>Save</button>
+                </div>
             </div>
         </div>
     {/if}

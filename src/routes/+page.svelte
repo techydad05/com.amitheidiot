@@ -1,5 +1,5 @@
 <script>
-import Quiz from '$lib/Quiz.svelte';
+import Quiz from './Quiz.svelte';
 import { fly } from 'svelte/transition';
 import { onMount } from 'svelte';
 
@@ -226,28 +226,6 @@ const questions = [
   }
 ];
 
-async function handleQuizComplete(event) {
-  const { score, totalQuestions } = event.detail;
-  const formData = new FormData();
-  formData.append('score', score);
-  formData.append('totalQuestions', totalQuestions);
-
-  try {
-    const response = await fetch('?/saveQuizResult', {
-      method: 'POST',
-      body: formData
-    });
-    const result = await response.json();
-    if (result.type === 'success') {
-      console.log('Quiz result saved successfully');
-    } else {
-      console.error('Failed to save quiz result:', result.error);
-    }
-  } catch (error) {
-    console.error('Error saving quiz result:', error);
-  }
-}
-
 const specialWords = [
   { text: "idiot", size: "text-6xl md:text-8xl" },
   { text: "ἰδιώτης", size: "text-5xl md:text-7xl" },
@@ -292,7 +270,7 @@ function startQuiz() {
 
 function startCountdown() {
   let startTime = Date.now();
-  let duration = 10000; // 10 seconds in milliseconds
+  let duration = 1000; // 10 seconds in milliseconds
   quizStarted = false;
 
   countdownInterval = setInterval(() => {
@@ -336,7 +314,7 @@ onMount(() => {
 });
 </script>
 
-<div class="relative h-screen overflow-hidden bg-base-200 flex flex-col justify-center items-center">
+<div class="relative h-[100dvh] overflow-hidden bg-base-200 flex flex-col justify-center items-center">
   {#if !showNewContainer}
     <div class="absolute inset-0 flex flex-wrap content-start opacity-30 p-2 md:p-4 word-container">
       {@html sizedFullText}
@@ -402,9 +380,8 @@ onMount(() => {
         {:else}
           <Quiz
             {questions}
-            timeLimit={8}
+            timeLimit={12}
             numQuestions={1}
-            on:quizComplete={handleQuizComplete}
           />
         {/if}
         <button class="btn btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
