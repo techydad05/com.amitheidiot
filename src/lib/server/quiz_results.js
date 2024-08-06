@@ -58,3 +58,16 @@ export async function getQuizResults() {
     throw err;
   }
 }
+
+export async function getQuizResultById(id) {
+  const text = 'SELECT * FROM quiz_results WHERE id = $1';
+  const values = [id];
+
+  try {
+    const res = await query(text, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error('Error fetching quiz result by ID:', err);
+    throw err;
+  }
+}

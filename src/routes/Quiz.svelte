@@ -23,20 +23,21 @@
     let showAward = false;
     let showSaveDropdown = false;
     let missedQuestions = [];
+    let url = '';
 
     const passingScore = 0.8; // 80% to pass
 
     $: progress = (currentQuestionIndex / numQuestions) * 100;
     $: currentQuestion = questions[currentQuestionIndex];
 
-    function generateRandomString(length) {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return result;
-    }
+    // function generateRandomString(length) {
+    //     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    //     let result = '';
+    //     for (let i = 0; i < length; i++) {
+    //         result += characters.charAt(Math.floor(Math.random() * characters.length));
+    //     }
+    //     return result;
+    // }
 
     async function saveQuizResult(score, totalQuestions, missedQuestions) {
         const formData = new FormData();
@@ -102,7 +103,7 @@
             if (percentageScore >= 80) { // B- or better
                 const result = await saveQuizResult(score, questions.length, missedQuestions);
                 if (result.type === 'success') {
-                    console.log("result:", JSON.parse(result.data)[6]);
+                    console.log("result:", JSON.parse(result.data));
                     generateQRCode(JSON.parse(result.data)[6]);
                 } else {
                     console.error('Failed to save quiz result:', result.error);
@@ -115,7 +116,7 @@
 
     function generateQRCode(id) {
         resultId = id;
-        const url = `https://amitheidiot.com/results/${id}`;
+        url = `https://amitheidiot.com/results/${id}`;
         const qr = new QRCode({
             content: url,
             padding: 4,
@@ -143,7 +144,7 @@
         const result = await saveQuizResult(score, questions.length, missedQuestions);
         console.log("result:", result);
         if (result.type === 'success') {
-            generateQRCode(resultId);
+            generateQRCode(JSON.parse(result.data)[6]);
         } else {
             console.error('Failed to save quiz result:', result.error);
         }
@@ -225,6 +226,7 @@
                 <div class="mb-6">
                     <p class="text-2xl font-bold text-white">Score: {score}/{questions.length}</p>
                 </div>
+                {url}
                 {#if qrCodeSvg}
                     <div class="mb-6 bg-white p-4 rounded-lg inline-block">
                         {@html qrCodeSvg}

@@ -106,7 +106,7 @@ const questions = [
   },
   {
     question: 'Why do some states have more Representatives than other states?',
-    options: [`Because of the state's population', 'Because the state's geographic size', 'Because the state's economic output', 'Because of the state's location`],
+    options: [`'Because of the state's population', 'Because the state's geographic size', 'Because the state's economic output', 'Because of the state's location'`],
     correctIndex: 0
   },
   {
@@ -380,8 +380,8 @@ onMount(() => {
         {:else}
           <Quiz
             {questions}
-            timeLimit={12}
-            numQuestions={1}
+            timeLimit={6}
+            numQuestions={25}
           />
         {/if}
         <button class="btn btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
