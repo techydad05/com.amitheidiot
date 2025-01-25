@@ -1,6 +1,6 @@
 <script>
 import Quiz from './Quiz.svelte';
-import { fly } from 'svelte/transition';
+import { fly, fade } from 'svelte/transition';
 import { onMount } from 'svelte';
 
 const questions = [
@@ -226,27 +226,81 @@ const questions = [
   }
 ];
 
+const primarySize = "text-3xl md:text-8xl";
+const secondarySize = "text-2xl md:text-4xl";
+const tertiarySize = "text-2xl md:text-5xl";
+const specialCharSize = "text-2xl md:text-5xl"; // Size for words with special characters
+const defaultSize = "text-2xl md:text-4xl";
+
 const specialWords = [
-  { text: "idiot", size: "text-6xl md:text-8xl" },
-  { text: "ἰδιώτης", size: "text-5xl md:text-7xl" },
-  { text: "idiōtēs", size: "text-4xl md:text-6xl" },
-  { text: "private", size: "text-5xl md:text-7xl" },
-  { text: "public", size: "text-5xl md:text-7xl" },
-  { text: "affairs", size: "text-4xl md:text-6xl" },
-  { text: "polis", size: "text-3xl md:text-5xl" },
-  { text: "citizenship", size: "text-4xl md:text-6xl" },
-  { text: "society", size: "text-5xl md:text-7xl" },
+  { text: "idiot", size: `${primarySize} font-bold`, rotate: "rotate-[-3deg]" },
+  { text: "ἰδιώτης", size: `${specialCharSize} font-semibold`, rotate: "rotate-[2deg]", hasParens: true },
+  { text: "idiōtēs", size: `${specialCharSize}`, rotate: "rotate-[-2deg]", hasParens: true },
+  { text: "private", size: `${primarySize} font-bold`, rotate: "rotate-[1deg]" },
+  { text: "public", size: `${primarySize} font-bold`, rotate: "rotate-[-1deg]" },
+  { text: "affairs", size: `${secondarySize} font-semibold`, rotate: "rotate-[2deg]" },
+  { text: "polis", size: `${tertiarySize} font-bold`, rotate: "rotate-[-3deg]", hasParens: true },
+  { text: "citizenship", size: `${secondarySize}`, rotate: "rotate-[1deg]" },
+  { text: "society", size: `${primarySize} font-semibold`, rotate: "rotate-[-2deg]" },
+  { text: "Greece", size: `${secondarySize} font-bold`, rotate: "rotate-[3deg]" },
+  { text: "civic", size: `${tertiarySize} font-semibold`, rotate: "rotate-[-1deg]" },
+  { text: "duties", size: `${tertiarySize}`, rotate: "rotate-[2deg]" },
+  { text: "politics", size: `${secondarySize} font-bold`, rotate: "rotate-[-2deg]" },
+  { text: "governance", size: `${tertiarySize} font-semibold`, rotate: "rotate-[1deg]" },
 ];
 
-const fullText = `In ancient Greece, the term "idiot" (ἰδιώτης, idiōtēs) had a very different meaning from what it does today. It originally referred to a private individual, someone who was not involved in public affairs or the governance of the city-state (polis). The word derives from "idios," meaning "private" or "one's own." An "idiot" in ancient Greek society was essentially a person who focused on their private life and interests, rather than participating in public life, politics, or civic duties. This term carried a negative connotation because the Greeks highly valued active participation in public affairs and viewed it as a key aspect of citizenship and contributing to the common good. Therefore, an "idiot" was seen as someone who was disengaged and uninvolved in the civic and communal responsibilities of society.`;
+const fullText = `In ancient Greece, the term "idiot" (ἰδιώτης) (idiōtēs) had a very different meaning from what it does today. It originally referred to a private individual, someone who was not involved in public affairs or the governance of the city-state (polis). The word derives from "idios," meaning "private" or "one's own." An "idiot" in ancient Greek society was essentially a person who focused on their private life and interests, rather than participating in public life, politics, or civic duties. This term carried a negative connotation because the Greeks highly valued active participation in public affairs and viewed it as a key aspect of citizenship and contributing to the common good. Therefore, an "idiot" was seen as someone who was disengaged and uninvolved in the civic and communal responsibilities of society.`;
 
-function applySpecificSizes(text, defaultSize='text-xl') {
-  const words = text.replace(/[^a-zA-Z0-9\s\u0370-\u03FF\u1F00-\u1FFF]/g, '').split(' ');
+function applySpecificSizes(text, defaultSize='text-2xl md:text-4xl') {
+  // Split by spaces but preserve parentheses and punctuation
+  const tokens = text.split(/(\s+|\(|\)|,)/g);
   const specialWordsMap = new Map(specialWords.map(w => [w.text.toLowerCase(), w]));
+  const rotations = ['rotate-[-1deg]', 'rotate-[1deg]', 'rotate-0'];
+  let index = 0;
+  let currentSpecial = null;
 
-  return words.map((word, index) => {
-    const size = specialWordsMap.get(word.toLowerCase())?.size || defaultSize;
-    return `<span id="word-${index}" class="${size} word ml-[5px]">${word}</span>`;
+  return tokens.map(token => {
+    // Handle opening parenthesis
+    if (token === '(') {
+      const nextToken = tokens[tokens.indexOf(token) + 1];
+      if (nextToken) {
+        const cleanNextToken = nextToken.replace(/[^a-zA-Z0-9\u0370-\u03FF\u1F00-\u1FFF]/g, '').toLowerCase();
+        currentSpecial = specialWordsMap.get(cleanNextToken);
+        if (currentSpecial?.hasParens) {
+          return `<span class="${currentSpecial.size} inline-block">(</span>`;
+        }
+      }
+      return token;
+    }
+
+    // Handle closing parenthesis
+    if (token === ')') {
+      if (currentSpecial?.hasParens) {
+        const size = currentSpecial.size;
+        currentSpecial = null;
+        return `<span class="${size} inline-block">)</span>`;
+      }
+      return token;
+    }
+
+    // If it's whitespace, add more space
+    if (/^\s+$/.test(token)) {
+      return ' \u00A0'; // Single non-breaking space
+    }
+
+    // If it's a comma, add space after it
+    if (token === ',') {
+      return ', ';
+    }
+
+    // Remove quotes and other punctuation for comparison, but keep the original token
+    const cleanToken = token.replace(/[^a-zA-Z0-9\u0370-\u03FF\u1F00-\u1FFF]/g, '').toLowerCase();
+    const special = specialWordsMap.get(cleanToken);
+    const size = special?.size || defaultSize;
+    const rotate = special?.rotate || rotations[index % rotations.length];
+
+    index++;
+    return `<span class="${size} word inline-block transform ${rotate} mx-1">${token}</span>`;
   }).join('');
 }
 
@@ -254,57 +308,47 @@ const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
 
 let showNewContainer = false;
 let showQuizContainer = false;
-let showLearnMoreContainer = false;
-let countdownProgress = 0;
+let showLearnMoreContent = false;
 let quizStarted = false;
+let countdownProgress = 0;
 let countdownInterval;
+
+function startQuiz() {
+  showLearnMoreContent = false;
+  showQuizContainer = true;
+  showNewContainer = false;
+  countdownProgress = 0;
+  quizStarted = false;
+
+  // Start countdown
+  countdownInterval = setInterval(() => {
+    countdownProgress += 0.1;
+    if (countdownProgress >= 1) {
+      clearInterval(countdownInterval);
+      quizStarted = true;
+    }
+  }, 100);
+}
+
+function showLearnMore() {
+  showLearnMoreContent = true;
+  showNewContainer = false;
+}
 
 function toggleContainer() {
   showNewContainer = true;
 }
 
-function startQuiz() {
-  showQuizContainer = true;
-  startCountdown();
-}
-
-function startCountdown() {
-  let startTime = Date.now();
-  let duration = 1000; // 10 seconds in milliseconds
-  quizStarted = false;
-
-  countdownInterval = setInterval(() => {
-    let elapsedTime = Date.now() - startTime;
-    countdownProgress = Math.min(elapsedTime / duration, 1);
-
-    if (elapsedTime >= duration) {
-      clearInterval(countdownInterval);
-      quizStarted = true;
-    }
-  }, 16); // Run approximately 60 times per second for smooth animation
-}
-
-function showLearnMore() {
-  showLearnMoreContainer = true;
-}
-
 function goBackToInfo() {
   showQuizContainer = false;
-  showLearnMoreContainer = false;
-  quizStarted = false;
-  clearInterval(countdownInterval);
-  countdownProgress = 0;
-  // Reset quiz state here if necessary
+  showLearnMoreContent = false;
+  showNewContainer = true;
 }
 
 function goBackToStart() {
   showNewContainer = false;
   showQuizContainer = false;
-  showLearnMoreContainer = false;
-  quizStarted = false;
-  clearInterval(countdownInterval);
-  countdownProgress = 0;
-  // Reset any other necessary states
+  showLearnMoreContent = false;
 }
 
 onMount(() => {
@@ -312,56 +356,192 @@ onMount(() => {
     clearInterval(countdownInterval);
   };
 });
+
+const learnMoreContent = [
+  {
+    title: "Origins in Ancient Greece",
+    text: "The word 'idiot' comes from the ancient Greek 'ἰδιώτης' (idiōtēs), which originally meant a private citizen, someone who did not participate in public life.",
+    highlight: ["ἰδιώτης", "idiōtēs", "private citizen"],
+    size: "text-xl md:text-3xl"
+  },
+  {
+    title: "Private vs Public Life",
+    text: "In ancient Greek society, active participation in public affairs was highly valued. Those who focused solely on private matters were seen as not fulfilling their civic duty.",
+    highlight: ["public affairs", "civic duty"],
+    size: "text-lg md:text-2xl"
+  },
+  {
+    title: "Evolution of Meaning",
+    text: "Over time, the meaning shifted from describing someone uninvolved in public affairs to its modern usage, showing how language evolves with society.",
+    highlight: ["evolved", "modern usage"],
+    size: "text-lg md:text-2xl"
+  }
+];
+
+function formatLearnMoreText(item) {
+  let formattedText = item.text;
+  item.highlight.forEach(word => {
+    const regex = new RegExp(`(${word})`, 'gi');
+    formattedText = formattedText.replace(regex, `<span class="font-bold text-primary">$1</span>`);
+  });
+  return formattedText;
+}
 </script>
 
 <div class="relative h-[100dvh] overflow-hidden bg-base-200 flex flex-col justify-center items-center">
   {#if !showNewContainer}
-    <div class="absolute inset-0 flex flex-wrap content-start opacity-30 p-2 md:p-4 word-container">
+    <div class="absolute inset-0 flex flex-wrap content-start opacity-20 p-2 md:p-4 word-container">
       {@html sizedFullText}
     </div>
-    
+
     <div class="relative z-10">
-      <button 
-        class="btn btn-outline btn-primary !bg-transparent !text-primary"
+      <button
+        class="btn glass bg-secondary btn-primary btn-lg text-primary-content border-primary-content"
         on:click={toggleContainer}
       >
-        Are you the idiot?
+        <span class="shimmer-text text-2xl">Are you the idiot?</span>
       </button>
     </div>
   {:else}
-    <div 
-      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-20 p-4"
-      transition:fly={{ x: 1000, duration: 500 }}
+    <div
+      class="fixed inset-0 bg-base-300 bg-opacity-95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto"
+      transition:fade
     >
-      <div class="text-center max-w-2xl">
-        <p class="text-lg md:text-2xl mb-8">
-          In ancient Greece, the term "idiot" (ἰδιώτης, idiōtēs) had a very different meaning from what it does today. If you would like to learn more about the history of the word "idiot" and its meaning, click the button below.
-        </p>
-        <div class="space-y-4">
-          <button class="btn btn-primary w-full" on:click={showLearnMore}>Learn More</button>
-          <button class="btn btn-secondary w-full" on:click={startQuiz}>I'm Ready</button>
-          <button class="btn btn-outline w-full" on:click={goBackToStart}>Go Back</button>
+      <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-3xl p-4 sm:p-8 space-y-6 sm:space-y-8 relative my-2 sm:my-4">
+        <!-- Close button -->
+        <button
+          class="absolute top-2 right-2 sm:top-4 sm:right-4 btn btn-circle btn-ghost btn-sm sm:btn-md"
+          on:click={goBackToStart}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- Title -->
+        <div class="text-center mt-6 sm:mt-0">
+          <h2 class="text-3xl sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-4 text-primary">Choose Your Path</h2>
+          <p class="text-lg sm:text-xl md:text-2xl text-base-content opacity-80 px-2">
+            Discover the fascinating journey of how a word about civic duty became a modern insult
+          </p>
+        </div>
+
+        <!-- Buttons in cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mt-4 sm:mt-8">
+          <!-- Learn More Card -->
+          <div class="card bg-primary text-primary-content shadow-xl">
+            <div class="card-body items-center text-center p-4 sm:p-6">
+              <h3 class="card-title text-xl sm:text-2xl font-bold mb-2">Learn More</h3>
+              <p class="text-sm sm:text-base mb-4">Explore the historical journey of the word "idiot" through ancient Greece.</p>
+              <div class="card-actions w-full">
+                <button
+                  class="btn glass btn-primary btn-sm sm:btn-md md:btn-lg w-full text-primary-content border-primary-content hover:bg-secondary hover:border-secondary-content"
+                  on:click={showLearnMore}
+                >
+                  Discover →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Take the Quiz Card -->
+          <div class="card bg-secondary text-secondary-content shadow-xl">
+            <div class="card-body items-center text-center p-4 sm:p-6">
+              <h3 class="card-title text-xl sm:text-2xl font-bold mb-2">Take the Quiz</h3>
+              <p class="text-sm sm:text-base mb-4">Test your knowledge about the historical meaning and modern usage.</p>
+              <div class="card-actions w-full">
+                <button
+                  class="btn glass btn-secondary btn-sm sm:btn-md md:btn-lg w-full text-secondary-content border-secondary-content hover:bg-primary hover:border-primary-content"
+                  on:click={startQuiz}
+                >
+                  Start Quiz →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coming Soon Card -->
+          <div class="card bg-accent text-accent-content shadow-xl">
+            <div class="card-body items-center text-center p-4 sm:p-6">
+              <h3 class="card-title text-xl sm:text-2xl font-bold mb-2">Coming Soon</h3>
+              <p class="text-sm sm:text-base mb-4">More features and content are on the way. Stay tuned!</p>
+              <div class="card-actions w-full">
+                <button
+                  class="btn glass btn-accent btn-sm sm:btn-md md:btn-lg w-full text-accent-content border-accent-content hover:bg-secondary hover:border-secondary-content"
+                  disabled
+                >
+                  Soon →
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   {/if}
-  
-  {#if showLearnMoreContainer}
-    <div 
-      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-40 p-4 overflow-y-auto"
-      in:fly={{ y: -1000, duration: 500 }}
-      out:fly={{ y: -1000, duration: 500 }}
+
+  {#if showLearnMoreContent}
+    <div
+      class="fixed inset-0 bg-base-300 bg-opacity-95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto"
+      transition:fade
     >
-      <div class="w-full max-w-3xl prose prose-lg dark:prose-invert">
-        <h2 class="text-3xl font-bold mb-4">The History of the Word "Idiot"</h2>
-        <p class="mb-6">{fullText}</p>
-        <button class="btn btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
+      <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-3xl p-4 sm:p-6 space-y-6 sm:space-y-8 relative my-2 sm:my-4">
+        <!-- Close button -->
+        <button
+          class="absolute top-2 right-2 sm:top-4 sm:right-4 btn btn-circle btn-ghost btn-sm sm:btn-md"
+          on:click={() => {
+            showLearnMoreContent = false;
+            showNewContainer = true;
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- Title -->
+        <h2 class="text-3xl sm:text-4xl md:text-6xl font-bold text-center mb-4 sm:mb-8 text-primary mt-6 sm:mt-0">
+          The History of "Idiot"
+        </h2>
+
+        <!-- Content sections -->
+        <div class="space-y-8 sm:space-y-12">
+          {#each learnMoreContent as section}
+            <div>
+              <h3 class="text-xl sm:text-2xl md:text-4xl font-bold mb-2 sm:mb-4 text-secondary">
+                {section.title}
+              </h3>
+              <p class="text-base sm:text-lg md:text-xl leading-relaxed">
+                {@html formatLearnMoreText(section)}
+              </p>
+            </div>
+          {/each}
+        </div>
+
+        <!-- Navigation buttons -->
+        <div class="flex flex-col sm:flex-row justify-between gap-4 sm:gap-8 mt-6 sm:mt-8">
+          <button
+            class="btn glass btn-primary btn-sm sm:btn-md w-full sm:w-auto text-primary-content border-primary-content hover:bg-secondary hover:border-secondary-content"
+            on:click={() => {
+              showLearnMoreContent = false;
+              showNewContainer = true;
+            }}
+          >
+            Back to Home
+          </button>
+          <button
+            class="btn glass btn-secondary btn-sm sm:btn-md w-full sm:w-auto text-secondary-content border-secondary-content hover:bg-primary hover:border-primary-content"
+            on:click={startQuiz}
+          >
+            Take the Quiz →
+          </button>
+        </div>
       </div>
     </div>
   {/if}
-  
+
   {#if showQuizContainer}
-    <div 
+    <div
       class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-30 p-4"
       in:fly={{ y: 1000, duration: 500 }}
       out:fly={{ y: 1000, duration: 500 }}
@@ -371,8 +551,8 @@ onMount(() => {
           <div class="text-center mb-8">
             <h2 class="text-2xl font-bold mb-4">Quiz starting in {Math.ceil(10 - countdownProgress * 10)} seconds</h2>
             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
-              <div 
-                class="bg-blue-600 h-2.5 rounded-full transition-all duration-100 ease-linear" 
+              <div
+                class="bg-blue-600 h-2.5 rounded-full transition-all duration-100 ease-linear"
                 style="width: {countdownProgress * 100}%"
               ></div>
             </div>
@@ -382,9 +562,10 @@ onMount(() => {
             {questions}
             timeLimit={6}
             numQuestions={25}
+            buttonClass="btn glass text-primary-content border-primary-content"
           />
         {/if}
-        <button class="btn btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
+        <button class="btn glass btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
       </div>
     </div>
   {/if}
@@ -393,9 +574,34 @@ onMount(() => {
 <style>
   .word {
     display: inline-block;
-    transition: transform 0.3s ease-out;
   }
   .word-container {
     z-index: 1;
+  }
+
+  .shimmer-text {
+    position: relative;
+    display: inline-block;
+    font-weight: 400;
+    background: linear-gradient(
+      90deg,
+      currentColor 0%,
+      #fff8 50%,
+      currentColor 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 3s infinite 2s;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
   }
 </style>

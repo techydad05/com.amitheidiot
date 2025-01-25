@@ -7,6 +7,7 @@
     export let questions = [];
     export let timeLimit = 30; // in seconds
     export let numQuestions = questions.length;
+    export let buttonClass = "btn glass text-primary-content border-primary-content hover:bg-secondary hover:border-secondary-content";
 
     const dispatch = createEventDispatcher();
 
@@ -205,7 +206,7 @@
                         </label>
                     {/each}
                 </div>
-                <button class="btn btn-primary btn-sm w-full" on:click={handleSubmit} disabled={selectedAnswer === null}>
+                <button class={buttonClass} on:click={handleSubmit} disabled={selectedAnswer === null}>
                     Submit
                 </button>
             {:else if currentState === 'results'}
@@ -242,8 +243,8 @@
                 <h2 class="text-xl font-bold mb-4">Save Your Results?</h2>
                 <p class="mb-4">Your score is between C- and B-. Do you want to save your results?</p>
                 <div class="flex justify-end space-x-4">
-                    <button class="btn btn-secondary" on:click={handleCancel}>Cancel</button>
-                    <button class="btn btn-primary" on:click={handleSave}>Save</button>
+                    <button class={buttonClass} on:click={handleCancel}>Cancel</button>
+                    <button class={buttonClass} on:click={handleSave}>Save</button>
                 </div>
             </div>
         </div>
