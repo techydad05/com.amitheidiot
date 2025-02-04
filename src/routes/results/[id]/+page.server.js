@@ -1,15 +1,26 @@
-import { getQuizResultById } from '$lib/server/quiz_results'; // Assume you have a function to get the result from the database
+import { getQuizResultById } from '$lib/server/quiz_results';
 
 export async function load({ params }) {
-  const { id } = params;
-  const result = await getQuizResultById(id);
-  if (!result) {
+  try {
+    const { id } = params;
+    const result = await getQuizResultById(id);
+    
+    if (!result) {
+      return {
+        status: 404,
+        error: 'Result not found'
+      };
+    }
+    
     return {
-      status: 404,
-      error: new Error('Result not found')
+      result
+    };
+  } catch (error) {
+    console.error('Error loading quiz result:', error);
+    return {
+      status: 500,
+      error: error.message || 'Failed to load quiz result',
+      details: error.details || null
     };
   }
-  return {
-    result
-  };
 }

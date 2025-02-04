@@ -561,7 +561,7 @@ function formatLearnMoreText(item) {
           <Quiz
             {questions}
             timeLimit={6}
-            numQuestions={25}
+            numQuestions={2}
             buttonClass="btn glass text-primary-content border-primary-content"
           />
         {/if}

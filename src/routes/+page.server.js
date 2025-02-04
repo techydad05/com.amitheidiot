@@ -14,7 +14,11 @@ export const actions = {
       return { success: true, result };
     } catch (error) {
       console.error('Error saving quiz result:', error);
-      return { success: false, error: 'Failed to save quiz result' };
+      return { 
+        success: false, 
+        error: error.message || 'Failed to save quiz result',
+        details: error.details || null
+      };
     }
   }
 };
