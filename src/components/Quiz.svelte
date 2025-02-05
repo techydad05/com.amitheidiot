@@ -234,8 +234,8 @@
         </div>
     {/if}
     {#if showSaveDropdown}
-        <div class="dropdown-background" on:click={handleCancel}>
-            <div class="dropdown-content" in:fly={{ y: 200 }} out:fly={{ y: 200 }} on:click|stopPropagation>
+        <div class="dropdown-background" role="button" tabindex="0" on:click={handleCancel} on:keydown={e => e.key === 'Escape' && handleCancel()}>
+            <div class="dropdown-content" role="dialog" aria-modal="true" in:fly={{ y: 200 }} out:fly={{ y: 200 }} on:click|stopPropagation>
                 <h2 class="text-xl font-bold mb-4">Save Your Results?</h2>
                 <p class="mb-4">Your score is between C- and B-. Do you want to save your results?</p>
                 <div class="flex justify-end space-x-4">

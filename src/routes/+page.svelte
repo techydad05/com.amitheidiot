@@ -215,11 +215,5 @@ function formatLearnMoreText(item) {
 </div>
 
 <style>
-  .word {
-    display: inline-block;
-  }
-  .word-container {
-    z-index: 1;
-  }
 
 </style>

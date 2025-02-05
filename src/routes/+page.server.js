@@ -1,8 +1,5 @@
 import { saveQuizResult } from '$lib/server/quiz_results.js';
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
-
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase } from '$lib/server/db.js';
 
 export const load = async () => {
   console.log('Starting to load questions...');
