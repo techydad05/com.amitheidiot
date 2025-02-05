@@ -19,25 +19,50 @@ async function checkDatabase() {
 
 checkDatabase();
 
-export async function saveQuizResult(score, totalQuestions, missedQuestions) {
+export async function saveQuizResult({ request }) {
   try {
-    const { data, error } = await supabase
+    const data = await request.formData();
+    const score = parseInt(data.get('score'));
+    const totalQuestions = parseInt(data.get('totalQuestions'));
+    const missedQuestions = JSON.parse(data.get('missedQuestions'));
+
+    // Log the data we're about to insert
+    console.log('Saving quiz result:', {
+      score,
+      totalQuestions,
+      missedQuestions
+    });
+
+    const { data: result, error } = await supabase
       .from('quiz_results')
-      .insert([
-        { 
-          score, 
-          total_questions: totalQuestions, 
-          missed_questions: missedQuestions 
-        }
-      ])
+      .insert({
+        score: score,
+        total_questions: totalQuestions,
+        missed_questions: missedQuestions, // This will be automatically converted to JSONB
+      })
       .select()
       .single();
 
-    if (error) throw error;
-    return data;
+    if (error) {
+      console.error('Error saving quiz result:', error);
+      return {
+        type: 'error',
+        error: error.message
+      };
+    }
+
+    console.log('Successfully saved quiz result:', result);
+
+    return {
+      type: 'success',
+      data: JSON.stringify([null, null, null, null, null, null, result.id])
+    };
   } catch (err) {
-    console.error('Error saving quiz result:', err);
-    throw err;
+    console.error('Failed to save quiz result:', err);
+    return {
+      type: 'error',
+      error: err.message
+    };
   }
 }
 

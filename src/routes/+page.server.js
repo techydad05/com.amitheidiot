@@ -1,24 +1,41 @@
 import { saveQuizResult } from '$lib/server/quiz_results.js';
+import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+export const load = async () => {
+  console.log('Starting to load questions...');
+  try {
+    const { data, error } = await supabase
+      .from('citizenship_questions')
+      .select('*')
+      .order('id');
+
+    if (error) {
+      console.error('Error fetching questions:', error);
+      return {
+        questions: [],
+        error: error.message
+      };
+    }
+
+    console.log(`Loaded ${data?.length || 0} questions`);
+    return {
+      questions: data || [],
+      error: null
+    };
+  } catch (err) {
+    console.error('Failed to fetch questions:', err);
+    return {
+      questions: [],
+      error: 'Failed to fetch questions'
+    };
+  }
+};
 
 export const actions = {
   saveQuizResult: async ({ request }) => {
-    const data = await request.formData();
-    console.log("data:", data);
-    const score = parseInt(data.get('score'));
-    const totalQuestions = parseInt(data.get('totalQuestions'));
-    const missedQuestions = JSON.parse(data.get('missedQuestions'));
-
-    try {
-      const result = await saveQuizResult(score, totalQuestions, missedQuestions);
-      console.log("result:", result.id);
-      return { success: true, result };
-    } catch (error) {
-      console.error('Error saving quiz result:', error);
-      return { 
-        success: false, 
-        error: error.message || 'Failed to save quiz result',
-        details: error.details || null
-      };
-    }
+    return await saveQuizResult({ request });
   }
 };
