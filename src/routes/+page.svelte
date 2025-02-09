@@ -37,25 +37,13 @@ try {
 let showNewContainer = false;
 let showQuizContainer = false;
 let showLearnMoreContent = false;
-let quizStarted = false;
-let countdownProgress = 0;
-let countdownInterval;
+
 
 function startQuiz() {
   showLearnMoreContent = false;
   showQuizContainer = true;
   showNewContainer = false;
-  countdownProgress = 0;
-  quizStarted = false;
 
-  // Start countdown
-  countdownInterval = setInterval(() => {
-    countdownProgress += 0.1;
-    if (countdownProgress >= 1) {
-      clearInterval(countdownInterval);
-      quizStarted = true;
-    }
-  }, 100);
 }
 
 function showLearnMore() {
@@ -79,32 +67,54 @@ function goBackToStart() {
   showLearnMoreContent = false;
 }
 
-onMount(() => {
-  return () => {
-    clearInterval(countdownInterval);
-  };
-});
+
 
 const learnMoreContent = [
   {
     title: "Origins in Ancient Greece",
     text: "The word 'idiot' comes from the ancient Greek 'ἰδιώτης' (idiōtēs), which originally meant a private citizen, someone who did not participate in public life.",
     highlight: ["ἰδιώτης", "idiōtēs", "private citizen"],
-    size: "text-xl md:text-3xl"
+    size: "text-xl md:text-3xl",
+    funFact: "In ancient Athens, citizens were expected to participate in the democratic process. Those who didn't were viewed with suspicion!",
+    icon: "🏛️"
   },
   {
     title: "Private vs Public Life",
     text: "In ancient Greek society, active participation in public affairs was highly valued. Those who focused solely on private matters were seen as not fulfilling their civic duty.",
     highlight: ["public affairs", "civic duty"],
-    size: "text-lg md:text-2xl"
+    size: "text-lg md:text-2xl",
+    funFact: "The Athenian democracy was so participatory that they even had a process called 'ostracism' where citizens could vote to exile powerful individuals!",
+    icon: "⚖️"
   },
   {
     title: "Evolution of Meaning",
     text: "Over time, the meaning shifted from describing someone uninvolved in public affairs to its modern usage, showing how language evolves with society.",
     highlight: ["evolved", "modern usage"],
-    size: "text-lg md:text-2xl"
+    size: "text-lg md:text-2xl",
+    funFact: "The transformation of 'idiot' from 'private citizen' to its modern meaning took over 2000 years of language evolution!",
+    icon: "🔄"
+  },
+  {
+    title: "Modern Democracy",
+    text: "Today, being an informed and active citizen is more important than ever. The complexity of modern issues requires educated participation.",
+    highlight: ["informed", "active citizen", "educated participation"],
+    size: "text-lg md:text-2xl",
+    funFact: "Studies show that higher levels of education correlate with increased political participation and better democratic outcomes!",
+    icon: "🗳️"
   }
 ];
+
+let selectedFact = null;
+let showFact = false;
+
+function toggleFact(fact) {
+  if (selectedFact === fact) {
+    showFact = !showFact;
+  } else {
+    selectedFact = fact;
+    showFact = true;
+  }
+}
 
 function formatLearnMoreText(item) {
   let formattedText = item.text;
@@ -116,7 +126,7 @@ function formatLearnMoreText(item) {
 }
 </script>
 
-<div class="relative h-[100dvh] overflow-hidden bg-base-200 flex flex-col justify-center items-center">
+<div class="relative h-[100dvh] overflow-hidden bg-base-200 flex flex-col justify-center items-center touch-manipulation select-none">
   {#if !showNewContainer}
     <Main {toggleContainer} />
   {:else}
@@ -125,7 +135,7 @@ function formatLearnMoreText(item) {
 
   {#if showLearnMoreContent}
     <div
-      class="fixed inset-0 bg-base-300 bg-opacity-95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto"
+      class="fixed inset-0 bg-base-300 bg-opacity-95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto overscroll-contain"
       transition:fade
     >
       <div class="bg-base-100 rounded-lg shadow-xl w-full max-w-3xl p-4 sm:p-6 space-y-6 sm:space-y-8 relative my-2 sm:my-4">
@@ -148,15 +158,33 @@ function formatLearnMoreText(item) {
         </h2>
 
         <!-- Content sections -->
-        <div class="space-y-8 sm:space-y-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-h-[70vh] overflow-y-auto p-2">
           {#each learnMoreContent as section}
-            <div>
-              <h3 class="text-xl sm:text-2xl md:text-4xl font-bold mb-2 sm:mb-4 text-secondary">
-                {section.title}
-              </h3>
-              <p class="text-base sm:text-lg md:text-xl leading-relaxed">
+            <div class="card bg-base-200 shadow-lg hover:shadow-xl transition-all duration-300 p-4 sm:p-6 h-full flex flex-col">
+              <div class="flex items-center gap-4 mb-4">
+                <span class="text-4xl">{section.icon}</span>
+                <h3 class="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">
+                  {section.title}
+                </h3>
+              </div>
+              <p class="text-base sm:text-lg md:text-xl leading-relaxed mb-4">
                 {@html formatLearnMoreText(section)}
               </p>
+              <button
+                class="btn btn-ghost btn-sm text-info hover:text-info-content transition-colors duration-200"
+                on:click={() => toggleFact(section)}
+              >
+                {selectedFact === section && showFact ? 'Hide Fun Fact' : 'Show Fun Fact'}
+              </button>
+              {#if selectedFact === section && showFact}
+                <div
+                  class="mt-4 p-4 bg-info bg-opacity-10 rounded-lg text-info-content"
+                  in:fly={{y: 20, duration: 300}}
+                  out:fade
+                >
+                  <p class="text-sm sm:text-base italic">{section.funFact}</p>
+                </div>
+              {/if}
             </div>
           {/each}
         </div>
@@ -185,35 +213,79 @@ function formatLearnMoreText(item) {
 
   {#if showQuizContainer}
     <div
-      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-30 p-4"
+      class="absolute inset-0 bg-base-100 flex flex-col justify-center items-center z-30 p-4 overscroll-contain"
       in:fly={{ y: 1000, duration: 500 }}
       out:fly={{ y: 1000, duration: 500 }}
     >
       <div class="w-full max-w-2xl">
-        {#if !quizStarted}
-          <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold mb-4">Quiz starting in {Math.ceil(10 - countdownProgress * 10)} seconds</h2>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
-              <div
-                class="bg-blue-600 h-2.5 rounded-full transition-all duration-100 ease-linear"
-                style="width: {countdownProgress * 100}%"
-              ></div>
-            </div>
-          </div>
-        {:else}
+
           <Quiz
             {questions}
-            timeLimit={6}
+            timeLimit={60}
             numQuestions={1}
             buttonClass="btn glass text-primary-content border-primary-content"
+            on:escape={goBackToInfo}
           />
-        {/if}
-        <button class="btn glass btn-outline btn-secondary mt-4 w-full" on:click={goBackToInfo}>Go Back</button>
       </div>
     </div>
   {/if}
 </div>
 
 <style>
+  /* Default styles for larger screens */
+  .container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    .container {
+      width: 100%;
+      padding: 16px;
+      touch-action: manipulation;
+    }
+
+    /* Hide scrollbars but keep functionality */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Mobile-optimized text sizes */
+    .text-3xl {
+      font-size: 1.5rem;
+    }
+
+    .text-2xl {
+      font-size: 1.25rem;
+    }
+
+    /* Add mobile touch feedback */
+    button:active {
+      transform: scale(0.98);
+    }
+  }
+
+  /* Custom scrollbar for desktop */
+  @media (min-width: 769px) {
+    .overflow-y-auto {
+      scrollbar-width: thin;
+      scrollbar-color: theme('colors.primary') transparent;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar {
+      width: 6px;
+      display: block;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+      background-color: theme('colors.primary');
+      border-radius: 3px;
+    }
+  }
 </style>

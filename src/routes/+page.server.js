@@ -33,6 +33,10 @@ export const load = async () => {
 
 export const actions = {
   saveQuizResult: async ({ request }) => {
-    return await saveQuizResult({ request });
+    const result = await saveQuizResult({ request });
+    // If it's an error, return it as is
+    if (result.type === 'error') return result;
+    // Otherwise return just the ID
+    return result;
   }
 };

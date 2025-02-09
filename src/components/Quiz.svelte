@@ -10,20 +10,28 @@
 
     let activeQuestions = [];
     let currentQuestion = null;
-    
-    $: {
-        if (questions.length > 0 && activeQuestions.length === 0) {
-            activeQuestions = [...questions];
-            shuffleArray(activeQuestions);
-            activeQuestions = activeQuestions.slice(0, Math.min(numQuestions, activeQuestions.length));
+
+    function initializeQuestions() {
+        if (questions.length > 0) {
+            // Create a new copy of questions and shuffle them
+            const shuffledQuestions = [...questions];
+            shuffleArray(shuffledQuestions);
+            // Select only the number of questions we need
+            activeQuestions = shuffledQuestions.slice(0, Math.min(numQuestions, shuffledQuestions.length));
+            currentQuestion = activeQuestions[currentQuestionIndex] || null;
         }
-        currentQuestion = activeQuestions[currentQuestionIndex] || null;
     }
+
+    $: if (questions.length > 0 && activeQuestions.length === 0) {
+        initializeQuestions();
+    }
+
+    $: currentQuestion = activeQuestions[currentQuestionIndex] || null;
     export let buttonClass = "btn glass text-primary-content border-primary-content hover:bg-secondary hover:border-secondary-content";
 
     const dispatch = createEventDispatcher();
 
-    let currentState = 'quiz';
+    let currentState = 'countdown';
     let currentQuestionIndex = 0;
     let selectedAnswer = null;
     let score = 0;
@@ -34,11 +42,118 @@
     let qrCodeSvg = '';
     let quizResult = {};
     let showAward = false;
+let showQRModal = false;
     let showSaveDropdown = false;
     let missedQuestions = [];
     let url = '';
 
     const passingScore = 0.8; // 80% to pass
+
+    // Fun emoji reactions based on score
+    function getEmojiReaction(percentage) {
+        if (percentage < 0.2) return '🤦‍♂️';
+        if (percentage < 0.4) return '😬';
+        if (percentage < 0.6) return '🤔';
+        if (percentage < 0.8) return '📚';
+        if (percentage < 0.9) return '🎓';
+        return '🧠✨';
+    }
+
+    // Fun facts about education and democracy
+    const funFacts = [
+        "Did you know? In ancient Athens, citizens who didn't participate in democracy were called 'idiotes' - that's where we get the word 'idiot'!",
+        "Fun fact: The U.S. ranks 31st in global education. Maybe we should fix that? 🤔",
+        "Interesting: Studies show that informed citizens make better decisions. Who would've thought? 😉",
+        "Did you know? The more educated a population is, the stronger their democracy becomes. Science! 🔬",
+        "Fun fact: You're more likely to be fooled by fake news if you can't pass basic civics tests. Just saying! 📱"
+    ];
+
+    function getRandomFunFact() {
+        return funFacts[Math.floor(Math.random() * funFacts.length)];
+    }
+
+    // Snarky streak messages
+    function getStreakMessage(correct) {
+        if (correct) {
+            return [
+                "Not bad, keep it up! 👍",
+                "You're on fire! 🔥",
+                "Okay, we see you! 👀",
+                "Knowledge is power! 💪"
+            ][Math.floor(Math.random() * 4)];
+        }
+        return [
+            "Oops! Time to hit the books! 📚",
+            "That's... interesting... 🤨",
+            "Really? That's your answer? 😅",
+            "Maybe Google it next time? 🔍"
+        ][Math.floor(Math.random() * 4)];
+    }
+
+    let correctStreak = 0;
+    let showStreakMessage = '';
+    let streakTimeout;
+
+    function updateStreak(isCorrect) {
+        if (isCorrect) {
+            correctStreak++;
+            showStreakMessage = getStreakMessage(true);
+        } else {
+            correctStreak = 0;
+            showStreakMessage = getStreakMessage(false);
+        }
+        clearTimeout(streakTimeout);
+        streakTimeout = setTimeout(() => showStreakMessage = '', 2000);
+    }
+
+    function getFeedbackMessage(percentage) {
+        if (percentage < 0.2) {
+            return {
+                message: "Your level of ignorance is actively contributing to society's problems. This isn't just about being uninformed - you're part of why democracy struggles. Start educating yourself immediately.",
+                class: "text-error font-bold"
+            };
+        } else if (percentage < 0.3) {
+            return {
+                message: "Seriously concerning. Your lack of basic knowledge makes you vulnerable to manipulation and misinformation. You need to start taking education seriously.",
+                class: "text-error"
+            };
+        } else if (percentage < 0.4) {
+            return {
+                message: "This is pretty bad. You're exactly who politicians love - uninformed and easily swayed. Time to wake up and start learning.",
+                class: "text-error"
+            };
+        } else if (percentage < 0.5) {
+            return {
+                message: "You're below average, and that's saying something. America's education system might be struggling, but you're not helping. Do better.",
+                class: "text-warning font-bold"
+            };
+        } else if (percentage < 0.6) {
+            return {
+                message: "Mediocre at best. You're floating by with minimal understanding. Is this really the best you can do?",
+                class: "text-warning"
+            };
+        } else if (percentage < 0.7) {
+            return {
+                message: "Getting there, but still not great. You're showing signs of awareness, but you need to push harder.",
+                class: "text-warning"
+            };
+        } else if (percentage < 0.8) {
+            return {
+                message: "Almost there. You're better than most, but that's a low bar. Keep pushing yourself to learn more.",
+                class: "text-info"
+            };
+        } else if (percentage < 0.9) {
+            return {
+                message: "Good job! You're actually informed. Now help educate others - we need more people like you.",
+                class: "text-success"
+            };
+        } else {
+            return {
+                message: "Exceptional! You're the kind of informed citizen democracy needs. Keep learning and help combat ignorance in others.",
+                class: "text-success font-bold"
+            };
+        }
+    }
 
     $: progress = (currentQuestionIndex / numQuestions) * 100;
 
@@ -60,12 +175,61 @@
 
         const response = await fetch('?/saveQuizResult', {
             method: 'POST',
-            body: formData
+            body: formData,
         });
 
         const result = await response.json();
-        console.log("saveQuizResult response:", result); // Add logging here
-        return result;
+        console.log("Save response:", result);
+
+        if (result.type === 'error') {
+            console.error('Failed to save quiz result:', result.error);
+            return;
+        }
+
+        const quizId = result;
+        if (quizId) {
+            // Generate QR code with the full URL
+            const baseUrl = window.location.origin;
+            const pathname = window.location.pathname;
+
+            // Check if we're on localhost
+            const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+
+            // For localhost, use the local URL
+            // For production, use amitheidiot.com
+            const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
+
+            const resultUrl = `${finalBaseUrl}/result/${quizId}`;
+            url = resultUrl;
+
+            const qr = new QRCode({
+                content: resultUrl,
+                padding: 2,
+                width: 256,
+                height: 256,
+                color: '#000000',
+                background: '#ffffff',
+                ecl: 'M' // Error correction level: L, M, Q, H
+            });
+            qrCodeSvg = qr.svg();
+        }
+
+        return quizId;
+    }
+
+    let countdownTime = 5;
+    let countdownTimer;
+
+    function startCountdown() {
+        countdownTime = 5;
+        countdownTimer = setInterval(() => {
+            countdownTime--;
+            if (countdownTime <= 0) {
+                clearInterval(countdownTimer);
+                currentState = 'quiz';
+                startTimer();
+            }
+        }, 1000);
     }
 
     onMount(() => {
@@ -73,7 +237,7 @@
             alert("No questions available. Please try again later.");
             return;
         }
-        startTimer();
+        startCountdown();
     });
 
     function shuffleArray(array) {
@@ -97,10 +261,13 @@
     async function handleSubmit() {
         clearInterval(timer);
         userAnswers[currentQuestionIndex] = selectedAnswer;
-        if (selectedAnswer !== currentQuestion.correctIndex) {
+        const isCorrect = selectedAnswer === currentQuestion.correctIndex;
+        if (!isCorrect) {
             missedQuestions.push(currentQuestion.question);
+            updateStreak(false);
         } else {
             score++;
+            updateStreak(true);
         }
         selectedAnswer = null;
 
@@ -109,15 +276,18 @@
             startTimer();
         } else {
             currentState = 'results';
-            const percentageScore = (score / questions.length) * 100;
+            const percentageScore = (score / activeQuestions.length) * 100;
+            console.log("activeQuestions:", activeQuestions.length);
+            console.log("percentageScore:", percentageScore);
 
             if (percentageScore >= 80) { // B- or better
-                const result = await saveQuizResult(score, questions.length, missedQuestions);
-                if (result.type === 'success') {
-                    console.log("result:", JSON.parse(result.data));
-                    generateQRCode(JSON.parse(result.data)[6]);
+                console.log('Saving quiz result:', { score, totalQuestions: activeQuestions.length, missedQuestions });
+                const quizId = await saveQuizResult(score, activeQuestions.length, missedQuestions);
+                if (quizId) {
+                    console.log("Save successful, quiz ID:", quizId);
+                    generateQRCode(quizId);
                 } else {
-                    console.error('Failed to save quiz result:', result.error);
+                    console.error('Failed to save quiz result');
                 }
             } else if (percentageScore >= 70) { // C- to B-
                 showSaveDropdown = true;
@@ -126,8 +296,15 @@
     }
 
     function generateQRCode(id) {
+        if (!id) {
+            console.error('No ID provided to generateQRCode');
+            return;
+        }
         resultId = id;
-        url = `https://amitheidiot.com/results/${id}`;
+        const baseUrl = window.location.origin;
+        const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+        const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
+        url = `${finalBaseUrl}/result/${id}`;
         const qr = new QRCode({
             content: url,
             padding: 4,
@@ -142,12 +319,18 @@
     }
 
     function restartQuiz() {
-        currentState = 'quiz';
+        // Reset all quiz state
+        currentState = 'countdown';
         currentQuestionIndex = 0;
         score = 0;
         userAnswers = [];
+        missedQuestions = [];
+        correctStreak = 0;
+        showStreakMessage = '';
+        // Re-initialize questions to get a new random set
+        initializeQuestions();
         dispatch('restartQuiz');
-        startTimer();
+        startCountdown();
     }
 
     async function handleSave() {
@@ -161,14 +344,26 @@
             method: 'POST',
             body: formData
         });
-        
-        const result = await response.json();
-        console.log("Save result:", result);
 
+        const result = await response.json();
+        console.log("Raw save result:", result);
+
+        // Add detailed logging
         if (result.type === 'success') {
-            generateQRCode(JSON.parse(result.data)[6]);
+            console.log('Success response received');
+            if (result.data) {
+                console.log('Data object present:', result.data);
+                if (result.data.id) {
+                    console.log('ID found:', result.data.id);
+                    generateQRCode(result.data.id);
+                } else {
+                    console.error('No ID in data object:', result.data);
+                }
+            } else {
+                console.error('No data object in response');
+            }
         } else {
-            console.error('Failed to save quiz result:', result.error);
+            console.error('Failed to save quiz result:', result.error || 'No ID returned');
         }
     }
 
@@ -180,12 +375,35 @@
 <div class="card w-full max-w-md mx-auto bg-base-100 shadow-xl relative">
     {#if !showAward}
         <div class="card-body p-6">
-            {#if currentState === 'quiz'}
+            {#if currentState === 'countdown'}
+                <div class="flex flex-col items-center justify-center h-48 relative">
+                    <h2 class="text-3xl font-bold mb-4">Get Ready!</h2>
+                    <p class="text-6xl font-bold text-primary">{countdownTime}</p>
+                    <button
+                        class="btn btn-sm btn-ghost hover:btn-error mt-8 normal-case font-normal"
+                        on:click={() => dispatch('escape')}
+                    >
+                        <span class="flex items-center gap-1">
+                            🏃‍♂️ I need more time to study!
+                        </span>
+                    </button>
+                </div>
+            {:else if currentState === 'quiz'}
                 <div class="timer {remainingTime <= 5 ? 'grow' : ''}">{remainingTime}s</div>
                 <div class="flex justify-between items-center mb-2 text-sm">
                     <span>Question {currentQuestionIndex + 1}/{activeQuestions.length}</span>
                 </div>
                 <progress class="progress progress-primary w-full mb-4" value={progress} max="100"></progress>
+                {#if showStreakMessage}
+                    <div class="text-center mb-2 text-lg font-semibold animate-bounce">
+                        {showStreakMessage}
+                    </div>
+                {/if}
+                {#if correctStreak >= 3}
+                    <div class="text-center mb-2 text-sm text-primary">
+                        🔥 {correctStreak} Correct in a row! 🔥
+                    </div>
+                {/if}
                 {#if currentQuestion}
                     <h3 class="text-lg font-semibold mb-3">{currentQuestion.question}</h3>
                     <div class="space-y-2 mb-4">
@@ -207,12 +425,21 @@
                 </button>
             {:else if currentState === 'results'}
                 <h2 class="card-title text-xl mb-4">Quiz Results</h2>
-                <p class="text-lg mb-4">Your score: <span class="font-bold">{score}/{activeQuestions.length}</span></p>
-                {#if score / activeQuestions.length >= passingScore}
-                    <p class="text-lg text-success mb-4">Congratulations! You passed the quiz.</p>
-                {:else}
-                    <p class="text-lg text-error mb-4">Sorry, you did not pass the quiz. Better luck next time!</p>
-                {/if}
+                <div class="stats shadow w-full mb-6">
+                    <div class="stat">
+                        <div class="stat-title">Your Score</div>
+                        <div class="stat-value flex items-center justify-center gap-2">
+                            {score}/{activeQuestions.length}
+                            <span class="text-4xl">{getEmojiReaction(score / activeQuestions.length)}</span>
+                        </div>
+                        <div class="stat-desc">{Math.round((score / activeQuestions.length) * 100)}%</div>
+                    </div>
+                </div>
+                <div class="text-sm italic text-base-content/70 mb-4 text-center">{getRandomFunFact()}</div>
+                {@const feedback = getFeedbackMessage(score / activeQuestions.length)}
+                <div class="p-4 rounded-lg bg-base-200 mb-6">
+                    <p class="{feedback.class} text-lg leading-relaxed">{feedback.message}</p>
+                </div>
             {/if}
         </div>
     {:else}
@@ -223,7 +450,11 @@
                 <div class="mb-6">
                     <p class="text-2xl font-bold text-white">Score: {score}/{questions.length}</p>
                 </div>
-                {url}
+                {#if url}
+                    <div class="mb-4">
+                        <p class="text-sm text-white bg-white/10 p-2 rounded break-all">{url}</p>
+                    </div>
+                {/if}
                 {#if qrCodeSvg}
                     <div class="mb-6 bg-white p-4 rounded-lg inline-block">
                         {@html qrCodeSvg}

@@ -1,4 +1,4 @@
-import { supabase } from "./db.js";
+import { supabase } from './db.js';
 
 async function checkDatabase() {
   try {
@@ -9,11 +9,10 @@ async function checkDatabase() {
       .limit(1);
 
     if (error) throw error;
-    console.log("Successfully connected to Supabase");
-    console.log("Sample data from quiz_results:", data);
-
+    console.log('Successfully connected to Supabase');
+    console.log('Sample data from quiz_results:', data);
   } catch (err) {
-    console.error("Error checking database:", err);
+    console.error('Error checking database:', err);
   }
 }
 
@@ -25,13 +24,6 @@ export async function saveQuizResult({ request }) {
     const score = parseInt(data.get('score'));
     const totalQuestions = parseInt(data.get('totalQuestions'));
     const missedQuestions = JSON.parse(data.get('missedQuestions'));
-
-    // Log the data we're about to insert
-    console.log('Saving quiz result:', {
-      score,
-      totalQuestions,
-      missedQuestions
-    });
 
     const { data: result, error } = await supabase
       .from('quiz_results')
@@ -47,21 +39,18 @@ export async function saveQuizResult({ request }) {
       console.error('Error saving quiz result:', error);
       return {
         type: 'error',
-        error: error.message
+        error: error.message,
       };
     }
 
     console.log('Successfully saved quiz result:', result);
 
-    return {
-      type: 'success',
-      data: JSON.stringify([null, null, null, null, null, null, result.id])
-    };
+    return result.id;
   } catch (err) {
     console.error('Failed to save quiz result:', err);
     return {
       type: 'error',
-      error: err.message
+      error: err.message,
     };
   }
 }
