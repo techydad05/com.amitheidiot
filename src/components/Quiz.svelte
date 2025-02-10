@@ -44,6 +44,7 @@
     let missedQuestions = [];
     let url = '';
     let showConfetti = false;
+    let result = null;
 
     const passingScore = 0.8; // 80% to pass
 
@@ -328,14 +329,14 @@
     }
 
     // Handle form submission result
-    // Handle form submission result
     function handleSave() {
-        return async ({ result }) => {
-            if (result.type === 'success' && result.id) {
-                generateQRCode(result.id);
+        return async ({ result: actionResult }) => {
+            if (actionResult.type === 'success' && actionResult.id) {
+                result = actionResult; // Store the full result including verificationToken
+                generateQRCode(actionResult.id);
                 showConfetti = true;
                 setTimeout(() => showConfetti = false, 5000);
-            } else if (result.type === 'error') {
+            } else if (actionResult.type === 'error') {
                 alert('Failed to save quiz results. Please try again.');
             }
         };
