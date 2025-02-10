@@ -358,7 +358,7 @@
                     </p>
                     {#if countdownTime <= 3}
                         <div class="fixed inset-0 pointer-events-none">
-                            <canvas use:confetti />
+                            <canvas use:confetti></canvas>
                         </div>
                     {/if}
                     <button
@@ -496,7 +496,7 @@
 
 {#if showConfetti}
     <div class="fixed inset-0 pointer-events-none">
-        <canvas use:confetti />
+        <canvas use:confetti></canvas>
     </div>
 {/if}
 

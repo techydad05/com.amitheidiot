@@ -123,7 +123,7 @@ function formatLearnMoreText(item) {
 }
 </script>
 
-<div class="relative h-[100dvh] overflow-hidden bg-base-200 flex flex-col justify-center items-center touch-manipulation select-none">
+<div class="relative h-[100dvh] overflow-hidden bg-base-200 flex flex-col justify-center items-center touch-manipulation select-none md:px-20 px-4">
   {#if !showNewContainer}
     <Main {toggleContainer} />
   {:else}

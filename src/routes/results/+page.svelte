@@ -223,11 +223,12 @@
       <h3 class="font-bold text-lg mb-4">Claim Your Result</h3>
       
       <div class="form-control">
-        <label class="label">
+        <label class="label" for="verification-code">
           <span class="label-text">Verification Code</span>
         </label>
         <input
           type="text"
+          id="verification-code"
           placeholder="Enter your verification code"
           class="input input-bordered w-full"
           bind:value={verificationCode}
@@ -235,11 +236,12 @@
       </div>
       
       <div class="form-control mt-4">
-        <label class="label">
+        <label class="label" for="username">
           <span class="label-text">Choose a Username</span>
         </label>
         <input
           type="text"
+          id="username"
           placeholder="Enter your desired username"
           class="input input-bordered w-full"
           bind:value={username}
