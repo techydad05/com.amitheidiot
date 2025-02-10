@@ -53,6 +53,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@neoconfetti/svelte": "^2.2.1",
 		"@supabase/supabase-js": "^2.48.1",
 		"qrcode-svg": "^1.1.0"
 	}

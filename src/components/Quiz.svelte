@@ -1,8 +1,10 @@
 <script>
     // @ts-nocheck
-    import { fade, fly } from 'svelte/transition';
+    import { fade, fly, scale } from 'svelte/transition';
     import { createEventDispatcher, onMount } from 'svelte';
+    import { enhance } from '$app/forms';
     import QRCode from 'qrcode-svg';
+    import { confetti } from '@neoconfetti/svelte';
 
     export let questions = [];
     export let timeLimit = 30; // in seconds
@@ -35,17 +37,13 @@
     let currentQuestionIndex = 0;
     let selectedAnswer = null;
     let score = 0;
-    let userAnswers = [];
     let timer;
     let remainingTime;
-    let resultId = '';
     let qrCodeSvg = '';
-    let quizResult = {};
     let showAward = false;
-let showQRModal = false;
-    let showSaveDropdown = false;
     let missedQuestions = [];
     let url = '';
+    let showConfetti = false;
 
     const passingScore = 0.8; // 80% to pass
 
@@ -167,55 +165,65 @@ let showQRModal = false;
     //     return result;
     // }
 
-    async function saveQuizResult(score, totalQuestions, missedQuestions) {
-        const formData = new FormData();
-        formData.append('score', score);
-        formData.append('totalQuestions', totalQuestions);
-        formData.append('missedQuestions', JSON.stringify(missedQuestions));
+    // Handle quiz result submission using SvelteKit action
+    async function handleQuizSubmit(event) {
+        const form = event.target;
+        const formData = new FormData(form);
 
-        const response = await fetch('?/saveQuizResult', {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-        console.log("Save response:", result);
-
-        if (result.type === 'error') {
-            console.error('Failed to save quiz result:', result.error);
-            return;
-        }
-
-        const quizId = result;
-        if (quizId) {
-            // Generate QR code with the full URL
-            const baseUrl = window.location.origin;
-            const pathname = window.location.pathname;
-
-            // Check if we're on localhost
-            const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
-
-            // For localhost, use the local URL
-            // For production, use amitheidiot.com
-            const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
-
-            const resultUrl = `${finalBaseUrl}/result/${quizId}`;
-            url = resultUrl;
-
-            const qr = new QRCode({
-                content: resultUrl,
-                padding: 2,
-                width: 256,
-                height: 256,
-                color: '#000000',
-                background: '#ffffff',
-                ecl: 'M' // Error correction level: L, M, Q, H
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
             });
-            qrCodeSvg = qr.svg();
-        }
 
-        return quizId;
+            const result = await response.json();
+
+            if (result.type === 'success' && result.id) {
+                // Generate QR code
+                const baseUrl = window.location.origin;
+                const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+                const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
+                const resultUrl = `${finalBaseUrl}/result/${result.id}`;
+
+                // Create QR code
+                const qr = new QRCode({
+                    content: resultUrl,
+                    padding: 4,
+                    width: 256,
+                    height: 256,
+                    color: '#000000',
+                    background: '#ffffff',
+                    ecl: 'M'
+                });
+
+                qrCodeSvg = qr.svg();
+                showAward = true;
+                showConfetti = true;
+                setTimeout(() => showConfetti = false, 5000);
+            }
+        } catch (error) {
+            console.error('Failed to save quiz result:', error);
+        }
     }
+    //         // For production, use amitheidiot.com
+    //         const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
+
+    //         const resultUrl = `${finalBaseUrl}/result/${quizId}`;
+    //         url = resultUrl;
+
+    //         const qr = new QRCode({
+    //             content: resultUrl,
+    //             padding: 2,
+    //             width: 256,
+    //             height: 256,
+    //             color: '#000000',
+    //             background: '#ffffff',
+    //             ecl: 'M' // Error correction level: L, M, Q, H
+    //         });
+    //         qrCodeSvg = qr.svg();
+    //     }
+    //     return quizId;
+    // }
 
     let countdownTime = 5;
     let countdownTimer;
@@ -237,6 +245,7 @@ let showQRModal = false;
             alert("No questions available. Please try again later.");
             return;
         }
+        initializeQuestions();
         startCountdown();
     });
 
@@ -258,10 +267,12 @@ let showQRModal = false;
         }, 1000);
     }
 
+    // Handle submitting an answer
     async function handleSubmit() {
         clearInterval(timer);
-        userAnswers[currentQuestionIndex] = selectedAnswer;
         const isCorrect = selectedAnswer === currentQuestion.correctIndex;
+
+        // Update score and streak
         if (!isCorrect) {
             missedQuestions.push(currentQuestion.question);
             updateStreak(false);
@@ -269,42 +280,24 @@ let showQRModal = false;
             score++;
             updateStreak(true);
         }
+
         selectedAnswer = null;
 
+        // Move to next question or end quiz
         if (currentQuestionIndex < activeQuestions.length - 1) {
             currentQuestionIndex++;
             startTimer();
         } else {
             currentState = 'results';
-            const percentageScore = (score / activeQuestions.length) * 100;
-            console.log("activeQuestions:", activeQuestions.length);
-            console.log("percentageScore:", percentageScore);
-
-            if (percentageScore >= 80) { // B- or better
-                console.log('Saving quiz result:', { score, totalQuestions: activeQuestions.length, missedQuestions });
-                const quizId = await saveQuizResult(score, activeQuestions.length, missedQuestions);
-                if (quizId) {
-                    console.log("Save successful, quiz ID:", quizId);
-                    generateQRCode(quizId);
-                } else {
-                    console.error('Failed to save quiz result');
-                }
-            } else if (percentageScore >= 70) { // C- to B-
-                showSaveDropdown = true;
-            }
         }
     }
 
     function generateQRCode(id) {
-        if (!id) {
-            console.error('No ID provided to generateQRCode');
-            return;
-        }
-        resultId = id;
         const baseUrl = window.location.origin;
         const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
         const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
         url = `${finalBaseUrl}/result/${id}`;
+
         const qr = new QRCode({
             content: url,
             padding: 4,
@@ -314,6 +307,7 @@ let showQRModal = false;
             background: "#ffffff",
             ecl: "M"
         });
+
         qrCodeSvg = qr.svg();
         showAward = true;
     }
@@ -333,43 +327,21 @@ let showQRModal = false;
         startCountdown();
     }
 
-    async function handleSave() {
-        showSaveDropdown = false;
-        const formData = new FormData();
-        formData.append('score', score);
-        formData.append('totalQuestions', activeQuestions.length);
-        formData.append('missedQuestions', JSON.stringify(missedQuestions.map(q => q.question)));
-
-        const response = await fetch('?/saveQuizResult', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-        console.log("Raw save result:", result);
-
-        // Add detailed logging
-        if (result.type === 'success') {
-            console.log('Success response received');
-            if (result.data) {
-                console.log('Data object present:', result.data);
-                if (result.data.id) {
-                    console.log('ID found:', result.data.id);
-                    generateQRCode(result.data.id);
-                } else {
-                    console.error('No ID in data object:', result.data);
-                }
-            } else {
-                console.error('No data object in response');
+    // Handle form submission result
+    // Handle form submission result
+    function handleSave() {
+        return async ({ result }) => {
+            if (result.type === 'success' && result.id) {
+                generateQRCode(result.id);
+                showConfetti = true;
+                setTimeout(() => showConfetti = false, 5000);
+            } else if (result.type === 'error') {
+                alert('Failed to save quiz results. Please try again.');
             }
-        } else {
-            console.error('Failed to save quiz result:', result.error || 'No ID returned');
-        }
+        };
     }
 
-    function handleCancel() {
-        showSaveDropdown = false;
-    }
+
 </script>
 
 <div class="card w-full max-w-md mx-auto bg-base-100 shadow-xl relative">
@@ -377,11 +349,22 @@ let showQRModal = false;
         <div class="card-body p-6">
             {#if currentState === 'countdown'}
                 <div class="flex flex-col items-center justify-center h-48 relative">
-                    <h2 class="text-3xl font-bold mb-4">Get Ready!</h2>
-                    <p class="text-6xl font-bold text-primary">{countdownTime}</p>
+                    <h2 class="text-3xl font-bold mb-4" in:scale>Get Ready!</h2>
+                    <p class="text-6xl font-bold"
+                       in:scale={{delay: 200}}
+                       style="color: {countdownTime <= 2 ? 'var(--color-error)' : 'var(--color-primary)'};
+                              transform: scale({1 + (3 - countdownTime) * 0.1});">
+                        {countdownTime}
+                    </p>
+                    {#if countdownTime <= 3}
+                        <div class="fixed inset-0 pointer-events-none">
+                            <canvas use:confetti />
+                        </div>
+                    {/if}
                     <button
                         class="btn btn-sm btn-ghost hover:btn-error mt-8 normal-case font-normal"
                         on:click={() => dispatch('escape')}
+                        in:scale={{delay: 400}}
                     >
                         <span class="flex items-center gap-1">
                             🏃‍♂️ I need more time to study!
@@ -405,10 +388,20 @@ let showQRModal = false;
                     </div>
                 {/if}
                 {#if currentQuestion}
-                    <h3 class="text-lg font-semibold mb-3">{currentQuestion.question}</h3>
+                    <div class="w-full flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold">{currentQuestion.question}</h3>
+                        {#if correctStreak >= 3}
+                            <div class="badge badge-accent animate-bounce" in:scale>
+                                🔥 {correctStreak} streak!
+                            </div>
+                        {/if}
+                    </div>
                     <div class="space-y-2 mb-4">
                         {#each currentQuestion.options as option, index}
-                            <label class="flex items-center p-2 rounded-lg hover:bg-base-200 cursor-pointer">
+                            <label
+                                class="flex items-center p-2 rounded-lg hover:bg-base-200 cursor-pointer transform transition-all duration-200 hover:scale-102"
+                                in:scale={{delay: index * 100}}
+                            >
                                 <input type="radio" name="answer" class="radio radio-primary radio-sm mr-2"
                                        bind:group={selectedAnswer} value={index} />
                                 <span class="text-sm">{option}</span>
@@ -440,6 +433,32 @@ let showQRModal = false;
                 <div class="p-4 rounded-lg bg-base-200 mb-6">
                     <p class="{feedback.class} text-lg leading-relaxed">{feedback.message}</p>
                 </div>
+
+                {#if (score / activeQuestions.length) >= 0.8}
+                    <form
+                        method="POST"
+                        action="?/saveQuiz"
+                        use:enhance={handleSave}
+                        class="w-full"
+                    >
+                        <input type="hidden" name="score" value={score} />
+                        <input type="hidden" name="totalQuestions" value={activeQuestions.length} />
+                        <input type="hidden" name="missedQuestions" value={JSON.stringify(missedQuestions)} />
+
+                        <button type="submit" class="{buttonClass} w-full mb-4">
+                            Get Your Certificate
+                        </button>
+                    </form>
+                {/if}
+
+                <div class="flex gap-4">
+                    <button class={buttonClass} on:click={restartQuiz}>
+                        Try Again
+                    </button>
+                    <button class={buttonClass} on:click={() => dispatch('escape')}>
+                        Exit
+                    </button>
+                </div>
             {/if}
         </div>
     {:else}
@@ -449,6 +468,14 @@ let showQRModal = false;
                 <p class="text-xl mb-6 text-white">This certifies that you have completed the "Am I The Idiot?" quiz</p>
                 <div class="mb-6">
                     <p class="text-2xl font-bold text-white">Score: {score}/{questions.length}</p>
+                </div>
+                <div class="alert alert-info mt-4 bg-white/20 text-white border-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div>
+                        <p class="font-bold">Save your verification code!</p>
+                        <p class="font-mono bg-white/10 p-2 rounded mt-2">{result.verificationToken}</p>
+                        <p class="text-sm mt-2">You'll need this to claim your result on the leaderboard.</p>
+                    </div>
                 </div>
                 {#if url}
                     <div class="mb-4">
@@ -464,19 +491,14 @@ let showQRModal = false;
             </div>
         </div>
     {/if}
-    {#if showSaveDropdown}
-        <div class="dropdown-background" role="button" tabindex="0" on:click={handleCancel} on:keydown={e => e.key === 'Escape' && handleCancel()}>
-            <div class="dropdown-content" role="dialog" aria-modal="true" in:fly={{ y: 200 }} out:fly={{ y: 200 }} on:click|stopPropagation>
-                <h2 class="text-xl font-bold mb-4">Save Your Results?</h2>
-                <p class="mb-4">Your score is between C- and B-. Do you want to save your results?</p>
-                <div class="flex justify-end space-x-4">
-                    <button class={buttonClass} on:click={handleCancel}>Cancel</button>
-                    <button class={buttonClass} on:click={handleSave}>Save</button>
-                </div>
-            </div>
-        </div>
-    {/if}
+
 </div>
+
+{#if showConfetti}
+    <div class="fixed inset-0 pointer-events-none">
+        <canvas use:confetti />
+    </div>
+{/if}
 
 <style>
     .timer {

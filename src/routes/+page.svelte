@@ -16,13 +16,11 @@ let loading = true;
 
 try {
   if (!error && Array.isArray(data.questions)) {
-    console.log(`Processing ${data.questions.length} questions`);
     questions = data.questions.map(q => ({
       question: q.question,
       options: q.options,
       correctIndex: q.correct_index
     }));
-    console.log(`Processed ${questions.length} questions`);
   } else {
     console.error('Invalid questions data:', data);
     error = 'Failed to load questions';
@@ -43,7 +41,6 @@ function startQuiz() {
   showLearnMoreContent = false;
   showQuizContainer = true;
   showNewContainer = false;
-
 }
 
 function showLearnMore() {
