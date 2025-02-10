@@ -219,7 +219,7 @@ function formatLearnMoreText(item) {
           <Quiz
             {questions}
             timeLimit={60}
-            numQuestions={155}
+            numQuestions={15}
             buttonClass="btn glass text-primary-content border-primary-content"
             on:escape={goBackToInfo}
           />
