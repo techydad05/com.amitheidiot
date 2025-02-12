@@ -1,14 +1,14 @@
 <script>
   // @ts-nocheck
 
-  import Quiz from '../components/Quiz.svelte';
   import { fly, fade } from 'svelte/transition';
   import { onMount } from 'svelte';
-  import Main from '../components/Main.svelte';
-  import Menu from '../components/Menu.svelte';
-  import AdminMenu from '../components/AdminMenu.svelte';
-  import WordHistory from '../components/WordHistory.svelte';
-  import DifficultySelect from '../components/DifficultySelect.svelte';
+  import Quiz from '$lib/components/Quiz.svelte';
+  import Main from '$lib/components/Main.svelte';
+  import Menu from '$lib/components/Menu.svelte';
+  import AdminMenu from '$lib/components/AdminMenu.svelte';
+  import WordHistory from '$lib/components/WordHistory.svelte';
+  import DifficultySelect from '$lib/components/DifficultySelect.svelte';
 
   /** @type {import('./$types').PageData} */
   export let data;
