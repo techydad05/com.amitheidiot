@@ -1,11 +1,12 @@
 <script>
     // @ts-nocheck
-    import { fade, fly, scale } from 'svelte/transition';
+    import { fade, fly, scale, blur } from 'svelte/transition';
     import { createEventDispatcher, onMount } from 'svelte';
     import { enhance } from '$app/forms';
     import QRCode from 'qrcode-svg';
     import { confetti } from '@neoconfetti/svelte';
     import { page } from '$app/stores';
+    import { elasticOut, quintOut } from 'svelte/easing';
 
     export let questions = [];
     export let timeLimit = 30; // in seconds
@@ -235,10 +236,12 @@
         countdownTime = 5;
         countdownTimer = setInterval(() => {
             countdownTime--;
-            if (countdownTime <= 0) {
+            if (countdownTime < 0) {
                 clearInterval(countdownTimer);
-                currentState = 'quiz';
-                startTimer();
+                setTimeout(() => {
+                    currentState = 'quiz';
+                    startTimer();
+                }, 1000); // Give time for the GO! animation
             }
         }, 1000);
     }
@@ -385,25 +388,54 @@
 
 </script>
 
+<style>
+    .countdown-number {
+        left: 50%;
+        transform-origin: center;
+        transform: translateX(-50%);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    :global(.countdown-number.text-success) {
+        text-shadow: 0 0 30px rgba(72, 187, 120, 0.5);
+    }
+
+    :global(.countdown-number.text-error) {
+        text-shadow: 0 0 30px rgba(245, 101, 101, 0.5);
+    }
+</style>
+
 <div class="card w-full max-w-md mx-auto bg-base-100 shadow-xl relative">
     {#if !showAward}
         <div class="card-body p-6">
             {#if currentState === 'countdown'}
-                <div class="flex flex-col items-center justify-center h-48 relative">
-                    <h2 class="text-3xl font-bold mb-4" in:scale>Get Ready!</h2>
-                    <p class="text-6xl font-bold"
-                       in:scale={{delay: 200}}
-                       style="color: {countdownTime <= 2 ? 'var(--color-error)' : 'var(--color-primary)'};
-                              transform: scale({1 + (3 - countdownTime) * 0.1});">
-                        {countdownTime}
-                    </p>
-                    {#if countdownTime <= 3}
-                        <div class="fixed inset-0 pointer-events-none">
-                            <canvas use:confetti></canvas>
-                        </div>
-                    {/if}
+                <div class="flex flex-col items-center justify-center h-64 relative overflow-visible">
+                    <h2 class="text-3xl font-bold mb-8" 
+                        in:scale={{ duration: 600, easing: elasticOut }}
+                    >
+                        Get Ready!
+                    </h2>
+                    {#key countdownTime}
+                        {#if countdownTime > 0}
+                            <p class="text-8xl font-bold transform-gpu countdown-number absolute z-10 {countdownTime <= 2 ? 'text-error' : 'text-primary'}"
+                                in:scale={{ duration: 600, easing: elasticOut }}
+                                out:blur={{ duration: 300 }}
+                                style="transform: scale({2 + (5 - countdownTime) * 0.5}) translateX(-50%);"
+                            >
+                                {countdownTime}
+                            </p>
+                        {:else}
+                            <p class="text-8xl font-bold text-success transform-gpu countdown-number absolute z-10"
+                                in:scale={{ duration: 800, easing: elasticOut }}
+                                style="transform: scale(3);"
+                            >
+                                GO!
+                            </p>
+                        {/if}
+                    {/key}
                     <button
-                        class="btn btn-sm btn-ghost hover:btn-error mt-8 normal-case font-normal"
+                        class="btn btn-sm btn-ghost hover:btn-error mt-48 normal-case font-normal"
                         on:click={() => dispatch('escape')}
                         in:scale={{delay: 400}}
                     >
