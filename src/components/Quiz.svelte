@@ -5,6 +5,7 @@
     import { enhance } from '$app/forms';
     import QRCode from 'qrcode-svg';
     import { confetti } from '@neoconfetti/svelte';
+    import { page } from '$app/stores';
 
     export let questions = [];
     export let timeLimit = 30; // in seconds
@@ -305,8 +306,8 @@
         console.log('Generating QR code for token:', tokenString);
 
         // Create URL that will open results page with verification code
-        const baseUrl = 'http://192.168.4.36:5173'; // Using IP instead of localhost
-        const resultsUrl = `${baseUrl}/results?verify=${tokenString}`;
+        const origin = $page.url.origin; // This will automatically use the correct host
+        const resultsUrl = `${origin}/results?verify=${tokenString}`;
         console.log('Generated results URL:', resultsUrl);
 
         // Generate QR code with the results URL
@@ -337,6 +338,9 @@
         url = '';
         result = { verificationToken: null };
         showConfetti = false;
+        correctStreak = 0;
+        showStreakMessage = '';
+        clearTimeout(streakTimeout);
         // Re-initialize questions to get a new random set
         initializeQuestions();
         dispatch('restartQuiz');
