@@ -37,23 +37,47 @@
   }
 
   function getGradientClass(rank) {
-    if (rank === 1) return "bg-gradient-to-r from-yellow-300 to-yellow-500";
-    if (rank === 2) return "bg-gradient-to-r from-gray-300 to-gray-500";
-    if (rank === 3) return "bg-gradient-to-r from-amber-600 to-amber-800";
+    if (rank === 1) return "bg-gradient-to-r from-yellow-100 to-yellow-300 text-primary-content";
+    if (rank === 2) return "bg-gradient-to-r from-gray-100 to-gray-300";
+    if (rank === 3) return "bg-gradient-to-r from-amber-100 to-amber-300";
     return "";
   }
 
   let mounted = false;
-  onMount(() => {
-    mounted = true;
-  });
-
   let verificationModalOpen = false;
   let activeResultId = null;
   let verificationCode = '';
   let username = '';
   let verifying = false;
   let error = '';
+
+  // Handle URL parameters for verification
+  onMount(() => {
+    mounted = true;
+    
+    // Check for verification code in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const verifyToken = urlParams.get('verify');
+    
+    if (verifyToken) {
+      console.log('Found verification token:', verifyToken);
+      verificationCode = verifyToken;
+      
+      // Find the matching result
+      const matchingResult = results.find(r => r.verification_token === verifyToken);
+      if (matchingResult) {
+        console.log('Found matching result:', matchingResult);
+        activeResultId = matchingResult.id;
+        verificationModalOpen = true;
+      } else {
+        console.error('No matching result found for token:', verifyToken);
+      }
+      
+      // Clean up URL without refreshing
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  });
 
   async function verifyAndClaim() {
     if (!verificationCode || !username) {
@@ -137,11 +161,10 @@
           <table class="table table-zebra">
             <thead>
               <tr>
-                <th>Rank</th>
-                <th>Score</th>
-                <th>Percentile</th>
-                <th class="hidden sm:table-cell">Date</th>
-                <th class="hidden md:table-cell">ID</th>
+                <th class="w-20">Rank</th>
+                <th class="w-1/2">Player</th>
+                <th class="w-32">Score</th>
+                <th class="hidden sm:table-cell w-32">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -173,33 +196,36 @@
                   </td>
                   <td>
                     <div class="flex items-center gap-2">
-                      <span>{result.percentage}%</span>
-                      <span class="text-xl">{getEmoji(result.percentage)}</span>
+                      {#if result.is_claimed}
+                        <span class="text-lg font-bold text-primary tracking-wide">{result.username}</span>
+                      {:else}
+                        <div class="flex items-center gap-3">
+                          <span class="opacity-50">Unclaimed</span>
+                          <button
+                            class="btn btn-sm btn-primary btn-outline whitespace-nowrap"
+                            on:click={() => {
+                              activeResultId = result.id;
+                              verificationModalOpen = true;
+                            }}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            Claim Result
+                          </button>
+                        </div>
+                      {/if}
                     </div>
                   </td>
                   <td>
-                    <div class="radial-progress text-primary" style="--value:{result.percentile}; --size:2rem;">
-                      {result.percentile}%
+                    <div class="flex items-center gap-2">
+                      <span class="text-lg">{result.percentage}%</span>
+                      <span class="text-2xl">{getEmoji(result.percentage)}</span>
                     </div>
                   </td>
                   <td class="hidden sm:table-cell">
                     {new Date(result.created_at).toLocaleDateString()}
-                  </td>
-                  <td class="hidden md:table-cell font-mono text-sm opacity-60">
-                    <div class="flex items-center gap-2">
-                      <span>{result.claimed_by || result.id}</span>
-                      {#if !result.is_claimed}
-                        <button
-                          class="btn btn-xs btn-ghost"
-                          on:click={() => {
-                            activeResultId = result.id;
-                            verificationModalOpen = true;
-                          }}
-                        >
-                          Claim
-                        </button>
-                      {/if}
-                    </div>
                   </td>
                 </tr>
               {/each}

@@ -44,7 +44,8 @@
     let missedQuestions = [];
     let url = '';
     let showConfetti = false;
-    let result = null;
+    let result = { verificationToken: null };
+    let userAnswers = [];
 
     const passingScore = 0.8; // 80% to pass
 
@@ -293,24 +294,34 @@
         }
     }
 
-    function generateQRCode(id) {
-        const baseUrl = window.location.origin;
-        const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
-        const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
-        url = `${finalBaseUrl}/result/${id}`;
+    function generateQRCode(token) {
+        if (!token) {
+            console.error('No token provided for QR code');
+            return;
+        }
 
+        // Ensure token is a string
+        const tokenString = String(token);
+        console.log('Generating QR code for token:', tokenString);
+
+        // Create URL that will open results page with verification code
+        const baseUrl = 'http://192.168.4.36:5173'; // Using IP instead of localhost
+        const resultsUrl = `${baseUrl}/results?verify=${tokenString}`;
+        console.log('Generated results URL:', resultsUrl);
+
+        // Generate QR code with the results URL
         const qr = new QRCode({
-            content: url,
+            content: resultsUrl,
             padding: 4,
             width: 256,
             height: 256,
             color: "#000000",
             background: "#ffffff",
-            ecl: "M"
+            ecl: "H" // Highest error correction for better scanning
         });
 
         qrCodeSvg = qr.svg();
-        showAward = true;
+        url = resultsUrl; // Store URL for display
     }
 
     function restartQuiz() {
@@ -320,8 +331,12 @@
         score = 0;
         userAnswers = [];
         missedQuestions = [];
-        correctStreak = 0;
-        showStreakMessage = '';
+        selectedAnswer = null;
+        showAward = false;
+        qrCodeSvg = '';
+        url = '';
+        result = { verificationToken: null };
+        showConfetti = false;
         // Re-initialize questions to get a new random set
         initializeQuestions();
         dispatch('restartQuiz');
@@ -330,15 +345,36 @@
 
     // Handle form submission result
     function handleSave() {
-        return async ({ result: actionResult }) => {
-            if (actionResult.type === 'success' && actionResult.id) {
-                result = actionResult; // Store the full result including verificationToken
-                generateQRCode(actionResult.id);
-                showConfetti = true;
-                setTimeout(() => showConfetti = false, 5000);
-            } else if (actionResult.type === 'error') {
+        return async ({ result: actionResult, error }) => {
+            console.log('Action result:', actionResult);
+            console.log('Action error:', error);
+
+            if (error) {
+                console.error('Failed to save quiz results:', error);
                 alert('Failed to save quiz results. Please try again.');
+                return;
             }
+
+            // Handle nested response from SvelteKit
+            const data = actionResult?.data || actionResult;
+            console.log('Processing response data:', data);
+
+            if (!data?.verificationToken) {
+                console.error('No verification token in response:', data);
+                alert('Failed to get verification token. Please try again.');
+                return;
+            }
+
+            result = {
+                type: 'success',
+                id: data.id,
+                verificationToken: data.verificationToken
+            };
+            console.log('Setting result:', result);
+            generateQRCode(result.verificationToken);
+            showAward = true;
+            showConfetti = true;
+            setTimeout(() => showConfetti = false, 5000);
         };
     }
 
@@ -468,27 +504,28 @@
                 <h2 class="text-3xl font-bold mb-4 text-white">Certificate of Completion</h2>
                 <p class="text-xl mb-6 text-white">This certifies that you have completed the "Am I The Idiot?" quiz</p>
                 <div class="mb-6">
-                    <p class="text-2xl font-bold text-white">Score: {score}/{questions.length}</p>
+                    <p class="text-2xl font-bold text-white">Score: {score}/{activeQuestions.length}</p>
                 </div>
-                <div class="alert alert-info mt-4 bg-white/20 text-white border-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <div>
-                        <p class="font-bold">Save your verification code!</p>
-                        <p class="font-mono bg-white/10 p-2 rounded mt-2">{result.verificationToken}</p>
-                        <p class="text-sm mt-2">You'll need this to claim your result on the leaderboard.</p>
-                    </div>
-                </div>
-                {#if url}
-                    <div class="mb-4">
-                        <p class="text-sm text-white bg-white/10 p-2 rounded break-all">{url}</p>
+                {#if result?.verificationToken}
+                    <div class="flex flex-col items-center gap-6">
+                        <div class="alert alert-info bg-white/20 text-white border-none max-w-sm">
+                            <div class="flex flex-col items-center w-full">
+                                <p class="font-bold text-lg mb-2">Your Verification Code</p>
+                                <p class="font-mono text-xl bg-white/10 p-3 rounded select-all w-full text-center tracking-wider">{result.verificationToken}</p>
+                                <p class="text-sm mt-2">Use this code to claim your result on the leaderboard</p>
+                            </div>
+                        </div>
+
+                        {#if qrCodeSvg}
+                            <div class="text-center">
+                                <p class="text-white mb-2">Scan to copy code:</p>
+                                <div class="bg-white p-4 rounded-lg inline-block shadow-lg">
+                                    {@html qrCodeSvg}
+                                </div>
+                            </div>
+                        {/if}
                     </div>
                 {/if}
-                {#if qrCodeSvg}
-                    <div class="mb-6 bg-white p-4 rounded-lg inline-block">
-                        {@html qrCodeSvg}
-                    </div>
-                {/if}
-                <p class="text-sm text-white">Scan the QR code to view your results online</p>
             </div>
         </div>
     {/if}

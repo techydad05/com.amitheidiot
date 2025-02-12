@@ -43,7 +43,15 @@ export const actions = {
       const score = parseInt(formData.get("score"));
       const totalQuestions = parseInt(formData.get("totalQuestions"));
       const missedQuestions = JSON.parse(formData.get("missedQuestions"));
+      // Generate a UUID for verification
       const verificationToken = crypto.randomUUID();
+
+      console.log('Saving quiz result:', {
+        score,
+        totalQuestions,
+        missedQuestions,
+        verificationToken
+      });
 
       // Save to Supabase
       const { data, error } = await supabase
@@ -52,15 +60,22 @@ export const actions = {
           score,
           total_questions: totalQuestions,
           missed_questions: missedQuestions,
-          created_at: new Date().toISOString(),
-          verification_token: verificationToken,
-          is_claimed: false,
-          claimed_by: null
+          verification_token: verificationToken
+          // created_at, is_claimed, and username will use their default values
         })
         .select("id")
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      if (!data?.id) {
+        throw new Error('No ID returned from insert');
+      }
+
+      console.log('Quiz result saved:', { id: data.id, verificationToken });
 
       return {
         type: "success",
@@ -68,10 +83,8 @@ export const actions = {
         verificationToken
       };
     } catch (error) {
-      return {
-        type: "error",
-        error: "Failed to save quiz results",
-      };
+      console.error('Failed to save quiz result:', error);
+      throw error; // Let SvelteKit handle the error response
     }
   },
 };

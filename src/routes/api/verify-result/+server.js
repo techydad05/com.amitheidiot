@@ -32,7 +32,7 @@ export async function POST({ request }) {
     const { data: existingUsername } = await supabase
       .from("quiz_results")
       .select("id")
-      .eq("claimed_by", username)
+      .eq("username", username)
       .single();
 
     if (existingUsername) {
@@ -47,7 +47,7 @@ export async function POST({ request }) {
       .from("quiz_results")
       .update({
         is_claimed: true,
-        claimed_by: username
+        username: username
       })
       .eq("id", resultId);
 
