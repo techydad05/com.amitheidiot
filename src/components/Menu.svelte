@@ -77,6 +77,22 @@
               </div>
             </div>
           </div>
+
+          <!-- Results Card -->
+          <div class="card bg-accent text-accent-content shadow-xl">
+            <div class="card-body items-center text-center p-4 sm:p-6">
+              <h3 class="card-title text-xl sm:text-2xl font-bold mb-2">View Results</h3>
+              <p class="text-sm sm:text-base mb-4">Check out the leaderboard and claim your quiz results.</p>
+              <div class="card-actions w-full">
+                <a
+                  href="/results"
+                  class="btn glass btn-accent btn-sm sm:btn-md md:btn-lg w-full text-accent-content border-accent-content hover:bg-secondary hover:border-secondary-content"
+                >
+                  Leaderboard →
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
