@@ -118,6 +118,14 @@
 
 <div class="min-h-screen bg-base-200 py-8 px-4">
   <div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+      <a href="/" class="btn btn-ghost gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+        </svg>
+        Back to Menu
+      </a>
+    </div>
     <div class="text-center mb-8">
       <h1 class="text-4xl font-bold mb-4" in:scale>Am I The Idiot? - Leaderboard</h1>
       <p class="text-lg opacity-80" in:fade={{ delay: 200 }}>

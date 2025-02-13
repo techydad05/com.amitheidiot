@@ -7,31 +7,79 @@ import { supabase } from "$lib/server/db.js";
  */
 export const load = async () => {
   try {
-    const { data, error } = await supabase
-      .from("citizenship_questions")
-      .select("*")
-      .order("id");
+    // Fetch questions and settings in parallel
+    const [questionsResult, settingsResult] = await Promise.all([
+      supabase.from("citizenship_questions").select("*").order("id"),
+      supabase.from("quiz_settings").select("*").single()
+    ]);
 
-    if (error) {
+    if (questionsResult.error) {
+      console.error('Failed to load questions:', questionsResult.error);
       return {
         questions: [],
-        error: "Failed to load questions",
+        settings: { numQuestions: 10, timeLimit: 30 },
+        error: "Failed to load questions"
       };
     }
 
+    // If settings don't exist, use defaults
+    const settings = settingsResult.error ? 
+      { numQuestions: 10, timeLimit: 30 } : 
+      settingsResult.data;
+
     return {
-      questions: data || [],
-      error: null,
+      questions: questionsResult.data || [],
+      settings,
+      error: null
     };
   } catch (err) {
+    console.error('Failed to fetch data:', err);
     return {
       questions: [],
-      error: "Failed to fetch questions",
+      settings: { numQuestions: 10, timeLimit: 30 },
+      error: "Failed to fetch data"
     };
   }
 };
 
 export const actions = {
+  saveSettings: async ({ request }) => {
+    const formData = await request.formData();
+    const num_questions = parseInt(formData.get('num_questions'));
+    const time_limit = parseInt(formData.get('time_limit'));
+
+    // First get the current settings row if it exists
+    const { data: currentSettings } = await supabase
+      .from('quiz_settings')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1)
+      .single();
+
+    let error;
+    if (currentSettings) {
+      // Update existing row
+      const result = await supabase
+        .from('quiz_settings')
+        .update({ num_questions, time_limit })
+        .eq('id', currentSettings.id);
+      error = result.error;
+    } else {
+      // Create first row if none exists
+      const result = await supabase
+        .from('quiz_settings')
+        .insert([{ num_questions, time_limit }]);
+      error = result.error;
+    }
+
+    if (error) {
+      console.error('Failed to save settings:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  },
+
   /**
    * Save quiz results to Supabase
    * @param {FormData} request.formData - Form data containing quiz results
