@@ -2,10 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
 
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Test the connection and log the result
 async function testConnection() {
@@ -23,4 +20,3 @@ async function testConnection() {
 testConnection();
 
 export { supabase };
-

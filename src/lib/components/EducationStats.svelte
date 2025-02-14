@@ -70,13 +70,14 @@
 </script>
 
 <div
-  class="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-base-300 bg-opacity-95 p-4 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
   transition:fade
   on:click|self={() => (show = false)}
 >
   <div
-    class="relative w-full max-w-4xl space-y-6 rounded-lg bg-base-100 p-6 shadow-xl"
-    in:fly={{ y: 20 }}
+    class="standard-modal-container"
+    in:fly={{ y: -50, duration: 500 }}
+    out:fade
   >
     <!-- Close button -->
     <button
@@ -146,3 +147,17 @@
     </div>
   </div>
 </div>
+
+<style global>
+  .standard-modal-container {
+    width: 100%;
+    max-width: 42rem;
+    max-height: 90vh;
+    padding: 1.5rem;
+    margin: auto;
+    overflow-y: auto;
+    background: theme(colors.base.100);
+    border-radius: theme(borderRadius.lg);
+    box-shadow: theme(boxShadow.xl);
+  }
+</style>
