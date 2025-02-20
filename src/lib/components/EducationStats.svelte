@@ -156,7 +156,7 @@
     padding: 1.5rem;
     margin: auto;
     overflow-y: auto;
-    background: theme(colors.base.100);
+    background: theme(colors.base-100);
     border-radius: theme(borderRadius.lg);
     box-shadow: theme(boxShadow.xl);
   }
