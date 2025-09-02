@@ -2,11 +2,12 @@
   import { onMount } from 'svelte';
   export let toggleContainer;
 
-  const primarySize = 'text-3xl md:text-8xl';
-  const secondarySize = 'text-2xl md:text-4xl';
-  const tertiarySize = 'text-2xl md:text-5xl';
-  const specialCharSize = 'text-2xl md:text-5xl';
-  const defaultSize = 'text-2xl md:text-4xl';
+  // Responsive text sizes optimized for space filling
+  const primarySize = 'text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl';
+  const secondarySize = 'text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl';
+  const tertiarySize = 'text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl';
+  const specialCharSize = 'text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl';
+  const defaultSize = 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl';
 
   let glowingWords = ['idiot', 'polis'];
   let glowPositions = { idiot: { x: 0, y: 0 }, polis: { x: 0, y: 0 } };
@@ -71,7 +72,7 @@
     return `text-shadow: ${pos.x}px ${pos.y}px 15px var(--color-primary)`;
   }
 
-  function applySpecificSizes(text, defaultSize = 'text-2xl md:text-4xl') {
+  function applySpecificSizes(text, defaultSize = 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl') {
     // Split by spaces but preserve parentheses and punctuation
     const tokens = text.split(/(\s+|\(|\)|,)/g);
     const specialWordsMap = new Map(specialWords.map((w) => [w.text.toLowerCase(), w]));
@@ -129,21 +130,21 @@
         const glowingStyle = special?.glow ? `style="${glowStyle(cleanToken)}"` : '';
 
         index++;
-        return `<span class="${size} word inline-block transform ${rotate} mx-1" ${glowingStyle}>${token}</span>`;
+        return `<span class="${size} word inline-block transform ${rotate} mx-0.5 sm:mx-1" ${glowingStyle}>${token}</span>`;
       })
       .join('');
   }
 
-  const sizedFullText = applySpecificSizes(fullText, 'text-2xl md:text-4xl');
+  const sizedFullText = applySpecificSizes(fullText, 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl');
 </script>
 
-<div class="word-container absolute inset-0 flex flex-wrap content-start p-2 opacity-20 md:p-4">
+<div class="word-container absolute inset-0 flex flex-wrap content-start justify-start items-start p-1 sm:p-2 md:p-3 lg:p-4 opacity-20 leading-tight">
   {@html sizedFullText}
 </div>
 
 <div class="relative z-10">
   <button
-    class="btn glass btn-primary btn-lg border-primary-content bg-secondary text-primary-content"
+    class="btn variant-filled-primary btn-xl"
     on:click={toggleContainer}
   >
     <span class="shimmer-text text-2xl">Are you the idiot?</span>

@@ -70,18 +70,22 @@
 </script>
 
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-surface-backdrop-token backdrop-blur-sm p-4 overflow-y-auto"
   transition:fade
+  role="dialog"
+  aria-modal="true"
   on:click|self={() => (show = false)}
+  on:keydown={(e) => e.key === 'Escape' && (show = false)}
 >
   <div
-    class="standard-modal-container"
+    class="w-full max-w-4xl max-h-[90vh] p-6 overflow-y-auto card variant-filled-surface shadow-xl"
     in:fly={{ y: -50, duration: 500 }}
     out:fade
+    role="document"
   >
     <!-- Close button -->
     <button
-      class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
+      class="btn-icon btn-icon-sm variant-filled-surface absolute right-2 top-2"
       on:click={() => (show = false)}
     >
       <svg
@@ -101,31 +105,31 @@
     </button>
 
     <div class="text-center">
-      <h2 class="mb-2 text-3xl font-bold text-primary">The Decline of American Education</h2>
-      <p class="text-lg text-base-content opacity-80">
+      <h2 class="mb-2 text-3xl font-bold text-primary-500">The Decline of American Education</h2>
+      <p class="text-lg opacity-80">
         A stark comparison between generations
       </p>
     </div>
 
     <div class="space-y-8">
       {#each stats as category}
-        <div class="rounded-lg bg-base-200 p-6">
-          <h3 class="mb-4 text-2xl font-bold text-secondary">{category.category}</h3>
+        <div class="card variant-soft-surface p-6">
+          <h3 class="mb-4 text-2xl font-bold text-secondary-500">{category.category}</h3>
           <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {#each category.comparisons as stat}
-              <div class="card bg-base-100 shadow-lg">
-                <div class="card-body p-4">
-                  <h4 class="card-title text-lg font-bold">{stat.title}</h4>
+              <div class="card variant-filled-surface shadow-lg">
+                <div class="p-4">
+                  <h4 class="text-lg font-bold mb-2">{stat.title}</h4>
                   <div class="space-y-2">
-                    <div class="rounded bg-error/10 p-2">
+                    <div class="card variant-soft-error p-2">
                       <p class="text-sm">
-                        <span class="font-bold text-error">Now:</span>
+                        <span class="font-bold text-error-500">Now:</span>
                         {stat.modern}
                       </p>
                     </div>
-                    <div class="rounded bg-success/10 p-2">
+                    <div class="card variant-soft-success p-2">
                       <p class="text-sm">
-                        <span class="font-bold text-success">Then:</span>
+                        <span class="font-bold text-success-500">Then:</span>
                         {stat.boomer}
                       </p>
                     </div>
@@ -140,7 +144,7 @@
     </div>
 
     <div class="mt-6 text-center">
-      <p class="text-sm italic text-base-content opacity-60">
+      <p class="text-sm italic opacity-60">
         These statistics highlight the growing challenges in education and economic mobility.
         Understanding this context is crucial for addressing modern civic participation.
       </p>
@@ -148,16 +152,4 @@
   </div>
 </div>
 
-<style global>
-  .standard-modal-container {
-    width: 100%;
-    max-width: 42rem;
-    max-height: 90vh;
-    padding: 1.5rem;
-    margin: auto;
-    overflow-y: auto;
-    background: theme(colors.base-100);
-    border-radius: theme(borderRadius.lg);
-    box-shadow: theme(boxShadow.xl);
-  }
-</style>
+

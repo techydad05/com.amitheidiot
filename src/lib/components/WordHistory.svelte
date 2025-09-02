@@ -70,28 +70,31 @@
     let text = section.text;
     section.highlight.forEach((word) => {
       const regex = new RegExp(`(${word})`, 'gi');
-      text = text.replace(regex, '<span class="text-primary font-semibold">$1</span>');
+      text = text.replace(regex, '<span class="text-primary-500 font-semibold">$1</span>');
     });
     return text;
   }
 </script>
 
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-base-300 bg-opacity-95 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-surface-backdrop-token backdrop-blur-sm"
   transition:fade
+  role="dialog"
+  aria-modal="true"
   on:click|self={onClose}
+  on:keydown={(e) => e.key === 'Escape' && onClose()}
 >
   <!-- Full-screen container -->
   <div class="flex h-full w-full flex-col md:p-4 lg:p-6">
     <!-- Main content container -->
     <div
-      class="relative flex h-full w-full flex-col overflow-hidden bg-base-100 shadow-xl md:rounded-lg md:max-h-[90vh]"
+      class="relative flex h-full w-full flex-col overflow-hidden variant-filled-surface shadow-xl md:rounded-container-token md:max-h-[90vh]"
     >
       <!-- Header section with fixed height -->
-      <div class="relative flex-none border-b border-base-300 p-4 md:p-6">
+      <div class="relative flex-none border-b border-surface-300-600-token p-4 md:p-6">
         <!-- Close button -->
         <button
-          class="btn btn-circle btn-ghost btn-sm absolute right-4 top-4 z-10 md:btn-md"
+          class="btn-icon btn-icon-sm variant-filled-surface absolute right-4 top-4 z-10"
           on:click={onClose}
         >
           <svg
@@ -111,7 +114,7 @@
         </button>
 
         <!-- Title -->
-        <h2 class="text-center text-3xl font-bold text-primary md:text-5xl lg:text-6xl">
+        <h2 class="text-center text-3xl font-bold text-primary-500 md:text-5xl lg:text-6xl">
           The History of "Idiot"
         </h2>
       </div>
@@ -122,11 +125,11 @@
           {#each learnMoreContent as section}
             <!-- Card with full height on mobile -->
             <div
-              class="card h-full bg-base-200 shadow-lg transition-all duration-300 hover:shadow-xl"
+              class="card variant-filled-surface h-full shadow-lg transition-all duration-300 hover:shadow-xl"
             >
               <!-- Image section with larger height on desktop -->
               <div
-                class="relative aspect-[4/3] w-full overflow-hidden bg-base-300 {section.imageClass || ''}"
+                class="relative aspect-[4/3] w-full overflow-hidden bg-surface-300-600-token {section.imageClass || ''}"
                 style="background-image: url({section.image});
                        background-size: cover;
                        background-position: {section.imageClass === 'evolution-image' ? 'top' : 'center'};
@@ -134,14 +137,14 @@
                        transition: background-position 0.5s ease-in-out;"
                 role="img"
                 aria-label={section.title}
-              />
+              ></div>
 
               <!-- Content section -->
               <div class="flex h-full flex-col p-4 md:p-6">
                 <!-- Header with icon -->
                 <div class="mb-6 flex items-center gap-4">
                   <span class="text-4xl md:text-5xl">{section.icon}</span>
-                  <h3 class="text-2xl font-bold text-secondary md:text-3xl lg:text-4xl">
+                  <h3 class="text-2xl font-bold text-secondary-500 md:text-3xl lg:text-4xl">
                     {section.title}
                   </h3>
                 </div>
@@ -155,7 +158,7 @@
                 <div class="mt-auto space-y-4">
                   {#if openFacts.has(section)}
                     <div
-                      class="rounded-lg bg-primary p-4 text-primary-content shadow-lg md:p-6"
+                      class="card variant-filled-primary p-4 shadow-lg md:p-6"
                       in:fly={{ y: 20, duration: 300 }}
                       out:fade
                     >
@@ -166,7 +169,7 @@
                     </div>
                   {/if}
                   <button
-                    class="btn btn-primary w-full"
+                    class="btn variant-filled-primary w-full"
                     on:click={() => toggleFact(section)}
                   >
                     {openFacts.has(section) ? 'Hide Fun Fact' : 'Show Fun Fact'}
@@ -179,16 +182,16 @@
       </div>
 
       <!-- Footer with navigation -->
-      <div class="flex-none border-t border-base-300 p-4 md:p-6">
+      <div class="flex-none border-t border-surface-300-600-token p-4 md:p-6">
         <div class="mx-auto max-w-7xl">
           <button
-            class="btn glass btn-primary w-full border-primary-content text-primary-content hover:border-secondary-content hover:bg-secondary md:w-auto"
+            class="btn variant-ghost-primary w-full md:w-auto"
             on:click={onClose}
           >
             Back to Home
           </button>
           <button
-            class="btn glass btn-secondary mt-4 w-full border-secondary-content text-secondary-content hover:border-primary-content hover:bg-primary md:ml-4 md:mt-0 md:w-auto"
+            class="btn variant-filled-secondary mt-4 w-full md:ml-4 md:mt-0 md:w-auto"
             on:click={onStartQuiz}
           >
             Take the Quiz →

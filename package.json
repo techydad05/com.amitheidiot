@@ -12,7 +12,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build"
+		"build-storybook": "storybook build",
+		"seed": "node seed-database.js"
 	},
 	"devDependencies": {
 		"@bonosoft/sveltekit-qrcode": "^0.0.3",
@@ -30,16 +31,14 @@
 		"@sveltejs/adapter-node": "^5.2.0",
 		"@sveltejs/kit": "^2.5.18",
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
-		"@tailwindcss/typography": "^0.5.13",
+		"@tailwindcss/typography": "^0.5.16",
 		"@types/eslint": "^8.56.10",
 		"autoprefixer": "^10.4.19",
-		"daisyui": "^4.12.10",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.42.0",
 		"globals": "^15.8.0",
 		"gsap": "^3.12.5",
-		"pg": "^8.12.0",
 		"postcss": "^8.4.39",
 		"prettier": "^3.3.3",
 		"prettier-plugin-svelte": "^3.2.6",
@@ -53,8 +52,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@floating-ui/dom": "^1.7.4",
 		"@neoconfetti/svelte": "^2.2.1",
-		"@supabase/supabase-js": "^2.48.1",
+		"@skeletonlabs/skeleton": "^2.10.2",
+		"@skeletonlabs/tw-plugin": "^0.4.0",
+		"@tailwindcss/forms": "^0.5.10",
+		"better-sqlite3": "^9.4.3",
 		"qrcode-svg": "^1.1.0",
 		"theme-change": "^2.5.0"
 	}

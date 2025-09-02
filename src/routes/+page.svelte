@@ -84,7 +84,7 @@
 
 
 <div
-  class="relative flex h-[100dvh] touch-manipulation select-none flex-col items-center justify-center overflow-hidden bg-base-200 px-4 md:px-20"
+  class="relative flex h-[100dvh] touch-manipulation select-none flex-col items-center justify-center overflow-hidden bg-surface-50-900-token px-4 md:px-20"
 >
   <AdminMenu settings={quizSettings} />
   {#if !showNewContainer}
@@ -117,7 +117,7 @@
 
   {#if showQuizContainer}
     <div
-      class="absolute inset-0 z-30 flex flex-col items-center justify-center overscroll-contain bg-base-100 p-4"
+      class="absolute inset-0 z-30 flex flex-col items-center justify-center overscroll-contain bg-surface-100-800-token p-4"
       in:fly={{ y: 1000, duration: 200 }}
       out:fly={{ y: 1000, duration: 200 }}
     >
@@ -126,7 +126,7 @@
           {questions}
           timeLimit={currentQuizSettings.time_limit}
           numQuestions={currentQuizSettings.num_questions}
-          buttonClass="btn glass text-primary-content border-primary-content"
+          buttonClass="btn variant-filled-primary"
           on:escape={goBackToInfo}
         />
       </div>

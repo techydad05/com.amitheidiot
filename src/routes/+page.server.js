@@ -1,35 +1,28 @@
 // @ts-nocheck
-import { supabase } from "$lib/server/db.js";
+import { dbHelpers } from "$lib/server/db.js";
 
 /**
- * Load quiz questions from Supabase
- * @returns {Promise<{questions: Array, error: string|null}>}
+ * Load quiz questions from SQLite database
+ * @returns {Promise<{questions: Array, settings: Object, error: string|null}>}
  */
 export const load = async () => {
   try {
-    // Fetch questions and settings in parallel
-    const [questionsResult, settingsResult] = await Promise.all([
-      supabase.from("citizenship_questions").select("*").order("id"),
-      supabase.from("quiz_settings").select("*").single()
-    ]);
+    const rawQuestions = dbHelpers.getQuestions();
+    const settings = dbHelpers.getSettings() || { num_questions: 10, time_limit: 30 };
 
-    if (questionsResult.error) {
-      console.error('Failed to load questions:', questionsResult.error);
-      return {
-        questions: [],
-        settings: { numQuestions: 10, timeLimit: 30 },
-        error: "Failed to load questions"
-      };
-    }
-
-    // If settings don't exist, use defaults
-    const settings = settingsResult.error ? 
-      { numQuestions: 10, timeLimit: 30 } : 
-      settingsResult.data;
+    // Transform questions to match expected format
+    const questions = rawQuestions.map(q => ({
+      question: q.question,
+      options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
+      correct_index: q.correct_answer
+    }));
 
     return {
-      questions: questionsResult.data || [],
-      settings,
+      questions: questions || [],
+      settings: {
+        numQuestions: settings.num_questions,
+        timeLimit: settings.time_limit
+      },
       error: null
     };
   } catch (err) {
@@ -44,44 +37,22 @@ export const load = async () => {
 
 export const actions = {
   saveSettings: async ({ request }) => {
-    const formData = await request.formData();
-    const num_questions = parseInt(formData.get('num_questions'));
-    const time_limit = parseInt(formData.get('time_limit'));
+    try {
+      const formData = await request.formData();
+      const num_questions = parseInt(formData.get('num_questions'));
+      const time_limit = parseInt(formData.get('time_limit'));
 
-    // First get the current settings row if it exists
-    const { data: currentSettings } = await supabase
-      .from('quiz_settings')
-      .select('id')
-      .order('id', { ascending: false })
-      .limit(1)
-      .single();
+      dbHelpers.updateSettings(num_questions, time_limit);
 
-    let error;
-    if (currentSettings) {
-      // Update existing row
-      const result = await supabase
-        .from('quiz_settings')
-        .update({ num_questions, time_limit })
-        .eq('id', currentSettings.id);
-      error = result.error;
-    } else {
-      // Create first row if none exists
-      const result = await supabase
-        .from('quiz_settings')
-        .insert([{ num_questions, time_limit }]);
-      error = result.error;
-    }
-
-    if (error) {
+      return { success: true };
+    } catch (error) {
       console.error('Failed to save settings:', error);
       return { success: false, error: error.message };
     }
-
-    return { success: true };
   },
 
   /**
-   * Save quiz results to Supabase
+   * Save quiz results to SQLite database
    * @param {FormData} request.formData - Form data containing quiz results
    * @returns {Promise<{type: string, id?: string, error?: string}>}
    */
@@ -90,44 +61,28 @@ export const actions = {
       const formData = await request.formData();
       const score = parseInt(formData.get("score"));
       const totalQuestions = parseInt(formData.get("totalQuestions"));
-      const missedQuestions = JSON.parse(formData.get("missedQuestions"));
+      const timeTaken = parseInt(formData.get("timeTaken")) || 0;
+      const answers = JSON.parse(formData.get("answers") || "[]");
+      
       // Generate a UUID for verification
       const verificationToken = crypto.randomUUID();
 
       console.log('Saving quiz result:', {
         score,
         totalQuestions,
-        missedQuestions,
+        timeTaken,
+        answers: answers.length,
         verificationToken
       });
 
-      // Save to Supabase
-      const { data, error } = await supabase
-        .from("quiz_results")
-        .insert({
-          score,
-          total_questions: totalQuestions,
-          missed_questions: missedQuestions,
-          verification_token: verificationToken
-          // created_at, is_claimed, and username will use their default values
-        })
-        .select("id")
-        .single();
+      // Save to SQLite
+      dbHelpers.insertQuizResult(verificationToken, score, totalQuestions, timeTaken, answers);
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-
-      if (!data?.id) {
-        throw new Error('No ID returned from insert');
-      }
-
-      console.log('Quiz result saved:', { id: data.id, verificationToken });
+      console.log('Quiz result saved:', { id: verificationToken });
 
       return {
         type: "success",
-        id: data.id,
+        id: verificationToken,
         verificationToken
       };
     } catch (error) {

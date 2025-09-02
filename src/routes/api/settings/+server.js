@@ -1,52 +1,33 @@
 import { json } from '@sveltejs/kit';
-import { supabase } from '$lib/server/db';
+import { dbHelpers } from '$lib/server/db';
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from('quiz_settings')
-    .select('*')
-    .order('id', { ascending: false })
-    .limit(1)
-    .single();
-
-  if (error) {
-    // If table doesn't exist, create it and insert default values
-    if (error.code === '42P01') {
-      await supabase.rpc('create_quiz_settings_table');
-      const { data: newData, error: insertError } = await supabase
-        .from('quiz_settings')
-        .insert([{ num_questions: 3, time_limit: 60 }])
-        .select()
-        .single();
-
-      if (insertError) {
-        return json({ error: insertError.message }, { status: 500 });
-      }
-      return json(newData);
+  try {
+    const settings = dbHelpers.getSettings();
+    
+    if (!settings) {
+      // Return default settings if none exist
+      return json({ num_questions: 3, time_limit: 60 });
     }
+
+    return json(settings);
+  } catch (error) {
+    console.error('Error fetching settings:', error);
     return json({ error: error.message }, { status: 500 });
   }
-
-  return json(data);
 }
 
 export async function POST({ request }) {
-  const { num_questions, time_limit } = await request.json();
+  try {
+    const { num_questions, time_limit } = await request.json();
 
-  const { data, error } = await supabase
-    .from('quiz_settings')
-    .insert([
-      {
-        num_questions,
-        time_limit,
-      },
-    ])
-    .select()
-    .single();
-
-  if (error) {
+    dbHelpers.updateSettings(num_questions, time_limit);
+    
+    // Return the updated settings
+    const updatedSettings = dbHelpers.getSettings();
+    return json(updatedSettings);
+  } catch (error) {
+    console.error('Error updating settings:', error);
     return json({ error: error.message }, { status: 500 });
   }
-
-  return json(data);
 }

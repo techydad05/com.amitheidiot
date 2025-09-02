@@ -1,20 +1,17 @@
 // @ts-nocheck
-import { supabase } from "$lib/server/db.js";
+import { dbHelpers } from "$lib/server/db.js";
 import { error } from '@sveltejs/kit';
 
 export async function load({ params }) {
   try {
-    const { data, error: queryError } = await supabase
-      .from("quiz_results")
-      .select("*")
-      .eq("id", params.id)
-      .single();
+    const result = dbHelpers.getQuizResult(params.id);
 
-    if (queryError) throw queryError;
-    if (!data) throw error(404, 'Result not found');
+    if (!result) {
+      throw error(404, 'Result not found');
+    }
 
     return {
-      result: data
+      result
     };
   } catch (err) {
     console.error("Error loading quiz result:", err);

@@ -88,26 +88,30 @@
 </script>
 
 <!-- Invisible click area -->
-<div
-    class="fixed top-0 left-0 w-16 h-16 z-[9999]"
+<button
+    class="fixed top-0 left-0 w-16 h-16 z-[9999] opacity-0 cursor-default"
     on:click={handleClick}
-/>
+    aria-label="Admin menu trigger"
+></button>
 
 {#if show}
     <div
-        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        class="fixed inset-0 bg-surface-backdrop-token flex items-center justify-center z-50"
         transition:fade
+        role="dialog"
+        aria-modal="true"
         on:click|self={() => show = false}
+        on:keydown={(e) => e.key === 'Escape' && (show = false)}
     >
         <div
-            class="bg-base-100 p-6 rounded-lg shadow-xl max-w-md w-full mx-4"
-            on:click|stopPropagation
+            class="card variant-filled-surface p-6 shadow-xl max-w-md w-full mx-4"
+            role="document"
         >
             <h2 class="text-2xl font-bold mb-6">Quiz Settings</h2>
             
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4">
                 <label class="label" for="numQuestions">
-                    <span class="label-text">Number of Questions</span>
+                    <span class="text-sm font-medium">Number of Questions</span>
                 </label>
                 <input
                     type="number"
@@ -115,13 +119,13 @@
                     bind:value={numQuestions}
                     min="1"
                     max="20"
-                    class="input input-bordered w-full"
+                    class="input variant-form-material w-full"
                 />
             </div>
 
-            <div class="form-control w-full mb-6">
+            <div class="w-full mb-6">
                 <label class="label" for="timeLimit">
-                    <span class="label-text">Time Limit (seconds)</span>
+                    <span class="text-sm font-medium">Time Limit (seconds)</span>
                 </label>
                 <input
                     type="number"
@@ -129,60 +133,41 @@
                     bind:value={timeLimit}
                     min="10"
                     max="300"
-                    class="input input-bordered w-full"
+                    class="input variant-form-material w-full"
                 />
             </div>
 
-            <div class="form-control w-full mb-6">
+            <div class="w-full mb-6">
                 <label class="label" for="theme">
-                    <span class="label-text">Theme</span>
+                    <span class="text-sm font-medium">Theme</span>
                 </label>
                 <select 
-                    class="select select-bordered w-full" 
+                    class="select variant-form-material w-full" 
                     bind:value={currentTheme}
                     on:change={handleThemeChange}
                 >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="cupcake">Cupcake</option>
-                    <option value="bumblebee">Bumblebee</option>
-                    <option value="emerald">Emerald</option>
-                    <option value="corporate">Corporate</option>
-                    <option value="synthwave">Synthwave</option>
-                    <option value="retro">Retro</option>
-                    <option value="cyberpunk">Cyberpunk</option>
-                    <option value="valentine">Valentine</option>
-                    <option value="halloween">Halloween</option>
-                    <option value="garden">Garden</option>
-                    <option value="forest">Forest</option>
-                    <option value="aqua">Aqua</option>
-                    <option value="lofi">Lo-Fi</option>
-                    <option value="pastel">Pastel</option>
-                    <option value="fantasy">Fantasy</option>
-                    <option value="wireframe">Wireframe</option>
-                    <option value="black">Black</option>
-                    <option value="luxury">Luxury</option>
-                    <option value="dracula">Dracula</option>
-                    <option value="cmyk">CMYK</option>
-                    <option value="autumn">Autumn</option>
-                    <option value="business">Business</option>
-                    <option value="acid">Acid</option>
-                    <option value="lemonade">Lemonade</option>
-                    <option value="night">Night</option>
-                    <option value="coffee">Coffee</option>
-                    <option value="winter">Winter</option>
+                    <option value="skeleton">Skeleton</option>
+                    <option value="wintry">Wintry</option>
+                    <option value="modern">Modern</option>
+                    <option value="rocket">Rocket</option>
+                    <option value="seafoam">Seafoam</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="sahara">Sahara</option>
+                    <option value="hamlindigo">Hamlindigo</option>
+                    <option value="gold-nouveau">Gold Nouveau</option>
+                    <option value="crimson">Crimson</option>
                 </select>
             </div>
 
             <div class="flex justify-end gap-4">
                 <button
-                    class="btn btn-ghost"
+                    class="btn variant-ghost-surface"
                     on:click={() => show = false}
                 >
                     Cancel
                 </button>
                 <button
-                    class="btn btn-primary"
+                    class="btn variant-filled-primary"
                     on:click={saveSettings}
                 >
                     Save Changes

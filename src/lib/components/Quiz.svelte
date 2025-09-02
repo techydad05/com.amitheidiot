@@ -34,8 +34,7 @@
   }
 
   $: currentQuestion = activeQuestions[currentQuestionIndex] || null;
-  export let buttonClass =
-    'btn glass text-primary-content border-primary-content hover:bg-secondary hover:border-secondary-content';
+  export let buttonClass = 'btn variant-filled-primary';
 
   const dispatch = createEventDispatcher();
 
@@ -409,9 +408,9 @@ let isSaving = false;
   }
 </script>
 
-<div class="card relative mx-auto w-full max-w-md bg-base-100 shadow-xl">
+<div class="card relative mx-auto w-full max-w-md variant-filled-surface shadow-xl">
   {#if !showAward}
-    <div class="card-body p-6">
+    <div class="p-6">
       {#if currentState === 'countdown'}
         <div class="relative flex h-48 flex-col items-center justify-center gap-4">
           <h2 class="text-3xl font-bold">Get Ready!</h2>
@@ -421,7 +420,7 @@ let isSaving = false;
             </p>
           </div>
           <button
-            class="btn btn-ghost btn-sm font-normal normal-case hover:btn-error"
+            class="btn variant-ghost-error btn-sm"
             on:click={() => dispatch('escape')}
           >
             <span class="flex items-center gap-1"> 🏃‍♂️ I need more time to study! </span>
@@ -431,7 +430,7 @@ let isSaving = false;
 
         <div class="mb-2 flex items-center justify-between text-sm">
           <div class="flex items-center gap-4">
-            <button class="btn btn-ghost btn-sm gap-1" on:click={() => dispatch('escape')}>
+            <button class="btn variant-ghost-surface btn-sm gap-1" on:click={() => dispatch('escape')}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
@@ -448,12 +447,12 @@ let isSaving = false;
             </button>
           </div>
           <div class="flex items-center gap-4">
-            <div class="badge badge-neutral">
+            <div class="badge variant-filled-surface">
               Question {currentQuestionIndex + 1}/{activeQuestions.length}
             </div>
             {#if remainingTime > 0}
               <div 
-                class="badge {remainingTime <= 5 ? 'badge-error text-lg' : remainingTime <= 10 ? 'badge-warning' : 'badge-primary'} transition-all duration-300"
+                class="badge {remainingTime <= 5 ? 'variant-filled-error text-lg' : remainingTime <= 10 ? 'variant-filled-warning' : 'variant-filled-primary'} transition-all duration-300"
                 style="transform: scale({remainingTime <= 5 ? 1.5 : 1}); {remainingTime <= 5 ? 'animation: pulse 1s infinite;' : ''}"
               >
                 {remainingTime}s
@@ -461,15 +460,16 @@ let isSaving = false;
             {/if}
           </div>
         </div>
-        <progress class="progress progress-primary mb-4 w-full" value={progress} max="100"
-        ></progress>
+        <div class="mb-4 w-full bg-surface-300-600-token rounded-full h-2">
+          <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: {progress}%"></div>
+        </div>
         {#if showStreakMessage}
           <div class="mb-2 animate-bounce text-center text-lg font-semibold">
             {showStreakMessage}
           </div>
         {/if}
         {#if correctStreak >= 3}
-          <div class="mb-2 text-center text-sm text-primary">
+          <div class="mb-2 text-center text-sm text-primary-500">
             🔥 {correctStreak} Correct in a row! 🔥
           </div>
         {/if}
@@ -480,7 +480,7 @@ let isSaving = false;
           >
             <h3 class="text-lg font-semibold">{currentQuestion.question}</h3>
             {#if correctStreak >= 3}
-              <div class="badge badge-accent animate-bounce" in:scale>
+              <div class="badge variant-filled-tertiary animate-bounce" in:scale>
                 🔥 {correctStreak} streak!
               </div>
             {/if}
@@ -488,14 +488,14 @@ let isSaving = false;
           <div class="mb-4 space-y-2">
             {#each currentQuestion.options as option, index}
               <label
-                class="hover:scale-102 flex transform cursor-pointer items-center rounded-lg p-2 transition-all duration-200 hover:bg-base-200"
+                class="hover:scale-102 flex transform cursor-pointer items-center rounded-container-token p-2 transition-all duration-200 hover:variant-soft-surface"
                 in:fly={{ y: 20, duration: 400, delay: 300 + index * 100 }}
                 out:fly={{ y: 20, duration: 200, delay: index * 50 }}
               >
                 <input
                   type="radio"
                   name="answer"
-                  class="radio-primary radio radio-sm mr-2"
+                  class="radio mr-2"
                   bind:group={selectedAnswer}
                   value={index}
                 />
@@ -512,20 +512,20 @@ let isSaving = false;
           Submit
         </button>
       {:else if currentState === 'results'}
-        <h2 class="card-title mb-4 text-xl">Quiz Results</h2>
-        <div class="stats mb-6 w-full shadow">
-          <div class="stat">
-            <div class="stat-title">Your Score</div>
-            <div class="stat-value flex items-center justify-center gap-2">
+        <h2 class="mb-4 text-xl font-bold">Quiz Results</h2>
+        <div class="card variant-filled-primary mb-6 w-full p-4 shadow">
+          <div class="text-center">
+            <div class="text-sm opacity-80">Your Score</div>
+            <div class="flex items-center justify-center gap-2 text-3xl font-bold">
               {score}/{activeQuestions.length}
               <span class="text-4xl">{getEmojiReaction(score / activeQuestions.length)}</span>
             </div>
-            <div class="stat-desc">{Math.round((score / activeQuestions.length) * 100)}%</div>
+            <div class="text-sm opacity-80">{Math.round((score / activeQuestions.length) * 100)}%</div>
           </div>
         </div>
-        <div class="mb-4 text-center text-sm italic text-base-content/70">{getRandomFunFact()}</div>
+        <div class="mb-4 text-center text-sm italic opacity-70">{getRandomFunFact()}</div>
         {@const feedback = getFeedbackMessage(score / activeQuestions.length)}
-        <div class="mb-6 rounded-lg bg-base-200 p-4">
+        <div class="mb-6 rounded-container-token variant-soft-surface p-4">
           <p class="{feedback.class} text-lg leading-relaxed">{feedback.message}</p>
         </div>
 
@@ -537,7 +537,7 @@ let isSaving = false;
 
             <button type="submit" class="{buttonClass} mb-4 w-full" disabled={isSaving}>
               {#if isSaving}
-                <span class="loading loading-spinner loading-sm mr-2"></span>
+                <span class="animate-spin mr-2">⏳</span>
                 Generating Certificate...
               {:else}
                 Add to Leaderboard
@@ -553,10 +553,10 @@ let isSaving = false;
       {/if}
     </div>
   {:else}
-    <div class="card-body bg-gradient-to-br from-yellow-300 to-yellow-500 p-6" transition:fade>
+    <div class="bg-gradient-to-br from-yellow-300 to-yellow-500 p-6" transition:fade>
       <div class="text-center">
         <button 
-          class="btn btn-sm absolute top-2 left-2" 
+          class="btn variant-filled-surface btn-sm absolute top-2 left-2" 
           on:click={() => showAward = false}
         >
           ←
@@ -570,7 +570,7 @@ let isSaving = false;
         </div>
         {#if result?.verificationToken}
           <div class="flex flex-col items-center gap-6">
-            <div class="alert alert-info max-w-sm border-none bg-white/20 text-white">
+            <div class="card variant-soft-primary max-w-sm bg-white/20 text-white p-4">
               <div class="flex w-full flex-col items-center">
                 <p class="mb-2 text-lg font-bold">Your Verification Code</p>
                 <p

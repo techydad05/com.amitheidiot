@@ -1,21 +1,17 @@
 // @ts-nocheck
-import { supabase } from "$lib/server/db.js";
+import { dbHelpers } from "$lib/server/db.js";
 
 export const load = async () => {
   try {
-    const { data, error } = await supabase
-      .from("quiz_results")
-      .select("*")
-      .order("score", { ascending: false })
-      .order("created_at", { ascending: false });
+    const data = dbHelpers.getAllQuizResults();
 
-    if (error) {
-      console.error("Error fetching results:", error);
-      return {
-        results: [],
-        error: "Failed to load results"
-      };
-    }
+    // Sort by score (descending) then by created_at (descending)
+    data.sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
     // Calculate percentiles and add rank
     const results = data.map((result, index) => ({

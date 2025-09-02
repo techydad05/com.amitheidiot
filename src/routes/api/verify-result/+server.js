@@ -1,27 +1,22 @@
 // @ts-nocheck
-import { supabase } from "$lib/server/db.js";
+import { dbHelpers } from "$lib/server/db.js";
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request }) {
   try {
     const { resultId, verificationToken, username } = await request.json();
 
-    // Verify the token
-    const { data: existingResult, error: verifyError } = await supabase
-      .from("quiz_results")
-      .select("*")
-      .eq("id", resultId)
-      .eq("verification_token", verificationToken)
-      .single();
+    // Verify the token (in SQLite, the ID is the verification token)
+    const existingResult = dbHelpers.getQuizResult(resultId);
 
-    if (verifyError || !existingResult) {
+    if (!existingResult || resultId !== verificationToken) {
       return json({ 
         type: "error",
         error: "Invalid verification code"
       }, { status: 401 });
     }
 
-    if (existingResult.is_claimed) {
+    if (existingResult.is_verified) {
       return json({
         type: "error",
         error: "This result has already been claimed"
@@ -29,11 +24,7 @@ export async function POST({ request }) {
     }
 
     // Check if username is available
-    const { data: existingUsername } = await supabase
-      .from("quiz_results")
-      .select("id")
-      .eq("username", username)
-      .single();
+    const existingUsername = dbHelpers.usernameExists(username, resultId);
 
     if (existingUsername) {
       return json({
@@ -43,17 +34,7 @@ export async function POST({ request }) {
     }
 
     // Update the result with the username
-    const { error: updateError } = await supabase
-      .from("quiz_results")
-      .update({
-        is_claimed: true,
-        username: username
-      })
-      .eq("id", resultId);
-
-    if (updateError) {
-      throw updateError;
-    }
+    dbHelpers.updateQuizResultUsername(resultId, username);
 
     return json({
       type: "success",

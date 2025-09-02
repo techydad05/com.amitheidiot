@@ -50,7 +50,7 @@
   ];
 </script>
 
-<div class="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+<div class="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-surface-backdrop-token backdrop-blur-sm p-4">
   <div class="standard-modal-container">
     <div
       class="relative w-full max-w-[95vw] mx-4 md:max-w-4xl md:mx-0 max-h-[80vh] overflow-y-auto z-50"
@@ -58,7 +58,7 @@
     >
       <!-- Close button -->
       <button
-        class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
+        class="btn-icon btn-icon-sm variant-filled-surface absolute right-2 top-2"
         on:click={onBack}
       >
         <svg
@@ -78,8 +78,8 @@
       </button>
 
       <div class="text-center">
-        <h2 class="mb-2 text-3xl font-bold text-primary">Rate Your Knowledge</h2>
-        <p class="text-lg text-base-content opacity-80">
+        <h2 class="mb-2 text-3xl font-bold text-primary-500">Rate Your Knowledge</h2>
+        <p class="text-lg opacity-80">
           Be honest (or don't, we'll find out anyway)
         </p>
       </div>
@@ -87,19 +87,19 @@
       <div class="grid gap-6 md:grid-cols-3">
         {#each difficulties as difficulty}
           <div
-            class="card transition-all duration-300 hover:-translate-y-2 {difficulty.class}"
+            class="card variant-filled-{difficulty.id === 'humble' ? 'success' : difficulty.id === 'moderate' ? 'warning' : 'error'} transition-all duration-300 hover:-translate-y-2 cursor-pointer"
             role="button"
             on:click={() => onSelect(difficulty.settings)}
             on:keydown={(e) => e.key === 'Enter' && onSelect(difficulty.settings)}
             tabindex="0"
           >
-            <div class="card-body items-center p-6 text-center">
+            <div class="p-6 text-center">
               <span class="text-4xl">{difficulty.icon}</span>
-              <h3 class="card-title mb-2 text-xl font-bold">{difficulty.title}</h3>
+              <h3 class="mb-2 text-xl font-bold">{difficulty.title}</h3>
               <p class="mb-1 text-sm italic opacity-90">{difficulty.subtitle}</p>
               <p class="text-sm">{difficulty.description}</p>
-              <div class="card-actions mt-4">
-                <button class="btn btn-outline border-2 {difficulty.hoverClass}">
+              <div class="mt-4">
+                <button class="btn variant-outline-surface border-2">
                   Choose This Level
                 </button>
               </div>
@@ -108,24 +108,24 @@
         {/each}
       </div>
 
-      <div class="divider text-base-content/70 font-semibold my-8">OR TAKE THE ULTIMATE CHALLENGE</div>
+      <div class="divider opacity-70 font-semibold my-8">OR TAKE THE ULTIMATE CHALLENGE</div>
 
       <!-- Premium Challenge -->
-      <div class="card bg-secondary text-secondary-content w-full transition-all duration-300 hover:-translate-y-2">
-        <div class="card-body items-center p-6 text-center">
-          <div class="flex items-center gap-3">
+      <div class="card variant-filled-secondary w-full transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+        <div class="p-6 text-center">
+          <div class="flex items-center gap-3 justify-center">
             <span class="text-4xl">👑</span>
-            <h3 class="card-title text-2xl font-bold">"Put Your Money Where Your Brain Is"</h3>
+            <h3 class="text-2xl font-bold">"Put Your Money Where Your Brain Is"</h3>
           </div>
           <p class="mb-1 text-lg italic opacity-90">The Ultimate Challenge - Leaderboard Access</p>
           <p class="text-base">Think you're smart enough for the leaderboard? Prove it with a $1 entry fee. All questions, 15 seconds each, no room for idiots.</p>
-          <div class="card-actions mt-4 w-full">
+          <div class="mt-4 w-full">
             <button 
-              class="btn btn-block bg-secondary text-secondary-content border-none font-bold shadow-lg hover:scale-105 hover:brightness-110"
+              class="btn variant-filled-tertiary w-full font-bold shadow-lg hover:scale-105"
               on:click={() => onSelect({
                 num_questions: questions.length,
                 time_limit: 15,
-                theme: 'luxury',
+                theme: 'skeleton',
                 isPremium: true
               })}
             >
@@ -138,7 +138,7 @@
         </div>
       </div>
 
-      <div class="mt-6 text-center text-sm italic text-base-content opacity-60">
+      <div class="mt-6 text-center text-sm italic opacity-60">
         Tip: The more confident you are, the less time you'll get per question.
         Choose wisely!
       </div>
