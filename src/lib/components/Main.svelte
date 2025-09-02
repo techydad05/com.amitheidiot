@@ -142,224 +142,127 @@
   {@html sizedFullText}
 </div>
 
-<!-- Epic Interactive Button with Greek Temple Design -->
+<!-- Modern Greek-Inspired Button -->
 <div class="relative z-10 flex flex-col items-center">
-  <!-- Floating Greek Columns Animation -->
-  <div class="absolute -top-20 left-1/2 transform -translate-x-1/2 opacity-30">
-    <div class="flex space-x-8 animate-float">
-      <div class="column-pillar">🏛️</div>
-      <div class="column-pillar delay-1">🏛️</div>
-      <div class="column-pillar delay-2">🏛️</div>
-    </div>
-  </div>
-
-  <!-- Main Epic Button -->
-  <div class="epic-button-container group cursor-pointer" on:click={toggleContainer}>
-    <!-- Glowing Aura -->
-    <div class="absolute inset-0 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 rounded-full blur-xl opacity-0 group-hover:opacity-75 transition-all duration-700 scale-110 animate-pulse-glow"></div>
+  <!-- Main Button Container -->
+  <div class="modern-button-container group cursor-pointer" on:click={toggleContainer}>
+    <!-- Subtle Glow Effect -->
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-amber-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 scale-110"></div>
     
-    <!-- Ancient Scroll Background -->
-    <div class="relative bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-200 dark:from-amber-900 dark:via-yellow-800 dark:to-amber-700 rounded-2xl p-8 shadow-2xl border-4 border-amber-300 dark:border-amber-600 transform group-hover:scale-105 transition-all duration-500 group-hover:rotate-1">
+    <!-- Main Button -->
+    <div class="relative bg-white/10 dark:bg-black/20 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 dark:border-white/10 transform group-hover:scale-[1.02] transition-all duration-300 group-hover:-translate-y-1">
       
-      <!-- Ancient Greek Border Pattern -->
-      <div class="absolute inset-2 border-2 border-amber-400 dark:border-amber-500 rounded-xl opacity-50" style="border-image: repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px) 2;"></div>
+      <!-- Subtle Greek Pattern -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent rounded-t-3xl"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent rounded-b-3xl"></div>
       
-      <!-- Floating Laurel Wreaths -->
-      <div class="absolute -top-4 -left-4 text-3xl animate-spin-slow opacity-70">🏆</div>
-      <div class="absolute -top-4 -right-4 text-3xl animate-spin-slow-reverse opacity-70">🏆</div>
-      
-      <!-- Main Question Text -->
+      <!-- Content -->
       <div class="relative text-center">
-        <div class="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2 tracking-widest uppercase">
-          Ancient Greek Challenge
-        </div>
+        <!-- Minimal Greek Icon -->
+        <div class="text-4xl mb-4 opacity-60 group-hover:opacity-80 transition-opacity duration-300">🏛️</div>
         
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800 dark:from-amber-300 dark:via-yellow-200 dark:to-amber-400 bg-clip-text text-transparent mb-4 leading-tight">
-          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300">Are</span>
-          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300 delay-75">You</span>
-          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300 delay-150">The</span>
-          <span class="inline-block transform group-hover:scale-125 transition-transform duration-300 delay-225 text-red-600 dark:text-red-400 drop-shadow-lg">IDIOT</span>
-          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300 delay-300">?</span>
+        <!-- Main Question -->
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+          <span class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-white dark:via-amber-200 dark:to-white bg-clip-text text-transparent">
+            Are You The
+          </span>
+          <br>
+          <span class="bg-gradient-to-r from-red-600 via-red-500 to-red-600 bg-clip-text text-transparent font-black tracking-tight group-hover:tracking-wide transition-all duration-300">
+            IDIOT
+          </span>
+          <span class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-white dark:via-amber-200 dark:to-white bg-clip-text text-transparent">
+            ?
+          </span>
         </h1>
         
-        <!-- Greek Translation -->
-        <div class="text-lg md:text-xl text-amber-700 dark:text-amber-300 font-medium mb-4 italic">
+        <!-- Greek Translation - Subtle -->
+        <div class="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-light mb-6 italic opacity-70 group-hover:opacity-100 transition-opacity duration-300">
           εἰσὶ σὺ ὁ ἰδιώτης;
         </div>
         
-        <!-- Subtitle -->
-        <div class="text-base md:text-lg text-amber-600 dark:text-amber-400 mb-6 max-w-md mx-auto leading-relaxed">
-          Test your knowledge of democracy and citizenship like the ancient Greeks intended
+        <!-- Modern CTA -->
+        <div class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full text-white font-semibold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+          <span>Test Your Knowledge</span>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
         </div>
         
-        <!-- Interactive Elements -->
-        <div class="flex justify-center items-center space-x-4 mb-4">
-          <div class="animate-bounce text-2xl">⚡</div>
-          <div class="px-4 py-2 bg-amber-200 dark:bg-amber-800 rounded-full text-sm font-semibold text-amber-800 dark:text-amber-200 group-hover:bg-amber-300 dark:group-hover:bg-amber-700 transition-colors duration-300">
-            Click to Begin Your Trial
-          </div>
-          <div class="animate-bounce text-2xl delay-300">⚡</div>
-        </div>
-        
-        <!-- Floating Wisdom Quote -->
-        <div class="text-xs md:text-sm text-amber-600 dark:text-amber-400 italic opacity-75 group-hover:opacity-100 transition-opacity duration-300">
-          "The unexamined life is not worth living" - Socrates
+        <!-- Subtle Tagline -->
+        <div class="text-sm text-slate-500 dark:text-slate-400 mt-4 opacity-60 group-hover:opacity-80 transition-opacity duration-300">
+          From ancient Athens to modern democracy
         </div>
       </div>
       
-      <!-- Corner Decorations -->
-      <div class="absolute top-2 left-2 text-amber-500 text-xl opacity-50">🌿</div>
-      <div class="absolute top-2 right-2 text-amber-500 text-xl opacity-50">🌿</div>
-      <div class="absolute bottom-2 left-2 text-amber-500 text-xl opacity-50">🌿</div>
-      <div class="absolute bottom-2 right-2 text-amber-500 text-xl opacity-50">🌿</div>
+      <!-- Minimal Corner Accents -->
+      <div class="absolute top-4 left-4 w-3 h-3 border-l-2 border-t-2 border-amber-400/30 rounded-tl-lg"></div>
+      <div class="absolute top-4 right-4 w-3 h-3 border-r-2 border-t-2 border-amber-400/30 rounded-tr-lg"></div>
+      <div class="absolute bottom-4 left-4 w-3 h-3 border-l-2 border-b-2 border-amber-400/30 rounded-bl-lg"></div>
+      <div class="absolute bottom-4 right-4 w-3 h-3 border-r-2 border-b-2 border-amber-400/30 rounded-br-lg"></div>
     </div>
     
-    <!-- Ripple Effect on Click -->
-    <div class="absolute inset-0 rounded-2xl overflow-hidden">
-      <div class="ripple-effect"></div>
+    <!-- Click Ripple Effect -->
+    <div class="absolute inset-0 rounded-3xl overflow-hidden">
+      <div class="modern-ripple-effect"></div>
     </div>
   </div>
   
-  <!-- Floating Ancient Symbols -->
-  <div class="absolute top-10 left-10 text-2xl animate-float opacity-40">🏺</div>
-  <div class="absolute top-20 right-10 text-2xl animate-float delay-1 opacity-40">📜</div>
-  <div class="absolute bottom-10 left-20 text-2xl animate-float delay-2 opacity-40">⚖️</div>
-  <div class="absolute bottom-20 right-20 text-2xl animate-float delay-3 opacity-40">🗿</div>
+  <!-- Subtle Floating Elements -->
+  <div class="absolute -top-8 -left-8 text-2xl opacity-20 animate-pulse">⚖️</div>
+  <div class="absolute -top-8 -right-8 text-2xl opacity-20 animate-pulse delay-1000">📜</div>
 </div>
 
 <style>
-  .epic-button-container {
+  .modern-button-container {
     position: relative;
     display: inline-block;
-    filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.15));
   }
 
-  .column-pillar {
-    font-size: 2rem;
-    animation: float 3s ease-in-out infinite;
+  .modern-button-container:hover {
+    filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25));
   }
 
-  .column-pillar.delay-1 {
-    animation-delay: 0.5s;
-  }
-
-  .column-pillar.delay-2 {
-    animation-delay: 1s;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-      transform: translateY(-20px) rotate(5deg);
-    }
-  }
-
-  @keyframes animate-float {
-    0%, 100% {
-      transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-      transform: translateY(-15px) rotate(3deg);
-    }
-  }
-
-  .animate-float {
-    animation: animate-float 4s ease-in-out infinite;
-  }
-
-  .animate-float.delay-1 {
-    animation-delay: 1s;
-  }
-
-  .animate-float.delay-2 {
-    animation-delay: 2s;
-  }
-
-  .animate-float.delay-3 {
-    animation-delay: 3s;
-  }
-
-  @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes spin-slow-reverse {
-    from {
-      transform: rotate(360deg);
-    }
-    to {
-      transform: rotate(0deg);
-    }
-  }
-
-  .animate-spin-slow {
-    animation: spin-slow 8s linear infinite;
-  }
-
-  .animate-spin-slow-reverse {
-    animation: spin-slow-reverse 8s linear infinite;
-  }
-
-  @keyframes pulse-glow {
-    0%, 100% {
-      opacity: 0.4;
-      transform: scale(1.1);
-    }
-    50% {
-      opacity: 0.8;
-      transform: scale(1.2);
-    }
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  .ripple-effect {
+  /* Modern Ripple Effect */
+  .modern-ripple-effect {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
     transform: translate(-50%, -50%);
     pointer-events: none;
-    transition: all 0.6s ease-out;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .epic-button-container:active .ripple-effect {
-    width: 300px;
-    height: 300px;
+  .modern-button-container:active .modern-ripple-effect {
+    width: 400px;
+    height: 400px;
     opacity: 0;
   }
 
-  /* Hover effects for the main container */
-  .epic-button-container:hover {
-    transform: translateY(-5px);
-  }
-
-  /* Greek border pattern animation */
-  @keyframes border-dance {
-    0% {
-      border-image-source: repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px);
+  /* Subtle Pulse Animation */
+  @keyframes subtle-pulse {
+    0%, 100% {
+      opacity: 0.6;
     }
     50% {
-      border-image-source: repeating-linear-gradient(45deg, currentColor, currentColor 10px, transparent 10px, transparent 20px);
-    }
-    100% {
-      border-image-source: repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px);
+      opacity: 1;
     }
   }
 
-  .epic-button-container:hover .absolute.inset-2 {
-    animation: border-dance 2s ease-in-out infinite;
+  .animate-pulse {
+    animation: subtle-pulse 3s ease-in-out infinite;
+  }
+
+  .delay-1000 {
+    animation-delay: 1s;
+  }
+
+  /* Smooth Transitions */
+  * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 </style>
