@@ -90,11 +90,39 @@
     <div
       class="relative flex h-full w-full flex-col overflow-hidden variant-filled-surface shadow-xl md:rounded-container-token md:max-h-[90vh]"
     >
-      <!-- Header section with fixed height -->
-      <div class="relative flex-none border-b border-surface-300-600-token p-4 md:p-6">
-        <!-- Close button -->
+      <!-- Epic Cinematic Header with Video Background -->
+      <div class="relative flex-none overflow-hidden h-64 md:h-80 lg:h-96">
+        <!-- Video Background -->
+        <div class="absolute inset-0">
+          <video
+            class="w-full h-full object-cover"
+            autoplay
+            muted
+            loop
+            playsinline
+          >
+            <source src="/democracy_greek_debating.mp4" type="video/mp4" />
+            <!-- Fallback image if video doesn't load -->
+            <div class="w-full h-full bg-gradient-to-br from-amber-900 via-yellow-800 to-amber-700"></div>
+          </video>
+          
+          <!-- Cinematic Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60"></div>
+          
+          <!-- Animated Particles -->
+          <div class="absolute inset-0 overflow-hidden">
+            <div class="particle particle-1">✨</div>
+            <div class="particle particle-2">🏛️</div>
+            <div class="particle particle-3">📜</div>
+            <div class="particle particle-4">⚖️</div>
+            <div class="particle particle-5">🌿</div>
+            <div class="particle particle-6">✨</div>
+          </div>
+        </div>
+
+        <!-- Close button with enhanced styling -->
         <button
-          class="btn-icon btn-icon-sm variant-filled-surface absolute right-4 top-4 z-10"
+          class="absolute right-4 top-4 z-20 btn-icon btn-icon-lg bg-black/50 hover:bg-black/70 text-white border-2 border-amber-400 hover:border-amber-300 transition-all duration-300 backdrop-blur-sm"
           on:click={onClose}
         >
           <svg
@@ -113,10 +141,41 @@
           </svg>
         </button>
 
-        <!-- Title -->
-        <h2 class="text-center text-3xl font-bold text-primary-500 md:text-5xl lg:text-6xl">
-          The History of "Idiot"
-        </h2>
+        <!-- Epic Title with Cinematic Effects -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-4">
+          <!-- Subtitle -->
+          <div class="text-amber-300 text-sm md:text-lg font-semibold mb-2 tracking-widest uppercase opacity-90">
+            From Ancient Agora to Modern Democracy
+          </div>
+          
+          <!-- Main Title -->
+          <h2 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl">
+            <span class="inline-block animate-fade-in-up">The</span>
+            <span class="inline-block animate-fade-in-up delay-200">History</span>
+            <span class="inline-block animate-fade-in-up delay-400">of</span>
+            <span class="inline-block animate-fade-in-up delay-600 text-amber-400">"Idiot"</span>
+          </h2>
+          
+          <!-- Greek Translation -->
+          <div class="text-xl md:text-2xl text-amber-200 font-medium italic mb-4 opacity-90">
+            ἡ ἱστορία τοῦ ἰδιώτου
+          </div>
+          
+          <!-- Subtitle Description -->
+          <div class="text-base md:text-lg text-gray-200 max-w-2xl leading-relaxed opacity-90">
+            Journey through time to discover how a simple Greek word for "private citizen" 
+            became one of our most misunderstood terms
+          </div>
+          
+          <!-- Scroll Indicator -->
+          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div class="text-amber-300 text-2xl">⬇️</div>
+            <div class="text-amber-200 text-sm mt-1">Scroll to explore</div>
+          </div>
+        </div>
+        
+        <!-- Ancient Greek Border -->
+        <div class="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 opacity-80"></div>
       </div>
 
       <!-- Scrollable content area -->
@@ -205,5 +264,124 @@
 <style>
   .evolution-image:hover {
     background-position: center !important;
+  }
+
+  /* Cinematic Animations */
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  .delay-600 {
+    animation-delay: 0.6s;
+  }
+
+  /* Floating Particles */
+  .particle {
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: float-particle 8s ease-in-out infinite;
+  }
+
+  .particle-1 {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  .particle-2 {
+    top: 60%;
+    left: 85%;
+    animation-delay: 1s;
+  }
+
+  .particle-3 {
+    top: 30%;
+    right: 15%;
+    animation-delay: 2s;
+  }
+
+  .particle-4 {
+    bottom: 40%;
+    left: 20%;
+    animation-delay: 3s;
+  }
+
+  .particle-5 {
+    top: 70%;
+    left: 60%;
+    animation-delay: 4s;
+  }
+
+  .particle-6 {
+    top: 15%;
+    left: 70%;
+    animation-delay: 5s;
+  }
+
+  @keyframes float-particle {
+    0%, 100% {
+      transform: translateY(0px) translateX(0px) rotate(0deg);
+      opacity: 0.3;
+    }
+    25% {
+      transform: translateY(-20px) translateX(10px) rotate(90deg);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(-10px) translateX(-15px) rotate(180deg);
+      opacity: 0.8;
+    }
+    75% {
+      transform: translateY(-30px) translateX(5px) rotate(270deg);
+      opacity: 0.4;
+    }
+  }
+
+  /* Video Enhancement */
+  video {
+    filter: sepia(20%) saturate(1.2) contrast(1.1);
+    transition: filter 0.3s ease;
+  }
+
+  video:hover {
+    filter: sepia(10%) saturate(1.4) contrast(1.2);
+  }
+
+  /* Enhanced Scroll Indicator */
+  @keyframes bounce-glow {
+    0%, 100% {
+      transform: translateY(0px);
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+      transform: translateY(-10px);
+      text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+    }
+  }
+
+  .animate-bounce {
+    animation: bounce-glow 2s ease-in-out infinite;
   }
 </style>

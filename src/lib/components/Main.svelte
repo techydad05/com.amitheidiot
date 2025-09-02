@@ -142,34 +142,224 @@
   {@html sizedFullText}
 </div>
 
-<div class="relative z-10">
-  <button
-    class="btn variant-filled-primary btn-xl"
-    on:click={toggleContainer}
-  >
-    <span class="shimmer-text text-2xl">Are you the idiot?</span>
-  </button>
+<!-- Epic Interactive Button with Greek Temple Design -->
+<div class="relative z-10 flex flex-col items-center">
+  <!-- Floating Greek Columns Animation -->
+  <div class="absolute -top-20 left-1/2 transform -translate-x-1/2 opacity-30">
+    <div class="flex space-x-8 animate-float">
+      <div class="column-pillar">🏛️</div>
+      <div class="column-pillar delay-1">🏛️</div>
+      <div class="column-pillar delay-2">🏛️</div>
+    </div>
+  </div>
+
+  <!-- Main Epic Button -->
+  <div class="epic-button-container group cursor-pointer" on:click={toggleContainer}>
+    <!-- Glowing Aura -->
+    <div class="absolute inset-0 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 rounded-full blur-xl opacity-0 group-hover:opacity-75 transition-all duration-700 scale-110 animate-pulse-glow"></div>
+    
+    <!-- Ancient Scroll Background -->
+    <div class="relative bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-200 dark:from-amber-900 dark:via-yellow-800 dark:to-amber-700 rounded-2xl p-8 shadow-2xl border-4 border-amber-300 dark:border-amber-600 transform group-hover:scale-105 transition-all duration-500 group-hover:rotate-1">
+      
+      <!-- Ancient Greek Border Pattern -->
+      <div class="absolute inset-2 border-2 border-amber-400 dark:border-amber-500 rounded-xl opacity-50" style="border-image: repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px) 2;"></div>
+      
+      <!-- Floating Laurel Wreaths -->
+      <div class="absolute -top-4 -left-4 text-3xl animate-spin-slow opacity-70">🏆</div>
+      <div class="absolute -top-4 -right-4 text-3xl animate-spin-slow-reverse opacity-70">🏆</div>
+      
+      <!-- Main Question Text -->
+      <div class="relative text-center">
+        <div class="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2 tracking-widest uppercase">
+          Ancient Greek Challenge
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800 dark:from-amber-300 dark:via-yellow-200 dark:to-amber-400 bg-clip-text text-transparent mb-4 leading-tight">
+          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300">Are</span>
+          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300 delay-75">You</span>
+          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300 delay-150">The</span>
+          <span class="inline-block transform group-hover:scale-125 transition-transform duration-300 delay-225 text-red-600 dark:text-red-400 drop-shadow-lg">IDIOT</span>
+          <span class="inline-block transform group-hover:scale-110 transition-transform duration-300 delay-300">?</span>
+        </h1>
+        
+        <!-- Greek Translation -->
+        <div class="text-lg md:text-xl text-amber-700 dark:text-amber-300 font-medium mb-4 italic">
+          εἰσὶ σὺ ὁ ἰδιώτης;
+        </div>
+        
+        <!-- Subtitle -->
+        <div class="text-base md:text-lg text-amber-600 dark:text-amber-400 mb-6 max-w-md mx-auto leading-relaxed">
+          Test your knowledge of democracy and citizenship like the ancient Greeks intended
+        </div>
+        
+        <!-- Interactive Elements -->
+        <div class="flex justify-center items-center space-x-4 mb-4">
+          <div class="animate-bounce text-2xl">⚡</div>
+          <div class="px-4 py-2 bg-amber-200 dark:bg-amber-800 rounded-full text-sm font-semibold text-amber-800 dark:text-amber-200 group-hover:bg-amber-300 dark:group-hover:bg-amber-700 transition-colors duration-300">
+            Click to Begin Your Trial
+          </div>
+          <div class="animate-bounce text-2xl delay-300">⚡</div>
+        </div>
+        
+        <!-- Floating Wisdom Quote -->
+        <div class="text-xs md:text-sm text-amber-600 dark:text-amber-400 italic opacity-75 group-hover:opacity-100 transition-opacity duration-300">
+          "The unexamined life is not worth living" - Socrates
+        </div>
+      </div>
+      
+      <!-- Corner Decorations -->
+      <div class="absolute top-2 left-2 text-amber-500 text-xl opacity-50">🌿</div>
+      <div class="absolute top-2 right-2 text-amber-500 text-xl opacity-50">🌿</div>
+      <div class="absolute bottom-2 left-2 text-amber-500 text-xl opacity-50">🌿</div>
+      <div class="absolute bottom-2 right-2 text-amber-500 text-xl opacity-50">🌿</div>
+    </div>
+    
+    <!-- Ripple Effect on Click -->
+    <div class="absolute inset-0 rounded-2xl overflow-hidden">
+      <div class="ripple-effect"></div>
+    </div>
+  </div>
+  
+  <!-- Floating Ancient Symbols -->
+  <div class="absolute top-10 left-10 text-2xl animate-float opacity-40">🏺</div>
+  <div class="absolute top-20 right-10 text-2xl animate-float delay-1 opacity-40">📜</div>
+  <div class="absolute bottom-10 left-20 text-2xl animate-float delay-2 opacity-40">⚖️</div>
+  <div class="absolute bottom-20 right-20 text-2xl animate-float delay-3 opacity-40">🗿</div>
 </div>
 
 <style>
-  .shimmer-text {
+  .epic-button-container {
     position: relative;
     display: inline-block;
-    font-weight: 400;
-    background: linear-gradient(90deg, currentColor 0%, #fff8 50%, currentColor 100%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: shimmer 3s infinite 2s;
-    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.3));
   }
 
-  @keyframes shimmer {
+  .column-pillar {
+    font-size: 2rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .column-pillar.delay-1 {
+    animation-delay: 0.5s;
+  }
+
+  .column-pillar.delay-2 {
+    animation-delay: 1s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(5deg);
+    }
+  }
+
+  @keyframes animate-float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(3deg);
+    }
+  }
+
+  .animate-float {
+    animation: animate-float 4s ease-in-out infinite;
+  }
+
+  .animate-float.delay-1 {
+    animation-delay: 1s;
+  }
+
+  .animate-float.delay-2 {
+    animation-delay: 2s;
+  }
+
+  .animate-float.delay-3 {
+    animation-delay: 3s;
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin-slow-reverse {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+
+  .animate-spin-slow-reverse {
+    animation: spin-slow-reverse 8s linear infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1.1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.2);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .ripple-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: all 0.6s ease-out;
+  }
+
+  .epic-button-container:active .ripple-effect {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+
+  /* Hover effects for the main container */
+  .epic-button-container:hover {
+    transform: translateY(-5px);
+  }
+
+  /* Greek border pattern animation */
+  @keyframes border-dance {
     0% {
-      background-position: 100% 0;
+      border-image-source: repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px);
+    }
+    50% {
+      border-image-source: repeating-linear-gradient(45deg, currentColor, currentColor 10px, transparent 10px, transparent 20px);
     }
     100% {
-      background-position: -100% 0;
+      border-image-source: repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px);
     }
+  }
+
+  .epic-button-container:hover .absolute.inset-2 {
+    animation: border-dance 2s ease-in-out infinite;
   }
 </style>
