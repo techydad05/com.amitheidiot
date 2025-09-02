@@ -597,26 +597,28 @@ let isSaving = false;
             </div>
             
             <!-- Enhanced Feedback -->
-            {@const feedback = getFeedbackMessage(score / activeQuestions.length)}
-            <div class="mb-6 bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-800 dark:to-yellow-800 rounded-lg p-4 border-2 border-amber-300 dark:border-amber-600">
-              <div class="flex items-start gap-3">
-                <div class="text-2xl">
-                  {#if score / activeQuestions.length >= 0.8}
-                    🏛️
-                  {:else if score / activeQuestions.length >= 0.6}
-                    📚
-                  {:else}
-                    🤔
-                  {/if}
-                </div>
-                <div>
-                  <div class="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-1">
-                    The Oracle Speaks:
+            {#if activeQuestions.length > 0}
+              {@const feedback = getFeedbackMessage(score / activeQuestions.length)}
+              <div class="mb-6 bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-800 dark:to-yellow-800 rounded-lg p-4 border-2 border-amber-300 dark:border-amber-600">
+                <div class="flex items-start gap-3">
+                  <div class="text-2xl">
+                    {#if score / activeQuestions.length >= 0.8}
+                      🏛️
+                    {:else if score / activeQuestions.length >= 0.6}
+                      📚
+                    {:else}
+                      🤔
+                    {/if}
                   </div>
-                  <p class="{feedback.class} text-base leading-relaxed">{feedback.message}</p>
+                  <div>
+                    <div class="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-1">
+                      The Oracle Speaks:
+                    </div>
+                    <p class="{feedback.class} text-base leading-relaxed">{feedback.message}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            {/if}
           </div>
           
           <!-- Ancient Greek Border -->
