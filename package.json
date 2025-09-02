@@ -16,7 +16,6 @@
 		"seed": "node seed-database.js"
 	},
 	"devDependencies": {
-		"@bonosoft/sveltekit-qrcode": "^0.0.3",
 		"@chromatic-com/storybook": "^1.6.1",
 		"@playwright/test": "^1.45.2",
 		"@storybook/addon-essentials": "8.3.0-alpha.1",
