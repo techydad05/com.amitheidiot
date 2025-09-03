@@ -1,38 +1,61 @@
-# create-svelte
+# Am I The Idiot? 🤔
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+An interactive web app that teaches the fascinating etymology of the word "idiot" - from ancient Greek civic duty to modern-day insult.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Interactive Learning**: Step-by-step journey through the word's history
+- **Beautiful UI**: Modern glassmorphism design with smooth animations
+- **Quiz System**: Test your knowledge with an engaging quiz
+- **Responsive**: Works perfectly on desktop and mobile
+- **Keyboard Navigation**: Full keyboard support for accessibility
+
+## The Story
+
+Did you know that calling someone an "idiot" originally had nothing to do with intelligence? In ancient Athens, an "idiotes" (ἰδιώτης) was simply a private citizen who chose personal matters over participating in democracy. The Greeks believed civic engagement was so important that avoiding it was considered selfish and harmful to society.
+
+Over centuries, the word evolved from describing civic disengagement to meaning "foolish person" - completely losing its original political context.
+
+## Tech Stack
+
+- **SvelteKit** - Modern web framework
+- **Tailwind CSS** - Utility-first styling
+- **Vite** - Fast build tool
+- **TypeScript** - Type safety
+
+## Getting Started
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
+# Install dependencies
+npm install
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
+# Start development server
 npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
+# Build for production
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Routes
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+- `/` - Landing page with the main question
+- `/start` - Introduction and navigation hub  
+- `/learn` - Interactive history lesson
+- `/quiz` - Knowledge test with explanations
+
+## Design Philosophy
+
+This app demonstrates that learning can be both educational and entertaining. The design uses:
+
+- **Glassmorphism** for modern, elegant UI
+- **Smooth transitions** for engaging interactions
+- **Progressive disclosure** to avoid overwhelming users
+- **Gamification** through the quiz system
+
+## Contributing
+
+Feel free to contribute improvements, additional historical context, or new features!
+
+## License
+
+MIT License - Feel free to use this for educational purposes.

@@ -21,7 +21,7 @@
 	import { onMount } from 'svelte';
 	
 	onMount(() => {
-		const theme = localStorage.getItem('theme') || 'light';
+		const theme = localStorage.getItem('theme') || 'dark';
 		document.documentElement.classList.toggle('dark', theme === 'dark');
 	});
 </script>
