@@ -57,60 +57,110 @@
         </p>
       </div>
 
-      <!-- Path Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12 px-4">
+      <!-- Main Path Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 px-4">
         
-        <!-- Learn Path -->
+        <!-- Etymology Journey -->
         <div class="group relative" in:fly={{ y: 30, duration: 800, delay: 400 }}>
           <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
           <div class="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 group-hover:border-white/30 transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-2">
-            <div class="text-4xl mb-4">🏛️</div>
-            <h3 class="text-2xl font-bold text-white mb-4">Learn the History</h3>
-            <p class="text-slate-300 mb-6 leading-relaxed">
-              Journey through ancient Greece and discover the fascinating evolution of language and democracy
+            <div class="text-5xl mb-6">🏛️</div>
+            <h3 class="text-3xl font-bold text-white mb-4">The Word Journey</h3>
+            <p class="text-slate-300 mb-6 leading-relaxed text-lg">
+              Follow "idiot" from ancient Athens to your Twitter feed. Spoiler: it's not what you think! 
+              Discover how a simple Greek word about civic duty became the ultimate insult.
             </p>
+            
+            <!-- Mini preview -->
+            <div class="bg-blue-500/10 rounded-2xl p-4 mb-6 border border-blue-500/20">
+              <div class="text-blue-300 text-sm font-semibold mb-2">🎯 You'll Learn:</div>
+              <ul class="text-blue-100 text-sm space-y-1">
+                <li>• Why ancient Greeks side-eyed "private citizens"</li>
+                <li>• How democracy shaped language (and vice versa)</li>
+                <li>• The 2,500-year translation fail that changed everything</li>
+              </ul>
+            </div>
+            
             <button
               on:click={() => goto('/learn')}
-              class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 group-hover:scale-105"
+              class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 group-hover:scale-105 text-lg"
             >
-              Start Learning →
+              Start the Journey →
             </button>
           </div>
         </div>
 
-        <!-- Quiz Path -->
+        <!-- Modern Crisis -->
         <div class="group relative" in:fly={{ y: 30, duration: 800, delay: 600 }}>
-          <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
           <div class="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 group-hover:border-white/30 transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-2">
-            <div class="text-4xl mb-4">⚡</div>
-            <h3 class="text-2xl font-bold text-white mb-4">Take the Quiz</h3>
-            <p class="text-slate-300 mb-6 leading-relaxed">
-              Test your knowledge and see if you're truly the "idiot" in the ancient Greek sense
+            <div class="text-5xl mb-6">📉</div>
+            <h3 class="text-3xl font-bold text-white mb-4">The Modern Crisis</h3>
+            <p class="text-slate-300 mb-6 leading-relaxed text-lg">
+              From Reagan to Citizens United: How we accidentally created a nation of "idiotes." 
+              The shocking stats about civic engagement that'll make you question everything.
             </p>
+            
+            <!-- Mini preview -->
+            <div class="bg-red-500/10 rounded-2xl p-4 mb-6 border border-red-500/20">
+              <div class="text-red-300 text-sm font-semibold mb-2">🚨 Eye-Opening Stats:</div>
+              <ul class="text-red-100 text-sm space-y-1">
+                <li>• How money in politics broke democracy</li>
+                <li>• The Reagan era's lasting impact on civic life</li>
+                <li>• Why Americans are becoming "idiotes" again</li>
+              </ul>
+            </div>
+            
             <button
-              on:click={() => goto('/quiz')}
-              class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 group-hover:scale-105"
+              on:click={() => goto('/crisis')}
+              class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 group-hover:scale-105 text-lg"
             >
-              Start Quiz →
+              See the Data →
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Fun Facts Path -->
-        <div class="group relative" in:fly={{ y: 30, duration: 800, delay: 800 }}>
-          <div class="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-          <div class="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 group-hover:border-white/30 transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-2">
-            <div class="text-4xl mb-4">💡</div>
-            <h3 class="text-2xl font-bold text-white mb-4">Fun Facts</h3>
-            <p class="text-slate-300 mb-6 leading-relaxed">
-              Discover more fascinating etymology and language evolution stories
-            </p>
-            <button
-              on:click={() => goto('/learn')}
-              class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 group-hover:scale-105"
-            >
-              Explore More →
-            </button>
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-12 px-4" in:fly={{ y: 30, duration: 800, delay: 800 }}>
+        
+        <!-- Quiz Path -->
+        <div class="group relative">
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+          <div class="relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 group-hover:border-white/30 transition-all duration-500 group-hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="text-3xl">⚡</div>
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-white mb-2">Quick Quiz</h3>
+                <p class="text-slate-300 text-sm">Test your knowledge in 2 minutes</p>
+              </div>
+              <button
+                on:click={() => goto('/quiz')}
+                class="px-4 py-2 bg-purple-600/80 hover:bg-purple-600 text-white rounded-xl transition-colors duration-300 font-semibold"
+              >
+                Start →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Word History -->
+        <div class="group relative">
+          <div class="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+          <div class="relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 group-hover:border-white/30 transition-all duration-500 group-hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="text-3xl">📚</div>
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-white mb-2">Full Timeline</h3>
+                <p class="text-slate-300 text-sm">Complete word evolution history</p>
+              </div>
+              <button
+                on:click={() => goto('/timeline')}
+                class="px-4 py-2 bg-amber-600/80 hover:bg-amber-600 text-white rounded-xl transition-colors duration-300 font-semibold"
+              >
+                Explore →
+              </button>
+            </div>
           </div>
         </div>
       </div>
