@@ -10,31 +10,35 @@
   const sections = [
     {
       title: "Ancient Athens",
-      subtitle: "The Birth of Democracy",
-      content: "In ancient Athens, every citizen had a voice in the agora - the public square where democracy was born.",
+      subtitle: "The Birth of Democracy 🏛️",
+      content: "Picture ancient Athens: bustling markets, passionate debates, and citizens gathering in the agora. This wasn't just a marketplace - it was democracy's birthplace, where every voice mattered.",
       icon: "🏛️",
-      color: "from-blue-500 to-purple-500"
+      color: "from-blue-500 to-purple-500",
+      funFact: "The agora was like ancient Twitter - but with actual face-to-face debates!"
     },
     {
-      title: "The Word 'Idiot'",
-      subtitle: "ἰδιώτης (idiotes)",
-      content: "Originally meant 'private citizen' - someone who chose personal matters over public service.",
-      icon: "📜",
-      color: "from-purple-500 to-pink-500"
+      title: "Meet the 'Idiotes'",
+      subtitle: "ἰδιώτης - The Original Meaning",
+      content: "An 'idiotes' wasn't stupid - they were just... private. Think of them as ancient introverts who preferred Netflix and chill over town hall meetings.",
+      icon: "🏠",
+      color: "from-purple-500 to-pink-500",
+      funFact: "Basically, they were the ancient equivalent of people who skip voting!"
     },
     {
-      title: "Public vs Private",
-      subtitle: "Civic Duty",
-      content: "Greeks believed that avoiding public life was selfish and ultimately harmful to society.",
+      title: "Civic Duty Drama",
+      subtitle: "Why Greeks Were Judgy About It",
+      content: "Greeks were hardcore about democracy. Avoiding civic duty was like ghosting your entire community. They believed your personal choices affected everyone.",
       icon: "⚖️",
-      color: "from-pink-500 to-red-500"
+      color: "from-pink-500 to-red-500",
+      funFact: "Imagine if not voting made you the neighborhood villain - that was ancient Greece!"
     },
     {
-      title: "Modern Meaning",
-      subtitle: "Lost in Translation",
-      content: "Over centuries, the word evolved to mean 'foolish person' - far from its original civic meaning.",
+      title: "The Great Translation Fail",
+      subtitle: "How 'Private Citizen' Became 'Dummy'",
+      content: "Over 2,000 years, the word took a wild journey. From 'person who avoids politics' to 'complete fool' - talk about a glow-down!",
       icon: "🔄",
-      color: "from-red-500 to-orange-500"
+      color: "from-red-500 to-orange-500",
+      funFact: "It's like if 'influencer' somehow became an insult in the year 4024!"
     }
   ];
 
@@ -134,9 +138,20 @@
           </div>
 
           <!-- Content -->
-          <p class="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8 sm:mb-12 px-4">
+          <p class="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-4">
             {sections[currentSection].content}
           </p>
+
+          <!-- Fun Fact -->
+          <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 sm:p-6 max-w-2xl mx-auto mb-8 sm:mb-12">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="text-2xl">💡</div>
+              <div class="text-amber-300 font-semibold">Fun Fact</div>
+            </div>
+            <p class="text-amber-100 text-sm sm:text-base leading-relaxed">
+              {sections[currentSection].funFact}
+            </p>
+          </div>
         </div>
       {/key}
 

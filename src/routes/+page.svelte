@@ -79,7 +79,7 @@
             </span>
           </h1>
           
-          <div class="text-5xl sm:text-6xl md:text-7xl lg:text-9xl xl:text-[12rem] font-black mb-8 sm:mb-12">
+          <div class="text-5xl sm:text-6xl md:text-7xl lg:text-9xl xl:text-[10rem] font-black mb-8 sm:mb-12 px-2">
             <span class="bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent drop-shadow-2xl">
               IDIOT?
             </span>

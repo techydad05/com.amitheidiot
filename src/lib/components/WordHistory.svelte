@@ -11,43 +11,43 @@
   const timeline = [
     {
       period: "5th Century BCE",
-      title: "Ancient Greece",
-      description: "ἰδιώτης (idiotes) - A private citizen who focuses on personal affairs rather than public service",
+      title: "Ancient Greece 🏛️",
+      description: "ἰδιώτης (idiotes) - A private citizen who chose personal life over public service. Think ancient Greek for 'I'm staying home tonight.'",
       icon: "🏛️",
       color: "from-blue-500 to-cyan-500"
     },
     {
       period: "Classical Period",
-      title: "Civic Duty",
-      description: "Greeks believed participation in democracy was essential. Those who avoided it were seen as selfish",
+      title: "Democracy Fanatics ⚖️",
+      description: "Greeks were OBSESSED with civic participation. Avoiding politics was like skipping the group project - everyone judged you for it.",
       icon: "⚖️",
       color: "from-cyan-500 to-teal-500"
     },
     {
       period: "Roman Era",
-      title: "Latin Adoption",
-      description: "Romans adopted the word as 'idiota' - maintaining the meaning of 'ordinary person'",
+      title: "Latin Makeover 🏺",
+      description: "Romans borrowed the word as 'idiota' but kept it chill - just meant 'ordinary person' or 'not a specialist.' No shade yet!",
       icon: "🏺",
       color: "from-teal-500 to-green-500"
     },
     {
       period: "Medieval Times",
-      title: "Meaning Shift",
-      description: "The word began to imply ignorance and lack of learning, moving away from civic context",
+      title: "The Plot Thickens 📜",
+      description: "Medieval scholars started connecting 'not participating in public life' with 'not being educated.' The meaning began its dark turn...",
       icon: "📜",
       color: "from-green-500 to-yellow-500"
     },
     {
       period: "Renaissance",
-      title: "Intellectual Focus",
-      description: "Emphasis on education made 'idiot' synonymous with lack of knowledge or wisdom",
+      title: "Education Obsession 🎨",
+      description: "Renaissance = education everything! 'Idiot' became synonymous with 'uneducated' and 'lacking wisdom.' The civic meaning was getting buried.",
       icon: "🎨",
       color: "from-yellow-500 to-orange-500"
     },
     {
       period: "Modern Era",
-      title: "Current Usage",
-      description: "Today it simply means 'foolish person' - completely divorced from its civic origins",
+      title: "Complete Transformation 🔄",
+      description: "Today's 'idiot' = foolish person. The original civic meaning? Completely forgotten! It's like the word had amnesia about its own history.",
       icon: "🔄",
       color: "from-orange-500 to-red-500"
     }

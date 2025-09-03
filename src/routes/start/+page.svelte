@@ -117,12 +117,33 @@
 
 
 
+      <!-- Fun Stats Section -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12 px-4" in:fly={{ y: 30, duration: 800, delay: 1000 }}>
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+          <div class="text-3xl mb-2">📚</div>
+          <div class="text-2xl font-bold text-white mb-1">2,500+</div>
+          <div class="text-sm text-white/60">Years of word evolution</div>
+        </div>
+        
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+          <div class="text-3xl mb-2">🏛️</div>
+          <div class="text-2xl font-bold text-white mb-1">Ancient</div>
+          <div class="text-sm text-white/60">Greek democracy birthplace</div>
+        </div>
+        
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+          <div class="text-3xl mb-2">🤯</div>
+          <div class="text-2xl font-bold text-white mb-1">Mind</div>
+          <div class="text-sm text-white/60">Blown by this story</div>
+        </div>
+      </div>
+
       <!-- Greek Quote -->
-      <div class="text-center mt-16" in:fade={{ duration: 800, delay: 1200 }}>
-        <blockquote class="text-lg md:text-xl text-slate-400 italic max-w-2xl mx-auto">
+      <div class="text-center mt-8" in:fade={{ duration: 800, delay: 1200 }}>
+        <blockquote class="text-lg md:text-xl text-slate-400 italic max-w-2xl mx-auto px-4">
           "The unexamined life is not worth living"
         </blockquote>
-        <cite class="text-amber-400 text-sm mt-2 block">— Socrates</cite>
+        <cite class="text-amber-400 text-sm mt-2 block">— Socrates (who definitely wasn't an 'idiotes')</cite>
       </div>
     </div>
   </div>

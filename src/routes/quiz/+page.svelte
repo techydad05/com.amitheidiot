@@ -9,51 +9,65 @@
   let score = 0;
   let answers = [];
   let quizComplete = false;
+  let timeLeft = 30; // 30 seconds per question
+  let timerInterval;
+  let timerActive = false;
 
   const questions = [
     {
-      question: "What did the Greek word 'idiotes' originally mean?",
+      question: "🏛️ What did the Greek word 'idiotes' originally mean?",
       options: [
-        "A foolish person",
+        "A foolish person who couldn't think straight",
         "A private citizen who avoided public life",
-        "A wise philosopher",
-        "A government official"
+        "A wise philosopher with deep thoughts",
+        "A government official with power"
       ],
       correct: 1,
-      explanation: "In ancient Greece, 'idiotes' meant a private citizen who chose personal matters over civic duty."
+      explanation: "Plot twist! 'Idiotes' just meant someone who minded their own business instead of getting involved in politics. Basically, ancient Greek for 'I don't want to deal with this drama.'"
     },
     {
-      question: "Why did ancient Greeks view 'idiotes' negatively?",
+      question: "🤔 Why did ancient Greeks side-eye the 'idiotes'?",
       options: [
-        "They were considered unintelligent",
-        "They didn't pay taxes",
+        "They thought they were naturally unintelligent",
+        "They refused to pay their taxes",
         "They avoided participating in democracy",
-        "They were foreigners"
+        "They were always foreigners and outsiders"
       ],
       correct: 2,
-      explanation: "Greeks believed civic participation was essential for a healthy democracy."
+      explanation: "Greeks were democracy fanatics! They believed everyone should participate in civic life. Staying home was like being that friend who never shows up to group projects."
     },
     {
-      question: "Where did democratic discussions take place in ancient Athens?",
+      question: "🏺 Where did the real democratic action happen in Athens?",
       options: [
-        "The Parthenon",
-        "Private homes",
+        "The Parthenon (fancy temple vibes)",
+        "Private homes (secret meetings)",
         "The agora (public square)",
-        "The gymnasium"
+        "The gymnasium (while working out)"
       ],
       correct: 2,
-      explanation: "The agora was the heart of Athenian democracy where citizens gathered to debate."
+      explanation: "The agora was ancient Athens' main character! It was part marketplace, part debate club, part social media - where all the civic tea was spilled."
     },
     {
-      question: "How did the meaning of 'idiot' change over time?",
+      question: "🔄 How did 'idiot' go from 'private person' to 'dummy'?",
       options: [
-        "It became more positive",
+        "It actually became more positive over time",
         "It evolved from 'private citizen' to 'foolish person'",
-        "It maintained its original meaning",
-        "It became a term of respect"
+        "The meaning stayed exactly the same",
+        "It became a term of respect and honor"
       ],
       correct: 1,
-      explanation: "The word gradually shifted from describing civic disengagement to general foolishness."
+      explanation: "Over 2,000+ years, the word took a wild journey! From 'person who avoids politics' to 'complete fool.' Language evolution is messy - like a 2,000-year game of telephone!"
+    },
+    {
+      question: "🎯 BONUS: What's the real lesson here?",
+      options: [
+        "Ancient Greeks were just mean to introverts",
+        "Words can completely change meaning over time",
+        "Democracy has always been exactly the same",
+        "Only smart people should participate in politics"
+      ],
+      correct: 1,
+      explanation: "Bingo! This whole story shows how language evolves and how context matters. What seems obvious today might have meant something totally different in the past. Mind = blown! 🤯"
     }
   ];
 
@@ -61,14 +75,37 @@
     selectedAnswer = index;
   }
 
+  function startTimer() {
+    timeLeft = 30;
+    timerActive = true;
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        // Auto-submit with no answer if time runs out
+        if (selectedAnswer === null) {
+          selectedAnswer = -1; // Mark as no answer
+        }
+        nextQuestion();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    timerActive = false;
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+  }
+
   function nextQuestion() {
-    if (selectedAnswer === null) return;
+    stopTimer();
     
     const isCorrect = selectedAnswer === questions[currentQuestion].correct;
     answers.push({
       question: currentQuestion,
       selected: selectedAnswer,
-      correct: isCorrect
+      correct: isCorrect,
+      timeUsed: 30 - timeLeft
     });
     
     if (isCorrect) score++;
@@ -80,6 +117,7 @@
         currentQuestion++;
         selectedAnswer = null;
         showResult = false;
+        startTimer();
       } else {
         quizComplete = true;
       }
@@ -87,12 +125,14 @@
   }
 
   function restartQuiz() {
+    stopTimer();
     currentQuestion = 0;
     selectedAnswer = null;
     showResult = false;
     score = 0;
     answers = [];
     quizComplete = false;
+    startTimer();
   }
 
   function getScoreMessage() {
@@ -104,8 +144,13 @@
   }
 
   onMount(() => {
+    startTimer(); // Start timer when quiz begins
+    
     const handleKeydown = (e) => {
-      if (e.key === 'Escape') goto('/learn');
+      if (e.key === 'Escape') {
+        stopTimer();
+        goto('/learn');
+      }
       if (e.key >= '1' && e.key <= '4' && !showResult && !quizComplete) {
         selectAnswer(parseInt(e.key) - 1);
       }
@@ -114,7 +159,11 @@
       }
     };
     window.addEventListener('keydown', handleKeydown);
-    return () => window.removeEventListener('keydown', handleKeydown);
+    
+    return () => {
+      stopTimer();
+      window.removeEventListener('keydown', handleKeydown);
+    };
   });
 </script>
 
@@ -143,6 +192,45 @@
 
       {#if !quizComplete}
         <div class="flex items-center gap-4">
+          <!-- Cool Timer -->
+          <div class="relative group">
+            <div class="w-16 h-16 rounded-full border-4 border-white/20 flex items-center justify-center relative overflow-hidden">
+              <!-- Background circle -->
+              <div class="absolute inset-0 rounded-full bg-gradient-to-br from-slate-800 to-slate-700"></div>
+              
+              <!-- Animated progress circle -->
+              <svg class="w-16 h-16 transform -rotate-90 absolute" viewBox="0 0 64 64">
+                <circle 
+                  cx="32" 
+                  cy="32" 
+                  r="28" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  stroke-width="4" 
+                  stroke-dasharray="175.93" 
+                  stroke-dashoffset="{175.93 - (175.93 * timeLeft / 30)}"
+                  class="transition-all duration-1000 {timeLeft <= 5 ? 'text-red-400 drop-shadow-lg' : timeLeft <= 10 ? 'text-yellow-400' : 'text-green-400'}"
+                  style="filter: drop-shadow(0 0 8px currentColor);"
+                />
+              </svg>
+              
+              <!-- Timer number with pulsing effect -->
+              <div class="text-white font-bold text-lg z-10 {timeLeft <= 5 ? 'animate-pulse text-red-300' : ''}">
+                {timeLeft}
+              </div>
+              
+              <!-- Glow effect when time is running out -->
+              {#if timeLeft <= 5}
+                <div class="absolute inset-0 rounded-full bg-red-500/20 animate-pulse"></div>
+              {/if}
+            </div>
+            
+            <!-- Tooltip -->
+            <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              {timeLeft}s left
+            </div>
+          </div>
+          
           <div class="text-white/60 text-sm">
             Question {currentQuestion + 1} of {questions.length}
           </div>
@@ -159,6 +247,19 @@
     <div class="w-full max-w-4xl">
       
       {#if !quizComplete}
+        <!-- Progress Bar -->
+        <div class="w-full max-w-2xl mx-auto mb-8 px-4">
+          <div class="bg-white/10 rounded-full h-2 overflow-hidden">
+            <div 
+              class="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all duration-500 ease-out"
+              style="width: {((currentQuestion + 1) / questions.length) * 100}%"
+            ></div>
+          </div>
+          <div class="text-center text-white/60 text-sm mt-2">
+            Progress: {currentQuestion + 1} of {questions.length}
+          </div>
+        </div>
+
         <!-- Question -->
         <div class="text-center mb-8 sm:mb-12 px-4">
           <div class="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6">🧠</div>
