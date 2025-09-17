@@ -123,7 +123,7 @@
   }
 
   function goBack() {
-    goto('/');
+    goto('/reveal');
   }
 
   function animateIn() {
@@ -224,7 +224,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"
           ></path>
         </svg>
-        <span class="hidden sm:inline">Back to Start</span>
+        <span class="hidden sm:inline">Back to Reveal</span>
         <span class="sm:hidden">Back</span>
       </button>
 
@@ -417,10 +417,16 @@
         </p>
         <div class="flex flex-col justify-center gap-4 sm:flex-row">
           <button
+            on:click={() => goto('/crisis')}
+            class="rounded-2xl bg-gradient-to-r from-red-500 to-orange-500 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105 hover:from-red-600 hover:to-orange-600"
+          >
+            Explore the Modern Crisis
+          </button>
+          <button
             on:click={() => goto('/quiz')}
             class="rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105 hover:from-green-600 hover:to-emerald-600"
           >
-            Test Your Civic Knowledge
+            Test Your Knowledge
           </button>
         </div>
       </div>
