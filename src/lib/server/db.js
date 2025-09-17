@@ -1,16 +1,6 @@
 // src/lib/server/db.js
 import Database from 'better-sqlite3';
 
-// Determine if we're in development mode
-function isDev() {
-  try {
-    // This will work in SvelteKit context
-    return process.env.NODE_ENV !== 'production';
-  } catch {
-    return true; // Default to dev mode
-  }
-}
-
 /**
  * @type {import("better-sqlite3/lib/database") | null}
  */
@@ -65,7 +55,10 @@ function getDatabase() {
       // Insert default quiz settings if none exist
       const settingsCount = db.prepare('SELECT COUNT(*) as count FROM quiz_settings').get();
       if (settingsCount.count === 0) {
-        db.prepare('INSERT INTO quiz_settings (num_questions, time_limit) VALUES (?, ?)').run(3, 60);
+        db.prepare('INSERT INTO quiz_settings (num_questions, time_limit) VALUES (?, ?)').run(
+          3,
+          60
+        );
       }
 
       console.log('✅ SQLite database initialized successfully!');
@@ -82,7 +75,25 @@ export const dbHelpers = {
   // Get all questions
   getQuestions: () => {
     const database = getDatabase();
-    return database.prepare('SELECT * FROM citizenship_questions ORDER BY id').all();
+    return database.prepare('SELECT * FROM quiz_questions ORDER BY id').all();
+  },
+
+  // Get questions by category
+  getQuestionsByCategory: (category) => {
+    const database = getDatabase();
+    return database.prepare('SELECT * FROM quiz_questions WHERE category = ? ORDER BY RANDOM()').all(category);
+  },
+
+  // Get questions by difficulty
+  getQuestionsByDifficulty: (difficulty) => {
+    const database = getDatabase();
+    return database.prepare('SELECT * FROM quiz_questions WHERE difficulty = ? ORDER BY RANDOM()').all(difficulty);
+  },
+
+  // Get random questions
+  getRandomQuestions: (limit = 10) => {
+    const database = getDatabase();
+    return database.prepare('SELECT * FROM quiz_questions ORDER BY RANDOM() LIMIT ?').all(limit);
   },
 
   // Get quiz settings
@@ -96,21 +107,35 @@ export const dbHelpers = {
     const database = getDatabase();
     const existing = database.prepare('SELECT id FROM quiz_settings LIMIT 1').get();
     if (existing) {
-      return database.prepare('UPDATE quiz_settings SET num_questions = ?, time_limit = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      return database
+        .prepare(
+          'UPDATE quiz_settings SET num_questions = ?, time_limit = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+        )
         .run(numQuestions, timeLimit, existing.id);
     } else {
-      return database.prepare('INSERT INTO quiz_settings (num_questions, time_limit) VALUES (?, ?)')
+      return database
+        .prepare('INSERT INTO quiz_settings (num_questions, time_limit) VALUES (?, ?)')
         .run(numQuestions, timeLimit);
     }
   },
 
   // Insert quiz result
-  insertQuizResult: (/** @type {any} */ id, /** @type {any} */ score, /** @type {any} */ totalQuestions, /** @type {any} */ timeTaken, /** @type {any} */ answers) => {
+  insertQuizResult: (
+    /** @type {any} */ id,
+    /** @type {any} */ score,
+    /** @type {any} */ totalQuestions,
+    /** @type {any} */ timeTaken,
+    /** @type {any} */ answers
+  ) => {
     const database = getDatabase();
-    return database.prepare(`
+    return database
+      .prepare(
+        `
       INSERT INTO quiz_results (id, score, total_questions, time_taken, answers)
       VALUES (?, ?, ?, ?, ?)
-    `).run(id, score, totalQuestions, timeTaken, JSON.stringify(answers));
+    `
+      )
+      .run(id, score, totalQuestions, timeTaken, JSON.stringify(answers));
   },
 
   // Get quiz result by ID
@@ -139,7 +164,9 @@ export const dbHelpers = {
   usernameExists: (/** @type {any} */ username, excludeId = null) => {
     const database = getDatabase();
     if (excludeId) {
-      return database.prepare('SELECT id FROM quiz_results WHERE username = ? AND id != ?').get(username, excludeId);
+      return database
+        .prepare('SELECT id FROM quiz_results WHERE username = ? AND id != ?')
+        .get(username, excludeId);
     }
     return database.prepare('SELECT id FROM quiz_results WHERE username = ?').get(username);
   },
@@ -147,34 +174,52 @@ export const dbHelpers = {
   // Update quiz result with username
   updateQuizResultUsername: (/** @type {any} */ id, /** @type {any} */ username) => {
     const database = getDatabase();
-    return database.prepare('UPDATE quiz_results SET username = ?, is_verified = TRUE WHERE id = ?')
+    return database
+      .prepare('UPDATE quiz_results SET username = ?, is_verified = TRUE WHERE id = ?')
       .run(username, id);
   },
 
   // Add a new question
-  addQuestion: (/** @type {any} */ question, /** @type {any} */ options, /** @type {any} */ correct_answer) => {
+  addQuestion: (
+    /** @type {any} */ question,
+    /** @type {any} */ options,
+    /** @type {any} */ correct_answer
+  ) => {
     const database = getDatabase();
-    return database.prepare(`
+    return database
+      .prepare(
+        `
       INSERT INTO citizenship_questions (question, options, correct_answer)
       VALUES (?, ?, ?)
-    `).run(question, JSON.stringify(options), correct_answer);
+    `
+      )
+      .run(question, JSON.stringify(options), correct_answer);
   },
 
   // Update a question
-  updateQuestion: (/** @type {any} */ id, /** @type {any} */ question, /** @type {any} */ options, /** @type {any} */ correct_answer) => {
+  updateQuestion: (
+    /** @type {any} */ id,
+    /** @type {any} */ question,
+    /** @type {any} */ options,
+    /** @type {any} */ correct_answer
+  ) => {
     const database = getDatabase();
-    return database.prepare(`
+    return database
+      .prepare(
+        `
       UPDATE citizenship_questions 
       SET question = ?, options = ?, correct_answer = ?
       WHERE id = ?
-    `).run(question, JSON.stringify(options), correct_answer, id);
+    `
+      )
+      .run(question, JSON.stringify(options), correct_answer, id);
   },
 
   // Delete a question
   deleteQuestion: (/** @type {any} */ id) => {
     const database = getDatabase();
     return database.prepare('DELETE FROM citizenship_questions WHERE id = ?').run(id);
-  }
+  },
 };
 
 export { getDatabase as db };
