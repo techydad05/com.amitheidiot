@@ -24,14 +24,33 @@ export async function GET({ url }) {
     }
 
     // Transform questions to match the expected format
-    const formattedQuestions = questions.map(q => ({
-      id: q.id,
-      question: q.question,
-      options: [q.option_a, q.option_b, q.option_c, q.option_d],
-      correct: q.correct_answer === 'A' ? 0 : q.correct_answer === 'B' ? 1 : q.correct_answer === 'C' ? 2 : 3,
-      category: q.category,
-      difficulty: q.difficulty
-    }));
+    const formattedQuestions = questions.map(q => {
+      let options;
+      try {
+        // Try to parse options as JSON first
+        options = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+      } catch (e) {
+        // If parsing fails, assume it's individual columns
+        options = [q.option_a, q.option_b, q.option_c, q.option_d];
+      }
+
+      // Handle correct answer - could be integer or letter
+      let correct;
+      if (typeof q.correct_answer === 'number') {
+        correct = q.correct_answer;
+      } else {
+        correct = q.correct_answer === 'A' ? 0 : q.correct_answer === 'B' ? 1 : q.correct_answer === 'C' ? 2 : 3;
+      }
+
+      return {
+        id: q.id,
+        question: q.question,
+        options: options,
+        correct: correct,
+        category: q.category || 'citizenship',
+        difficulty: q.difficulty || 'easy'
+      };
+    });
 
     return json({
       success: true,

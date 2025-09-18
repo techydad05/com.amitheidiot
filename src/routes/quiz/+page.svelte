@@ -13,7 +13,7 @@
   let timeLeft = 0;
   let timer = null;
   let questions = [];
-  let loading = true;
+  let loading = false;
   let error = null;
 
   // Quiz settings

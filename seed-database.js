@@ -15,9 +15,23 @@ function initializeDatabase() {
       question TEXT NOT NULL,
       options TEXT NOT NULL,
       correct_answer INTEGER NOT NULL,
+      category TEXT DEFAULT 'citizenship',
+      difficulty TEXT DEFAULT 'easy',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Add category and difficulty columns if they don't exist (for existing databases)
+  try {
+    db.exec(`ALTER TABLE citizenship_questions ADD COLUMN category TEXT DEFAULT 'citizenship'`);
+  } catch (e) {
+    // Column already exists, ignore
+  }
+  try {
+    db.exec(`ALTER TABLE citizenship_questions ADD COLUMN difficulty TEXT DEFAULT 'easy'`);
+  } catch (e) {
+    // Column already exists, ignore
+  }
 
   // Create quiz_settings table
   db.exec(`
@@ -67,6 +81,8 @@ const sampleQuestions = [
       'Federal Law',
     ]),
     correct_answer: 0,
+    category: 'citizenship',
+    difficulty: 'easy',
   },
   {
     question: 'What does the Constitution do?',
@@ -77,6 +93,8 @@ const sampleQuestions = [
       'All of the above',
     ]),
     correct_answer: 3,
+    category: 'citizenship',
+    difficulty: 'easy',
   },
   {
     question:
@@ -88,6 +106,8 @@ const sampleQuestions = [
       'We the Nation',
     ]),
     correct_answer: 0,
+    category: 'citizenship',
+    difficulty: 'medium',
   },
   {
     question: 'What is an amendment?',
@@ -98,6 +118,8 @@ const sampleQuestions = [
       'A law passed by Congress',
     ]),
     correct_answer: 2,
+    category: 'citizenship',
+    difficulty: 'easy',
   },
   {
     question: 'What do we call the first ten amendments to the Constitution?',
@@ -108,16 +130,22 @@ const sampleQuestions = [
       'The Basic Laws',
     ]),
     correct_answer: 0,
+    category: 'citizenship',
+    difficulty: 'easy',
   },
   {
     question: 'What is one right or freedom from the First Amendment?',
     options: JSON.stringify(['Speech', 'Religion', 'Assembly', 'All of the above']),
     correct_answer: 3,
+    category: 'citizenship',
+    difficulty: 'medium',
   },
   {
     question: 'How many amendments does the Constitution have?',
     options: JSON.stringify(['25', '26', '27', '28']),
     correct_answer: 2,
+    category: 'citizenship',
+    difficulty: 'hard',
   },
   {
     question: 'What did the Declaration of Independence do?',
@@ -128,6 +156,8 @@ const sampleQuestions = [
       'All of the above',
     ]),
     correct_answer: 3,
+    category: 'citizenship',
+    difficulty: 'easy',
   },
   {
     question: 'What are two rights in the Declaration of Independence?',
@@ -138,6 +168,8 @@ const sampleQuestions = [
       'Freedom and justice',
     ]),
     correct_answer: 2,
+    category: 'citizenship',
+    difficulty: 'medium',
   },
   {
     question: 'What is freedom of religion?',
@@ -148,6 +180,8 @@ const sampleQuestions = [
       'You cannot practice a religion',
     ]),
     correct_answer: 1,
+    category: 'citizenship',
+    difficulty: 'easy',
   },
 ];
 
@@ -159,13 +193,13 @@ try {
     console.log('Seeding database with sample questions...');
 
     const insertQuestion = db.prepare(`
-      INSERT INTO citizenship_questions (question, options, correct_answer)
-      VALUES (?, ?, ?)
+      INSERT INTO citizenship_questions (question, options, correct_answer, category, difficulty)
+      VALUES (?, ?, ?, ?, ?)
     `);
 
     const insertMany = db.transaction((questions) => {
       for (const question of questions) {
-        insertQuestion.run(question.question, question.options, question.correct_answer);
+        insertQuestion.run(question.question, question.options, question.correct_answer, question.category, question.difficulty);
       }
     });
 

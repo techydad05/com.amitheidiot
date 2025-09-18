@@ -25,9 +25,23 @@ function getDatabase() {
           question TEXT NOT NULL,
           options TEXT NOT NULL,
           correct_answer INTEGER NOT NULL,
+          category TEXT DEFAULT 'citizenship',
+          difficulty TEXT DEFAULT 'easy',
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `);
+
+      // Add category and difficulty columns if they don't exist (for existing databases)
+      try {
+        db.exec(`ALTER TABLE citizenship_questions ADD COLUMN category TEXT DEFAULT 'citizenship'`);
+      } catch (e) {
+        // Column already exists, ignore
+      }
+      try {
+        db.exec(`ALTER TABLE citizenship_questions ADD COLUMN difficulty TEXT DEFAULT 'easy'`);
+      } catch (e) {
+        // Column already exists, ignore
+      }
 
       db.exec(`
         CREATE TABLE IF NOT EXISTS quiz_settings (
@@ -75,25 +89,25 @@ export const dbHelpers = {
   // Get all questions
   getQuestions: () => {
     const database = getDatabase();
-    return database.prepare('SELECT * FROM quiz_questions ORDER BY id').all();
+    return database.prepare('SELECT * FROM citizenship_questions ORDER BY id').all();
   },
 
   // Get questions by category
   getQuestionsByCategory: (category) => {
     const database = getDatabase();
-    return database.prepare('SELECT * FROM quiz_questions WHERE category = ? ORDER BY RANDOM()').all(category);
+    return database.prepare('SELECT * FROM citizenship_questions WHERE category = ? ORDER BY RANDOM()').all(category);
   },
 
   // Get questions by difficulty
   getQuestionsByDifficulty: (difficulty) => {
     const database = getDatabase();
-    return database.prepare('SELECT * FROM quiz_questions WHERE difficulty = ? ORDER BY RANDOM()').all(difficulty);
+    return database.prepare('SELECT * FROM citizenship_questions WHERE difficulty = ? ORDER BY RANDOM()').all(difficulty);
   },
 
   // Get random questions
   getRandomQuestions: (limit = 10) => {
     const database = getDatabase();
-    return database.prepare('SELECT * FROM quiz_questions ORDER BY RANDOM() LIMIT ?').all(limit);
+    return database.prepare('SELECT * FROM citizenship_questions ORDER BY RANDOM() LIMIT ?').all(limit);
   },
 
   // Get quiz settings
