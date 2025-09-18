@@ -1,11 +1,10 @@
 <script>
   // @ts-nocheck
-  import { fade, fly, scale, blur } from 'svelte/transition';
+  import { fade, fly, scale } from 'svelte/transition';
   import { createEventDispatcher, onMount } from 'svelte';
   import { enhance } from '$app/forms';
   import { confetti } from '@neoconfetti/svelte';
   import { page } from '$app/stores';
-  import { elasticOut, quintOut } from 'svelte/easing';
   import QRCode from './QRCode.svelte';
 
   export let questions = [];
@@ -50,10 +49,7 @@
   let url = '';
   let showConfetti = false;
   let result = { verificationToken: null };
-let isSaving = false;
-  let userAnswers = [];
-
-  const passingScore = 0.8; // 80% to pass
+  let isSaving = false;
 
   // Fun emoji reactions based on score
   function getEmojiReaction(percentage) {
@@ -100,7 +96,7 @@ let isSaving = false;
   let showStreakMessage = '';
   let streakTimeout;
   let progress = 0;
-  
+
   $: {
     // Calculate progress based on current question
     if (currentState === 'quiz' && activeQuestions.length > 0) {
@@ -189,46 +185,6 @@ let isSaving = false;
   //     return result;
   // }
 
-  // Handle quiz result submission using SvelteKit action
-  async function handleQuizSubmit(event) {
-    const form = event.target;
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (result.type === 'success' && result.id) {
-        // Generate QR code
-        const baseUrl = window.location.origin;
-        const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
-        const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
-        const resultUrl = `${finalBaseUrl}/result/${result.id}`;
-
-        // Create QR code
-        const qr = new QRCode({
-          content: resultUrl,
-          padding: 4,
-          width: 256,
-          height: 256,
-          color: '#000000',
-          background: '#ffffff',
-          ecl: 'M',
-        });
-
-        qrCodeSvg = qr.svg();
-        showAward = true;
-        showConfetti = true;
-        setTimeout(() => (showConfetti = false), 5000);
-      }
-    } catch (error) {
-      console.error('Failed to save quiz result:', error);
-    }
-  }
   //         // For production, use amitheidiot.com
   //         const finalBaseUrl = isLocalhost ? baseUrl : 'https://amitheidiot.com';
 
@@ -408,70 +364,84 @@ let isSaving = false;
   }
 </script>
 
-<div class="card relative mx-auto w-full max-w-md variant-filled-surface shadow-xl">
+<div class="card variant-filled-surface relative mx-auto w-full max-w-md shadow-xl">
   {#if !showAward}
     <div class="p-6">
       {#if currentState === 'countdown'}
-        <div class="relative flex h-64 flex-col items-center justify-center gap-4 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900 dark:to-yellow-800 rounded-lg overflow-hidden">
+        <div
+          class="relative flex h-64 flex-col items-center justify-center gap-4 overflow-hidden rounded-lg bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900 dark:to-yellow-800"
+        >
           <!-- Ancient Greek Columns Background -->
           <div class="absolute inset-0 opacity-10">
-            <div class="flex justify-around items-end h-full">
+            <div class="flex h-full items-end justify-around">
               <div class="text-6xl">🏛️</div>
               <div class="text-6xl">🏛️</div>
               <div class="text-6xl">🏛️</div>
             </div>
           </div>
-          
+
           <!-- Floating Laurel Wreaths -->
-          <div class="absolute top-2 left-2 text-2xl animate-spin-slow opacity-60">🏆</div>
-          <div class="absolute top-2 right-2 text-2xl animate-spin-slow-reverse opacity-60">🏆</div>
-          
+          <div class="animate-spin-slow absolute left-2 top-2 text-2xl opacity-60">🏆</div>
+          <div class="animate-spin-slow-reverse absolute right-2 top-2 text-2xl opacity-60">🏆</div>
+
           <div class="relative z-10 text-center">
-            <h2 class="text-2xl md:text-3xl font-bold text-amber-800 dark:text-amber-200 mb-2">
+            <h2 class="mb-2 text-2xl font-bold text-amber-800 dark:text-amber-200 md:text-3xl">
               Prepare for the Agora!
             </h2>
-            <div class="text-sm text-amber-600 dark:text-amber-400 mb-4 italic">
+            <div class="mb-4 text-sm italic text-amber-600 dark:text-amber-400">
               The ancient Greeks are watching...
             </div>
-            
-            <div class="flex items-center justify-center mb-4">
+
+            <div class="mb-4 flex items-center justify-center">
               <div class="relative">
                 <!-- Glowing Ring -->
-                <div class="absolute inset-0 rounded-full border-4 border-amber-400 animate-ping opacity-30"></div>
-                <div class="relative bg-gradient-to-br from-amber-200 to-yellow-300 dark:from-amber-700 dark:to-yellow-600 rounded-full w-32 h-32 flex items-center justify-center shadow-2xl">
-                  <p class="text-6xl font-bold {countdownTime > 0 ? 'text-amber-800 dark:text-amber-200' : 'text-green-600 dark:text-green-400'} drop-shadow-lg">
+                <div
+                  class="absolute inset-0 animate-ping rounded-full border-4 border-amber-400 opacity-30"
+                ></div>
+                <div
+                  class="relative flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-yellow-300 shadow-2xl dark:from-amber-700 dark:to-yellow-600"
+                >
+                  <p
+                    class="text-6xl font-bold {countdownTime > 0
+                      ? 'text-amber-800 dark:text-amber-200'
+                      : 'text-green-600 dark:text-green-400'} drop-shadow-lg"
+                  >
                     {countdownTime > 0 ? countdownTime : 'GO!'}
                   </p>
                 </div>
               </div>
             </div>
-            
+
             {#if countdownTime > 0}
-              <div class="text-amber-700 dark:text-amber-300 text-sm mb-4">
+              <div class="mb-4 text-sm text-amber-700 dark:text-amber-300">
                 Channel your inner philosopher...
               </div>
             {:else}
-              <div class="text-green-600 dark:text-green-400 text-lg font-bold mb-4 animate-pulse">
+              <div class="mb-4 animate-pulse text-lg font-bold text-green-600 dark:text-green-400">
                 Begin your trial of wisdom! ⚡
               </div>
             {/if}
-            
+
             <button
-              class="btn bg-amber-200 hover:bg-amber-300 dark:bg-amber-700 dark:hover:bg-amber-600 text-amber-800 dark:text-amber-200 btn-sm border-2 border-amber-400 dark:border-amber-500"
+              class="btn btn-sm border-2 border-amber-400 bg-amber-200 text-amber-800 hover:bg-amber-300 dark:border-amber-500 dark:bg-amber-700 dark:text-amber-200 dark:hover:bg-amber-600"
               on:click={() => dispatch('escape')}
             >
               <span class="flex items-center gap-1"> 🏃‍♂️ I need more time to study! </span>
             </button>
           </div>
-          
+
           <!-- Ancient Greek Border Pattern -->
-          <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"></div>
+          <div
+            class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"
+          ></div>
         </div>
       {:else if currentState === 'quiz'}
-
         <div class="mb-2 flex items-center justify-between text-sm">
           <div class="flex items-center gap-4">
-            <button class="btn variant-ghost-surface btn-sm gap-1" on:click={() => dispatch('escape')}>
+            <button
+              class="variant-ghost-surface btn btn-sm gap-1"
+              on:click={() => dispatch('escape')}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
@@ -488,21 +458,30 @@ let isSaving = false;
             </button>
           </div>
           <div class="flex items-center gap-4">
-            <div class="badge variant-filled-surface">
+            <div class="variant-filled-surface badge">
               Question {currentQuestionIndex + 1}/{activeQuestions.length}
             </div>
             {#if remainingTime > 0}
-              <div 
-                class="badge {remainingTime <= 5 ? 'variant-filled-error text-lg' : remainingTime <= 10 ? 'variant-filled-warning' : 'variant-filled-primary'} transition-all duration-300"
-                style="transform: scale({remainingTime <= 5 ? 1.5 : 1}); {remainingTime <= 5 ? 'animation: pulse 1s infinite;' : ''}"
+              <div
+                class="badge {remainingTime <= 5
+                  ? 'variant-filled-error text-lg'
+                  : remainingTime <= 10
+                    ? 'variant-filled-warning'
+                    : 'variant-filled-primary'} transition-all duration-300"
+                style="transform: scale({remainingTime <= 5 ? 1.5 : 1}); {remainingTime <= 5
+                  ? 'animation: pulse 1s infinite;'
+                  : ''}"
               >
                 {remainingTime}s
               </div>
             {/if}
           </div>
         </div>
-        <div class="mb-4 w-full bg-surface-300-600-token rounded-full h-2">
-          <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: {progress}%"></div>
+        <div class="bg-surface-300-600-token mb-4 h-2 w-full rounded-full">
+          <div
+            class="h-2 rounded-full bg-primary-500 transition-all duration-300"
+            style="width: {progress}%"
+          ></div>
         </div>
         {#if showStreakMessage}
           <div class="mb-2 animate-bounce text-center text-lg font-semibold">
@@ -515,13 +494,14 @@ let isSaving = false;
           </div>
         {/if}
         {#if currentQuestion}
-          <div class="mb-3 flex w-full items-center justify-between"
-            in:fly={{y: 20, duration: 400, delay: 200}}
-            out:fly={{y: -20, duration: 200}}
+          <div
+            class="mb-3 flex w-full items-center justify-between"
+            in:fly={{ y: 20, duration: 400, delay: 200 }}
+            out:fly={{ y: -20, duration: 200 }}
           >
             <h3 class="text-lg font-semibold">{currentQuestion.question}</h3>
             {#if correctStreak >= 3}
-              <div class="badge variant-filled-tertiary animate-bounce" in:scale>
+              <div class="variant-filled-tertiary badge animate-bounce" in:scale>
                 🔥 {correctStreak} streak!
               </div>
             {/if}
@@ -529,7 +509,7 @@ let isSaving = false;
           <div class="mb-4 space-y-2">
             {#each currentQuestion.options as option, index}
               <label
-                class="hover:scale-102 flex transform cursor-pointer items-center rounded-container-token p-2 transition-all duration-200 hover:variant-soft-surface"
+                class="hover:scale-102 flex transform cursor-pointer items-center p-2 transition-all duration-200 rounded-container-token hover:variant-soft-surface"
                 in:fly={{ y: 20, duration: 400, delay: 300 + index * 100 }}
                 out:fly={{ y: 20, duration: 200, delay: index * 50 }}
               >
@@ -554,52 +534,72 @@ let isSaving = false;
         </button>
       {:else if currentState === 'results'}
         <!-- Epic Greek-Inspired Results -->
-        <div class="relative bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900 dark:to-yellow-800 rounded-lg p-6 overflow-hidden">
+        <div
+          class="relative overflow-hidden rounded-lg bg-gradient-to-br from-amber-50 to-yellow-100 p-6 dark:from-amber-900 dark:to-yellow-800"
+        >
           <!-- Ancient Greek Temple Background -->
           <div class="absolute inset-0 opacity-5">
-            <div class="text-9xl text-center pt-8">🏛️</div>
+            <div class="pt-8 text-center text-9xl">🏛️</div>
           </div>
-          
+
           <!-- Floating Elements -->
-          <div class="absolute top-2 left-2 text-xl animate-pulse opacity-60">🏆</div>
-          <div class="absolute top-2 right-2 text-xl animate-pulse opacity-60 delay-500">📜</div>
-          <div class="absolute bottom-2 left-2 text-xl animate-pulse opacity-60 delay-1000">⚖️</div>
-          <div class="absolute bottom-2 right-2 text-xl animate-pulse opacity-60 delay-1500">🌿</div>
-          
+          <div class="absolute left-2 top-2 animate-pulse text-xl opacity-60">🏆</div>
+          <div class="absolute right-2 top-2 animate-pulse text-xl opacity-60 delay-500">📜</div>
+          <div class="absolute bottom-2 left-2 animate-pulse text-xl opacity-60 delay-1000">⚖️</div>
+          <div class="delay-1500 absolute bottom-2 right-2 animate-pulse text-xl opacity-60">
+            🌿
+          </div>
+
           <div class="relative z-10">
-            <h2 class="mb-6 text-2xl font-bold text-center text-amber-800 dark:text-amber-200">
+            <h2 class="mb-6 text-center text-2xl font-bold text-amber-800 dark:text-amber-200">
               Judgment from the Agora
             </h2>
-            
+
             <!-- Epic Score Display -->
             <div class="relative mb-6">
               <!-- Glowing Ring -->
               <div class="absolute inset-0 flex justify-center">
-                <div class="w-32 h-32 rounded-full border-4 border-amber-400 animate-pulse opacity-50"></div>
+                <div
+                  class="h-32 w-32 animate-pulse rounded-full border-4 border-amber-400 opacity-50"
+                ></div>
               </div>
-              
-              <div class="bg-gradient-to-br from-amber-200 to-yellow-300 dark:from-amber-700 dark:to-yellow-600 rounded-full w-32 h-32 mx-auto flex flex-col items-center justify-center shadow-2xl relative">
-                <div class="text-xs text-amber-800 dark:text-amber-200 opacity-80 font-semibold">Your Wisdom</div>
-                <div class="flex items-center gap-1 text-2xl font-bold text-amber-900 dark:text-amber-100">
+
+              <div
+                class="relative mx-auto flex h-32 w-32 flex-col items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-yellow-300 shadow-2xl dark:from-amber-700 dark:to-yellow-600"
+              >
+                <div class="text-xs font-semibold text-amber-800 opacity-80 dark:text-amber-200">
+                  Your Wisdom
+                </div>
+                <div
+                  class="flex items-center gap-1 text-2xl font-bold text-amber-900 dark:text-amber-100"
+                >
                   {score}/{activeQuestions.length}
                   <span class="text-3xl">{getEmojiReaction(score / activeQuestions.length)}</span>
                 </div>
-                <div class="text-sm text-amber-800 dark:text-amber-200 opacity-80 font-medium">
+                <div class="text-sm font-medium text-amber-800 opacity-80 dark:text-amber-200">
                   {Math.round((score / activeQuestions.length) * 100)}%
                 </div>
               </div>
             </div>
-            
+
             <!-- Greek-style Fun Fact -->
-            <div class="mb-4 text-center bg-amber-100 dark:bg-amber-800 rounded-lg p-3 border-l-4 border-amber-500">
-              <div class="text-xs text-amber-700 dark:text-amber-300 font-semibold mb-1">Ancient Wisdom</div>
-              <div class="text-sm italic text-amber-800 dark:text-amber-200">{getRandomFunFact()}</div>
+            <div
+              class="mb-4 rounded-lg border-l-4 border-amber-500 bg-amber-100 p-3 text-center dark:bg-amber-800"
+            >
+              <div class="mb-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                Ancient Wisdom
+              </div>
+              <div class="text-sm italic text-amber-800 dark:text-amber-200">
+                {getRandomFunFact()}
+              </div>
             </div>
-            
+
             <!-- Enhanced Feedback -->
             {#if activeQuestions.length > 0}
               {@const feedback = getFeedbackMessage(score / activeQuestions.length)}
-              <div class="mb-6 bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-800 dark:to-yellow-800 rounded-lg p-4 border-2 border-amber-300 dark:border-amber-600">
+              <div
+                class="mb-6 rounded-lg border-2 border-amber-300 bg-gradient-to-r from-amber-100 to-yellow-100 p-4 dark:border-amber-600 dark:from-amber-800 dark:to-yellow-800"
+              >
                 <div class="flex items-start gap-3">
                   <div class="text-2xl">
                     {#if score / activeQuestions.length >= 0.8}
@@ -611,7 +611,7 @@ let isSaving = false;
                     {/if}
                   </div>
                   <div>
-                    <div class="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-1">
+                    <div class="mb-1 text-sm font-semibold text-amber-700 dark:text-amber-300">
                       The Oracle Speaks:
                     </div>
                     <p class="{feedback.class} text-base leading-relaxed">{feedback.message}</p>
@@ -620,9 +620,11 @@ let isSaving = false;
               </div>
             {/if}
           </div>
-          
+
           <!-- Ancient Greek Border -->
-          <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"></div>
+          <div
+            class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"
+          ></div>
         </div>
 
         {#if score / activeQuestions.length >= 0.8}
@@ -633,7 +635,7 @@ let isSaving = false;
 
             <button type="submit" class="{buttonClass} mb-4 w-full" disabled={isSaving}>
               {#if isSaving}
-                <span class="animate-spin mr-2">⏳</span>
+                <span class="mr-2 animate-spin">⏳</span>
                 Generating Certificate...
               {:else}
                 Add to Leaderboard
@@ -651,9 +653,9 @@ let isSaving = false;
   {:else}
     <div class="bg-gradient-to-br from-yellow-300 to-yellow-500 p-6" transition:fade>
       <div class="text-center">
-        <button 
-          class="btn variant-filled-surface btn-sm absolute top-2 left-2" 
-          on:click={() => showAward = false}
+        <button
+          class="variant-filled-surface btn btn-sm absolute left-2 top-2"
+          on:click={() => (showAward = false)}
         >
           ←
         </button>
@@ -666,7 +668,7 @@ let isSaving = false;
         </div>
         {#if result?.verificationToken}
           <div class="flex flex-col items-center gap-6">
-            <div class="card variant-soft-primary max-w-sm bg-white/20 text-white p-4">
+            <div class="card variant-soft-primary max-w-sm bg-white/20 p-4 text-white">
               <div class="flex w-full flex-col items-center">
                 <p class="mb-2 text-lg font-bold">Your Verification Code</p>
                 <p
@@ -765,7 +767,8 @@ let isSaving = false;
 
   /* Enhanced Pulse Animation */
   @keyframes pulse-glow {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.3;
       transform: scale(1);
     }

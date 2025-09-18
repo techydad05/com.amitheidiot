@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { dbHelpers } from "$lib/server/db.js";
+import { dbHelpers } from '$lib/server/db.js';
 import { error } from '@sveltejs/kit';
 
 export async function load({ params }) {
@@ -11,10 +11,10 @@ export async function load({ params }) {
     }
 
     return {
-      result
+      result,
     };
   } catch (err) {
-    console.error("Error loading quiz result:", err);
+    console.error('Error loading quiz result:', err);
     throw error(500, 'Failed to load quiz result');
   }
 }

@@ -134,18 +134,9 @@
     }
   }
 
-  .glow-text {
-    animation: glow 2s ease-in-out infinite;
-  }
-
   .morphing-button {
     background-size: 200% 200%;
     animation: gradient-shift 3s ease infinite;
-  }
-
-  .morphing-button-2 {
-    background-size: 200% 200%;
-    animation: gradient-shift-2 4s ease infinite;
   }
 
   @keyframes gradient-shift {
@@ -158,38 +149,5 @@
     100% {
       background-position: 0% 50%;
     }
-  }
-
-  @keyframes gradient-shift-2 {
-    0% {
-      background-position: 0% 50%;
-    }
-    25% {
-      background-position: 100% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-    75% {
-      background-position: 0% 100%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  .hover-lift {
-    transition:
-      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  }
-
-  .ease-smooth-in-out {
-    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
   }
 </style>

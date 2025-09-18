@@ -163,9 +163,7 @@
         <div class="flex gap-2">
           {#each sections as _, index}
             <div
-              class="h-2 w-8 rounded-full transition-all duration-300"
-              class:bg-orange-500={index === currentSection}
-              class:bg-white/20={index !== currentSection}
+              class="h-2 w-8 rounded-full transition-all duration-300 {index === currentSection ? 'bg-orange-500' : 'bg-white/20'}"
             ></div>
           {/each}
         </div>

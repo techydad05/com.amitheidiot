@@ -12,7 +12,10 @@ try {
 
   console.log('3. Testing simple query...');
   const result = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
-  console.log('✅ Query successful, tables:', result.map(r => r.name));
+  console.log(
+    '✅ Query successful, tables:',
+    result.map((r) => r.name)
+  );
 
   console.log('4. Testing database module (fixed import)...');
   const { dbHelpers } = await import('./src/lib/server/db.js');
@@ -24,7 +27,6 @@ try {
 
   db.close();
   console.log('🎉 All tests passed! The issue might be elsewhere.');
-
 } catch (error) {
   console.error('❌ Error found:', error);
   console.error('Stack:', error.stack);

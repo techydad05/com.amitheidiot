@@ -67,19 +67,19 @@
     <div class="w-full max-w-6xl text-center">
       <div class="space-y-8">
         <div class="text-8xl transition-transform duration-300 hover:rotate-12">🤯</div>
-        
+
         <h1
           class="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-5xl font-black text-transparent sm:text-6xl md:text-8xl"
         >
           PLOT TWIST!
         </h1>
-        
+
         <div class="mx-auto max-w-5xl space-y-6">
           <p class="text-2xl font-light text-slate-200 sm:text-3xl md:text-4xl lg:text-5xl">
             The word <span class="glow-text font-bold text-red-400">"idiot"</span> has nothing to do
             with intelligence.
           </p>
-          
+
           <div class="text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
             <span
               class="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent"
@@ -90,9 +90,7 @@
         </div>
 
         <div class="mx-auto w-full max-w-4xl pt-8">
-          <div
-            class="rounded-3xl border border-slate-700/50 bg-slate-800/30 p-8 backdrop-blur-sm"
-          >
+          <div class="rounded-3xl border border-slate-700/50 bg-slate-800/30 p-8 backdrop-blur-sm">
             <div class="space-y-6 text-lg leading-relaxed text-slate-200 sm:text-xl">
               <p>
                 In ancient Greece, an <span class="glow-text font-semibold italic text-blue-300"
@@ -100,10 +98,13 @@
                 > was someone who avoided civic duty and public life.
               </p>
               <p class="text-slate-300">
-                It literally meant "private person" - someone who minded their own business instead of participating in democracy.
+                It literally meant "private person" - someone who minded their own business instead
+                of participating in democracy.
               </p>
               <div class="mt-8 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-6">
-                <p class="text-xl font-medium text-blue-200">💡 Ready to learn the full 2,500-year story?</p>
+                <p class="text-xl font-medium text-blue-200">
+                  💡 Ready to learn the full 2,500-year story?
+                </p>
               </div>
             </div>
           </div>

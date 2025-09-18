@@ -6,7 +6,7 @@ console.log('Starting dev server...');
 
 const server = spawn('npm', ['run', 'dev'], {
   stdio: ['pipe', 'pipe', 'pipe'],
-  cwd: process.cwd()
+  cwd: process.cwd(),
 });
 
 let serverReady = false;
@@ -15,7 +15,7 @@ let hasErrors = false;
 server.stdout.on('data', (data) => {
   const output = data.toString();
   console.log('STDOUT:', output);
-  
+
   if (output.includes('ready in')) {
     serverReady = true;
     console.log('✅ Server is ready!');
@@ -38,7 +38,7 @@ await setTimeout(10000);
 
 if (serverReady && !hasErrors) {
   console.log('🎉 Server started successfully!');
-  
+
   // Test a simple HTTP request
   try {
     const response = await fetch('http://localhost:5173/');

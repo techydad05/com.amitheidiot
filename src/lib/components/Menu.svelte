@@ -10,15 +10,15 @@
 </script>
 
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-surface-backdrop-token p-2 backdrop-blur-sm sm:p-4"
+  class="bg-surface-backdrop-token fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-2 backdrop-blur-sm sm:p-4"
   transition:fade
 >
   <div
-    class="relative my-2 w-full max-w-3xl space-y-6 rounded-container-token bg-surface-100-800-token p-4 shadow-xl sm:my-4 sm:space-y-8 sm:p-8"
+    class="bg-surface-100-800-token relative my-2 w-full max-w-3xl space-y-6 p-4 shadow-xl rounded-container-token sm:my-4 sm:space-y-8 sm:p-8"
   >
     <!-- Close button -->
     <button
-      class="btn-icon btn-icon-sm variant-filled-surface absolute right-2 top-2 sm:btn-icon-base sm:right-4 sm:top-4"
+      class="variant-filled-surface btn-icon btn-icon-sm absolute right-2 top-2 sm:btn-icon-base sm:right-4 sm:top-4"
       on:click={goBackToStart}
     >
       <svg
@@ -42,7 +42,7 @@
       <h2 class="mb-2 text-3xl font-bold text-primary-500 sm:mb-4 sm:text-4xl md:text-6xl">
         Choose Your Path
       </h2>
-      <p class="px-2 text-lg text-surface-600-300-token opacity-80 sm:text-xl md:text-2xl">
+      <p class="text-surface-600-300-token px-2 text-lg opacity-80 sm:text-xl md:text-2xl">
         Discover the fascinating journey of how a word about civic duty became a modern insult
       </p>
     </div>
@@ -56,10 +56,7 @@
           <p class="mb-3 text-sm opacity-90">
             Explore the historical journey of the word "idiot" through ancient Greece.
           </p>
-          <button
-            class="btn variant-ghost-surface w-full"
-            on:click={showLearnMore}
-          >
+          <button class="variant-ghost-surface btn w-full" on:click={showLearnMore}>
             Discover →
           </button>
         </div>
@@ -72,10 +69,7 @@
           <p class="mb-3 text-sm opacity-90">
             Test your knowledge about the historical meaning and modern usage.
           </p>
-          <button
-            class="btn variant-ghost-surface w-full"
-            on:click={startQuiz}
-          >
+          <button class="variant-ghost-surface btn w-full" on:click={startQuiz}>
             Start Quiz →
           </button>
         </div>
@@ -88,43 +82,27 @@
           <p class="mb-3 text-sm opacity-90">
             Check out the leaderboard and claim your quiz results.
           </p>
-          <a
-            href="/results"
-            class="btn variant-ghost-surface w-full"
-          >
-            Leaderboard →
-          </a>
+          <a href="/results" class="variant-ghost-surface btn w-full"> Leaderboard → </a>
         </div>
       </div>
-
     </div>
 
     <!-- Education Stats Button -->
     <div class="w-full">
-      <button
-        class="btn variant-outline-error w-full"
-        on:click={() => showStats = true}
-      >
+      <button class="variant-outline-error btn w-full" on:click={() => (showStats = true)}>
         <span class="mr-2">📊</span>
         View Education Crisis Stats
       </button>
     </div>
 
     <!-- Coming Soon Card -->
-    <div class="card variant-filled-surface p-4 shadow-xl w-full">
-        <div class="text-center">
-          <h3 class="mb-2 text-lg font-bold sm:text-xl">Coming Soon</h3>
-          <p class="mb-3 text-sm opacity-80">
-            More features and content are on the way. Stay tuned!
-          </p>
-          <button
-            class="btn variant-ghost-surface w-full"
-            disabled
-          >
-            Soon →
-          </button>
-        </div>
+    <div class="card variant-filled-surface w-full p-4 shadow-xl">
+      <div class="text-center">
+        <h3 class="mb-2 text-lg font-bold sm:text-xl">Coming Soon</h3>
+        <p class="mb-3 text-sm opacity-80">More features and content are on the way. Stay tuned!</p>
+        <button class="variant-ghost-surface btn w-full" disabled> Soon → </button>
       </div>
+    </div>
   </div>
 </div>
 

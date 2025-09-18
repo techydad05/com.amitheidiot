@@ -4,7 +4,7 @@ import { dbHelpers } from '$lib/server/db';
 export async function GET() {
   try {
     const settings = dbHelpers.getSettings();
-    
+
     if (!settings) {
       // Return default settings if none exist
       return json({ num_questions: 3, time_limit: 60 });
@@ -22,7 +22,7 @@ export async function POST({ request }) {
     const { num_questions, time_limit } = await request.json();
 
     dbHelpers.updateSettings(num_questions, time_limit);
-    
+
     // Return the updated settings
     const updatedSettings = dbHelpers.getSettings();
     return json(updatedSettings);

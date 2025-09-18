@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { dbHelpers } from "$lib/server/db.js";
+import { dbHelpers } from '$lib/server/db.js';
 
 /**
  * Load quiz questions from SQLite database
@@ -11,26 +11,26 @@ export const load = async () => {
     const settings = dbHelpers.getSettings() || { num_questions: 10, time_limit: 30 };
 
     // Transform questions to match expected format
-    const questions = rawQuestions.map(q => ({
+    const questions = rawQuestions.map((q) => ({
       question: q.question,
       options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
-      correct_index: q.correct_answer
+      correct_index: q.correct_answer,
     }));
 
     return {
       questions: questions || [],
       settings: {
         numQuestions: settings.num_questions,
-        timeLimit: settings.time_limit
+        timeLimit: settings.time_limit,
       },
-      error: null
+      error: null,
     };
   } catch (err) {
     console.error('Failed to fetch data:', err);
     return {
       questions: [],
       settings: { numQuestions: 10, timeLimit: 30 },
-      error: "Failed to fetch data"
+      error: 'Failed to fetch data',
     };
   }
 };
@@ -59,11 +59,11 @@ export const actions = {
   saveQuiz: async ({ request }) => {
     try {
       const formData = await request.formData();
-      const score = parseInt(formData.get("score"));
-      const totalQuestions = parseInt(formData.get("totalQuestions"));
-      const timeTaken = parseInt(formData.get("timeTaken")) || 0;
-      const answers = JSON.parse(formData.get("answers") || "[]");
-      
+      const score = parseInt(formData.get('score'));
+      const totalQuestions = parseInt(formData.get('totalQuestions'));
+      const timeTaken = parseInt(formData.get('timeTaken')) || 0;
+      const answers = JSON.parse(formData.get('answers') || '[]');
+
       // Generate a UUID for verification
       const verificationToken = crypto.randomUUID();
 
@@ -72,7 +72,7 @@ export const actions = {
         totalQuestions,
         timeTaken,
         answers: answers.length,
-        verificationToken
+        verificationToken,
       });
 
       // Save to SQLite
@@ -81,9 +81,9 @@ export const actions = {
       console.log('Quiz result saved:', { id: verificationToken });
 
       return {
-        type: "success",
+        type: 'success',
         id: verificationToken,
-        verificationToken
+        verificationToken,
       };
     } catch (error) {
       console.error('Failed to save quiz result:', error);

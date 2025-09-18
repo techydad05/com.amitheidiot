@@ -191,23 +191,6 @@
   });
 </script>
 
-
-  onMount(() => {
-    const handleKeydown = (e) => {
-      if (quizState === 'playing') {
-        if (e.key >= '1' && e.key <= '4') {
-          handleAnswer(parseInt(e.key) - 1);
-        }
-      }
-      if (e.key === 'Escape') {
-        goto('/crisis');
-      }
-    };
-    window.addEventListener('keydown', handleKeydown);
-    return () => window.removeEventListener('keydown', handleKeydown);
-  });
-</script>
-
 <svelte:head>
   <title>American Citizenship Quiz - Am I The Idiot?</title>
   <meta name="description" content="Test your knowledge of American civics and citizenship with this engaging quiz." />
@@ -512,73 +495,4 @@
   <div class="relative z-10 p-4 text-center text-sm text-white/40">
     <p>Press ESC to go back • Use keyboard numbers 1-4 to answer quickly</p>
   </div>
-</div>
-                    ? 'border-blue-400'
-                    : 'border-white/20'} {quizState === 'reviewing' &&
-                  index === currentQuestion.correct
-                    ? 'border-green-500 bg-green-500/20'
-                    : ''} {quizState === 'reviewing' &&
-                  selectedAnswer === index &&
-                  index !== currentQuestion.correct
-                    ? 'border-red-500 bg-red-500/20'
-                    : ''}"
-                >
-                  <span class="mr-4 font-mono">{String.fromCharCode(65 + index)}</span>
-                  <span>{option}</span>
-
-                  {#if quizState === 'reviewing'}
-                    <div class="absolute right-3 top-3 text-2xl">
-                      {#if index === currentQuestion.correct}✅
-                      {:else if selectedAnswer === index}❌
-                      {/if}
-                    </div>
-                  {/if}
-                </button>
-              {/each}
-            </div>
-
-            <!-- Explanation -->
-            {#if quizState === 'reviewing'}
-              <div in:fly={{ y: 20, duration: 400, delay: 300 }} class="mt-8 text-center">
-                <div
-                  class="inline-block rounded-2xl border border-white/10 bg-black/20 p-4 backdrop-blur-sm"
-                >
-                  <p class="text-lg text-white/90">{currentQuestion.explanation}</p>
-                </div>
-              </div>
-            {/if}
-          </div>
-        {/key}
-      </div>
-    {:else}
-      <!-- Quiz Complete -->
-      <div
-        in:fly={{ y: 50, duration: 500, easing: quintOut }}
-        class="rounded-3xl border border-white/10 bg-black/20 p-8 text-center shadow-2xl backdrop-blur-xl sm:p-12"
-      >
-        <div class="mb-6 text-7xl">{score / questions.length >= 0.8 ? '🏆' : '🎉'}</div>
-        <h1 class="mb-4 text-4xl font-bold text-white md:text-5xl">Quiz Complete!</h1>
-        <p class="mb-6 text-xl text-white/80">{getScoreMessage()}</p>
-        <div class="mb-10 text-6xl font-bold">
-          <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            {score} / {questions.length}
-          </span>
-        </div>
-        <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <button
-            on:click={restartQuiz}
-            class="w-full rounded-2xl border border-white/20 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:bg-white/20 sm:w-auto"
-          >
-            Try Again
-          </button>
-          <button
-            on:click={() => goto('/learn')}
-            class="w-full rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-105 sm:w-auto"
-          >
-            Review History
-          </button>
-        </div>
-      </div>
-    {/if}
-  </main>
 </div>

@@ -5,19 +5,24 @@ This document outlines the migration from Supabase to SQLite for self-hosting.
 ## Changes Made
 
 ### Dependencies
+
 - **Removed**: `@supabase/supabase-js`, `pg`
 - **Added**: `better-sqlite3`
 
 ### Database Configuration
+
 - **Old**: Supabase client with remote database
 - **New**: Local SQLite database with better-sqlite3
 
 ### Database Location
+
 - **Development**: `amitheidiot.db` (in project root)
 - **Production**: `/data/amitheidiot.db`
 
 ### Schema
+
 The SQLite database includes these tables:
+
 - `citizenship_questions` - Quiz questions with options and correct answers
 - `quiz_settings` - Configuration for number of questions and time limits
 - `quiz_results` - User quiz results and scores
@@ -25,11 +30,13 @@ The SQLite database includes these tables:
 ## Setup Instructions
 
 1. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Seed the database** (optional, for sample questions):
+
    ```bash
    npm run seed
    ```
@@ -52,6 +59,7 @@ If you need to migrate existing data from Supabase:
 ## Production Deployment
 
 For production deployment:
+
 - Ensure the `/data` directory exists and is writable
 - The SQLite database file will be created at `/data/amitheidiot.db`
 - Consider setting up regular backups of the database file

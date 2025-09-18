@@ -4,73 +4,73 @@
 
   const stats = [
     {
-      category: "Literacy and Education",
+      category: 'Literacy and Education',
       comparisons: [
         {
-          title: "Adult Literacy Rate",
-          modern: "54% of U.S. adults read below 6th grade level (2023)",
-          boomer: "Over 80% literacy rate during the 1960s",
-          source: "National Center for Education Statistics"
+          title: 'Adult Literacy Rate',
+          modern: '54% of U.S. adults read below 6th grade level (2023)',
+          boomer: 'Over 80% literacy rate during the 1960s',
+          source: 'National Center for Education Statistics',
         },
         {
-          title: "College Affordability",
-          modern: "Average student debt: $37,574 (2023)",
-          boomer: "1970s: Could pay for college with summer job",
-          source: "Federal Reserve"
+          title: 'College Affordability',
+          modern: 'Average student debt: $37,574 (2023)',
+          boomer: '1970s: Could pay for college with summer job',
+          source: 'Federal Reserve',
         },
         {
-          title: "Public Education Funding",
-          modern: "Many schools underfunded by $1,000+ per student",
-          boomer: "1960s-70s: Significant public investment in education",
-          source: "Education Law Center"
-        }
-      ]
+          title: 'Public Education Funding',
+          modern: 'Many schools underfunded by $1,000+ per student',
+          boomer: '1960s-70s: Significant public investment in education',
+          source: 'Education Law Center',
+        },
+      ],
     },
     {
-      category: "Economic Reality",
+      category: 'Economic Reality',
       comparisons: [
         {
-          title: "Home Ownership",
-          modern: "Millennials: 48% own homes (age 26-41)",
-          boomer: "Boomers at same age: 70% owned homes",
-          source: "National Association of Realtors"
+          title: 'Home Ownership',
+          modern: 'Millennials: 48% own homes (age 26-41)',
+          boomer: 'Boomers at same age: 70% owned homes',
+          source: 'National Association of Realtors',
         },
         {
-          title: "Wage vs. Cost of Living",
-          modern: "Need 2.5x minimum wage to afford rent in most states",
-          boomer: "1970: Could afford rent on minimum wage",
-          source: "National Low Income Housing Coalition"
+          title: 'Wage vs. Cost of Living',
+          modern: 'Need 2.5x minimum wage to afford rent in most states',
+          boomer: '1970: Could afford rent on minimum wage',
+          source: 'National Low Income Housing Coalition',
         },
         {
-          title: "Wealth Distribution",
-          modern: "Millennials own 4.6% of U.S. wealth",
-          boomer: "Boomers owned 21% at same age",
-          source: "Federal Reserve"
-        }
-      ]
+          title: 'Wealth Distribution',
+          modern: 'Millennials own 4.6% of U.S. wealth',
+          boomer: 'Boomers owned 21% at same age',
+          source: 'Federal Reserve',
+        },
+      ],
     },
     {
-      category: "Social Mobility",
+      category: 'Social Mobility',
       comparisons: [
         {
-          title: "Chance of Doing Better Than Parents",
-          modern: "50% chance (born 1980s)",
-          boomer: "90% chance (born 1940s)",
-          source: "Opportunity Insights"
+          title: 'Chance of Doing Better Than Parents',
+          modern: '50% chance (born 1980s)',
+          boomer: '90% chance (born 1940s)',
+          source: 'Opportunity Insights',
         },
         {
-          title: "Income Required for Middle Class",
-          modern: "2x 1970s amount adjusted for inflation",
-          boomer: "Single income sufficient for family",
-          source: "Pew Research"
-        }
-      ]
-    }
+          title: 'Income Required for Middle Class',
+          modern: '2x 1970s amount adjusted for inflation',
+          boomer: 'Single income sufficient for family',
+          source: 'Pew Research',
+        },
+      ],
+    },
   ];
 </script>
 
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center bg-surface-backdrop-token backdrop-blur-sm p-4 overflow-y-auto"
+  class="bg-surface-backdrop-token fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 backdrop-blur-sm"
   transition:fade
   role="dialog"
   aria-modal="true"
@@ -78,14 +78,14 @@
   on:keydown={(e) => e.key === 'Escape' && (show = false)}
 >
   <div
-    class="w-full max-w-4xl max-h-[90vh] p-6 overflow-y-auto card variant-filled-surface shadow-xl"
+    class="card variant-filled-surface max-h-[90vh] w-full max-w-4xl overflow-y-auto p-6 shadow-xl"
     in:fly={{ y: -50, duration: 500 }}
     out:fade
     role="document"
   >
     <!-- Close button -->
     <button
-      class="btn-icon btn-icon-sm variant-filled-surface absolute right-2 top-2"
+      class="variant-filled-surface btn-icon btn-icon-sm absolute right-2 top-2"
       on:click={() => (show = false)}
     >
       <svg
@@ -106,9 +106,7 @@
 
     <div class="text-center">
       <h2 class="mb-2 text-3xl font-bold text-primary-500">The Decline of American Education</h2>
-      <p class="text-lg opacity-80">
-        A stark comparison between generations
-      </p>
+      <p class="text-lg opacity-80">A stark comparison between generations</p>
     </div>
 
     <div class="space-y-8">
@@ -119,7 +117,7 @@
             {#each category.comparisons as stat}
               <div class="card variant-filled-surface shadow-lg">
                 <div class="p-4">
-                  <h4 class="text-lg font-bold mb-2">{stat.title}</h4>
+                  <h4 class="mb-2 text-lg font-bold">{stat.title}</h4>
                   <div class="space-y-2">
                     <div class="card variant-soft-error p-2">
                       <p class="text-sm">
@@ -151,5 +149,3 @@
     </div>
   </div>
 </div>
-
-

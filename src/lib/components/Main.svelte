@@ -7,7 +7,6 @@
   const secondarySize = 'text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl';
   const tertiarySize = 'text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl';
   const specialCharSize = 'text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl';
-  const defaultSize = 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl';
 
   let glowingWords = ['idiot', 'polis'];
   let glowPositions = { idiot: { x: 0, y: 0 }, polis: { x: 0, y: 0 } };
@@ -72,7 +71,10 @@
     return `text-shadow: ${pos.x}px ${pos.y}px 15px var(--color-primary)`;
   }
 
-  function applySpecificSizes(text, defaultSize = 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl') {
+  function applySpecificSizes(
+    text,
+    defaultSize = 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl'
+  ) {
     // Split by spaces but preserve parentheses and punctuation
     const tokens = text.split(/(\s+|\(|\)|,)/g);
     const specialWordsMap = new Map(specialWords.map((w) => [w.text.toLowerCase(), w]));
@@ -135,10 +137,15 @@
       .join('');
   }
 
-  const sizedFullText = applySpecificSizes(fullText, 'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl');
+  const sizedFullText = applySpecificSizes(
+    fullText,
+    'text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl'
+  );
 </script>
 
-<div class="word-container absolute inset-0 flex flex-wrap content-start justify-start items-start p-1 sm:p-2 md:p-3 lg:p-4 opacity-20 leading-tight">
+<div
+  class="word-container absolute inset-0 flex flex-wrap content-start items-start justify-start p-1 leading-tight opacity-20 sm:p-2 md:p-3 lg:p-4"
+>
   {@html sizedFullText}
 </div>
 
@@ -147,69 +154,110 @@
   <!-- Main Button Container -->
   <div class="modern-button-container group cursor-pointer" on:click={toggleContainer}>
     <!-- Subtle Glow Effect -->
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-amber-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 scale-110"></div>
-    
+    <div
+      class="absolute inset-0 scale-110 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-amber-500/20 opacity-0 blur-xl transition-all duration-500 group-hover:opacity-100"
+    ></div>
+
     <!-- Main Button -->
-    <div class="relative bg-white/10 dark:bg-black/20 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 dark:border-white/10 transform group-hover:scale-[1.02] transition-all duration-300 group-hover:-translate-y-1">
-      
+    <div
+      class="relative transform rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02] dark:border-white/10 dark:bg-black/20 md:p-12"
+    >
       <!-- Subtle Greek Pattern -->
-      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent rounded-t-3xl"></div>
-      <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent rounded-b-3xl"></div>
-      
+      <div
+        class="absolute left-0 right-0 top-0 h-1 rounded-t-3xl bg-gradient-to-r from-transparent via-amber-400/50 to-transparent"
+      ></div>
+      <div
+        class="absolute bottom-0 left-0 right-0 h-1 rounded-b-3xl bg-gradient-to-r from-transparent via-amber-400/50 to-transparent"
+      ></div>
+
       <!-- Content -->
       <div class="relative text-center">
         <!-- Minimal Greek Icon -->
-        <div class="text-4xl mb-4 opacity-60 group-hover:opacity-80 transition-opacity duration-300">🏛️</div>
-        
+        <div
+          class="mb-4 text-4xl opacity-60 transition-opacity duration-300 group-hover:opacity-80"
+        >
+          🏛️
+        </div>
+
         <!-- Main Question -->
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-          <span class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-white dark:via-amber-200 dark:to-white bg-clip-text text-transparent">
+        <h1 class="mb-6 text-5xl font-bold leading-tight md:text-6xl lg:text-7xl">
+          <span
+            class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 bg-clip-text text-transparent dark:from-white dark:via-amber-200 dark:to-white"
+          >
             Are You The
           </span>
-          <br>
-          <span class="bg-gradient-to-r from-red-600 via-red-500 to-red-600 bg-clip-text text-transparent font-black tracking-tight group-hover:tracking-wide transition-all duration-300">
+          <br />
+          <span
+            class="bg-gradient-to-r from-red-600 via-red-500 to-red-600 bg-clip-text font-black tracking-tight text-transparent transition-all duration-300 group-hover:tracking-wide"
+          >
             IDIOT
           </span>
-          <span class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-white dark:via-amber-200 dark:to-white bg-clip-text text-transparent">
+          <span
+            class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 bg-clip-text text-transparent dark:from-white dark:via-amber-200 dark:to-white"
+          >
             ?
           </span>
         </h1>
-        
+
         <!-- Greek Translation - Subtle -->
-        <div class="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-light mb-6 italic opacity-70 group-hover:opacity-100 transition-opacity duration-300">
+        <div
+          class="mb-6 text-lg font-light italic text-slate-600 opacity-70 transition-opacity duration-300 group-hover:opacity-100 dark:text-slate-400 md:text-xl"
+        >
           εἰσὶ σὺ ὁ ἰδιώτης;
         </div>
-        
+
         <!-- Modern CTA -->
-        <div class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full text-white font-semibold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+        <div
+          class="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-purple-700 group-hover:scale-105 group-hover:shadow-xl"
+        >
           <span>Test Your Knowledge</span>
-          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          <svg
+            class="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            ></path>
           </svg>
         </div>
-        
+
         <!-- Subtle Tagline -->
-        <div class="text-sm text-slate-500 dark:text-slate-400 mt-4 opacity-60 group-hover:opacity-80 transition-opacity duration-300">
+        <div
+          class="mt-4 text-sm text-slate-500 opacity-60 transition-opacity duration-300 group-hover:opacity-80 dark:text-slate-400"
+        >
           From ancient Athens to modern democracy
         </div>
       </div>
-      
+
       <!-- Minimal Corner Accents -->
-      <div class="absolute top-4 left-4 w-3 h-3 border-l-2 border-t-2 border-amber-400/30 rounded-tl-lg"></div>
-      <div class="absolute top-4 right-4 w-3 h-3 border-r-2 border-t-2 border-amber-400/30 rounded-tr-lg"></div>
-      <div class="absolute bottom-4 left-4 w-3 h-3 border-l-2 border-b-2 border-amber-400/30 rounded-bl-lg"></div>
-      <div class="absolute bottom-4 right-4 w-3 h-3 border-r-2 border-b-2 border-amber-400/30 rounded-br-lg"></div>
+      <div
+        class="absolute left-4 top-4 h-3 w-3 rounded-tl-lg border-l-2 border-t-2 border-amber-400/30"
+      ></div>
+      <div
+        class="absolute right-4 top-4 h-3 w-3 rounded-tr-lg border-r-2 border-t-2 border-amber-400/30"
+      ></div>
+      <div
+        class="absolute bottom-4 left-4 h-3 w-3 rounded-bl-lg border-b-2 border-l-2 border-amber-400/30"
+      ></div>
+      <div
+        class="absolute bottom-4 right-4 h-3 w-3 rounded-br-lg border-b-2 border-r-2 border-amber-400/30"
+      ></div>
     </div>
-    
+
     <!-- Click Ripple Effect -->
-    <div class="absolute inset-0 rounded-3xl overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden rounded-3xl">
       <div class="modern-ripple-effect"></div>
     </div>
   </div>
-  
+
   <!-- Subtle Floating Elements -->
-  <div class="absolute -top-8 -left-8 text-2xl opacity-20 animate-pulse">⚖️</div>
-  <div class="absolute -top-8 -right-8 text-2xl opacity-20 animate-pulse delay-1000">📜</div>
+  <div class="absolute -left-8 -top-8 animate-pulse text-2xl opacity-20">⚖️</div>
+  <div class="absolute -right-8 -top-8 animate-pulse text-2xl opacity-20 delay-1000">📜</div>
 </div>
 
 <style>
@@ -245,7 +293,8 @@
 
   /* Subtle Pulse Animation */
   @keyframes subtle-pulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.6;
     }
     50% {

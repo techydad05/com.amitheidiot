@@ -1,5 +1,5 @@
 <script>
-  import { fade, fly } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
   export let onSelect;
   export let onBack;
   export let questions = [];
@@ -13,11 +13,11 @@
       settings: {
         num_questions: 5,
         time_limit: 45,
-        theme: 'garden'
+        theme: 'garden',
       },
       class: 'bg-success text-success-content',
       hoverClass: 'hover:bg-success-focus',
-      subtitle: 'For the self-aware citizen'
+      subtitle: 'For the self-aware citizen',
     },
     {
       id: 'moderate',
@@ -27,11 +27,11 @@
       settings: {
         num_questions: 7,
         time_limit: 30,
-        theme: 'synthwave'
+        theme: 'synthwave',
       },
       class: 'bg-warning text-warning-content',
       hoverClass: 'hover:bg-warning-focus',
-      subtitle: 'For the casually misinformed'
+      subtitle: 'For the casually misinformed',
     },
     {
       id: 'facebook',
@@ -41,24 +41,26 @@
       settings: {
         num_questions: 10,
         time_limit: 20,
-        theme: 'dracula'
+        theme: 'dracula',
       },
       class: 'bg-error text-error-content',
       hoverClass: 'hover:bg-error-focus',
-      subtitle: 'For those who think they know everything'
-    }
+      subtitle: 'For those who think they know everything',
+    },
   ];
 </script>
 
-<div class="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-surface-backdrop-token backdrop-blur-sm p-4">
+<div
+  class="bg-surface-backdrop-token fixed inset-0 z-50 flex min-h-screen items-center justify-center p-4 backdrop-blur-sm"
+>
   <div class="standard-modal-container">
     <div
-      class="relative w-full max-w-[95vw] mx-4 md:max-w-4xl md:mx-0 max-h-[80vh] overflow-y-auto z-50"
+      class="relative z-50 mx-4 max-h-[80vh] w-full max-w-[95vw] overflow-y-auto md:mx-0 md:max-w-4xl"
       in:fly={{ y: 20, duration: 200 }}
     >
       <!-- Close button -->
       <button
-        class="btn-icon btn-icon-sm variant-filled-surface absolute right-2 top-2"
+        class="variant-filled-surface btn-icon btn-icon-sm absolute right-2 top-2"
         on:click={onBack}
       >
         <svg
@@ -79,15 +81,17 @@
 
       <div class="text-center">
         <h2 class="mb-2 text-3xl font-bold text-primary-500">Rate Your Knowledge</h2>
-        <p class="text-lg opacity-80">
-          Be honest (or don't, we'll find out anyway)
-        </p>
+        <p class="text-lg opacity-80">Be honest (or don't, we'll find out anyway)</p>
       </div>
 
       <div class="grid gap-6 md:grid-cols-3">
         {#each difficulties as difficulty}
           <div
-            class="card variant-filled-{difficulty.id === 'humble' ? 'success' : difficulty.id === 'moderate' ? 'warning' : 'error'} transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+            class="card variant-filled-{difficulty.id === 'humble'
+              ? 'success'
+              : difficulty.id === 'moderate'
+                ? 'warning'
+                : 'error'} cursor-pointer transition-all duration-300 hover:-translate-y-2"
             role="button"
             on:click={() => onSelect(difficulty.settings)}
             on:keydown={(e) => e.key === 'Enter' && onSelect(difficulty.settings)}
@@ -99,48 +103,52 @@
               <p class="mb-1 text-sm italic opacity-90">{difficulty.subtitle}</p>
               <p class="text-sm">{difficulty.description}</p>
               <div class="mt-4">
-                <button class="btn variant-outline-surface border-2">
-                  Choose This Level
-                </button>
+                <button class="variant-outline-surface btn border-2"> Choose This Level </button>
               </div>
             </div>
           </div>
         {/each}
       </div>
 
-      <div class="divider opacity-70 font-semibold my-8">OR TAKE THE ULTIMATE CHALLENGE</div>
+      <div class="divider my-8 font-semibold opacity-70">OR TAKE THE ULTIMATE CHALLENGE</div>
 
       <!-- Premium Challenge -->
-      <div class="card variant-filled-secondary w-full transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+      <div
+        class="card variant-filled-secondary w-full cursor-pointer transition-all duration-300 hover:-translate-y-2"
+      >
         <div class="p-6 text-center">
-          <div class="flex items-center gap-3 justify-center">
+          <div class="flex items-center justify-center gap-3">
             <span class="text-4xl">👑</span>
             <h3 class="text-2xl font-bold">"Put Your Money Where Your Brain Is"</h3>
           </div>
           <p class="mb-1 text-lg italic opacity-90">The Ultimate Challenge - Leaderboard Access</p>
-          <p class="text-base">Think you're smart enough for the leaderboard? Prove it with a $1 entry fee. All questions, 15 seconds each, no room for idiots.</p>
+          <p class="text-base">
+            Think you're smart enough for the leaderboard? Prove it with a $1 entry fee. All
+            questions, 15 seconds each, no room for idiots.
+          </p>
           <div class="mt-4 w-full">
-            <button 
-              class="btn variant-filled-tertiary w-full font-bold shadow-lg hover:scale-105"
-              on:click={() => onSelect({
-                num_questions: questions.length,
-                time_limit: 15,
-                theme: 'skeleton',
-                isPremium: true
-              })}
+            <button
+              class="variant-filled-tertiary btn w-full font-bold shadow-lg hover:scale-105"
+              on:click={() =>
+                onSelect({
+                  num_questions: questions.length,
+                  time_limit: 15,
+                  theme: 'skeleton',
+                  isPremium: true,
+                })}
             >
               Enter the Challenge ($1)
             </button>
           </div>
           <p class="mt-2 text-xs opacity-75">
-            Entry fee helps support server costs. Only premium scores are eligible for the leaderboard.
+            Entry fee helps support server costs. Only premium scores are eligible for the
+            leaderboard.
           </p>
         </div>
       </div>
 
       <div class="mt-6 text-center text-sm italic opacity-60">
-        Tip: The more confident you are, the less time you'll get per question.
-        Choose wisely!
+        Tip: The more confident you are, the less time you'll get per question. Choose wisely!
       </div>
     </div>
   </div>

@@ -39,7 +39,7 @@ npm run build
 ## Routes
 
 - `/` - Landing page with the main question
-- `/start` - Introduction and navigation hub  
+- `/start` - Introduction and navigation hub
 - `/learn` - Interactive history lesson
 - `/quiz` - Knowledge test with explanations
 
